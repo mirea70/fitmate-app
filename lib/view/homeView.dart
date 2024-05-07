@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:fitmate_app/view/account/LoginView.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -17,13 +16,17 @@ class HomeView extends StatelessWidget {
               // color: Color(0xffFF9800),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xfff6d365).withOpacity(0.7), Color(0xfffda085)],
+                  colors: [
+                    Color(0xfff6d365).withOpacity(0.7),
+                    Color(0xfffda085)
+                  ],
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
                 ),
               ),
             ),
             Column(
+
               children: [
                 SizedBox(
                   height: deviceSize.height * 0.1,
@@ -107,12 +110,19 @@ class HomeView extends StatelessWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: (){},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return LoginView();
+                            },
+                          ),
+                        );
+                      },
                       child: Text(
                         '다른 방법으로 시작하기',
-                        style: TextStyle(
-                          color: Colors.white
-                        ),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ],

@@ -1,7 +1,6 @@
-import 'package:fitmate_app/view/home_view.dart';
+import 'package:fitmate_app/view/homeView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/riverpod.dart';
 
 void main() {
   runApp(
