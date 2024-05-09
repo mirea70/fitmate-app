@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({required this.deviceSize, required this.onTapMethod});
+  CustomButton({required this.deviceSize, required this.onTapMethod, required this.title, this.isEnabled = true});
+
   final Size deviceSize;
-  final GestureTapCallback onTapMethod;
+  final VoidCallback onTapMethod;
+  final String title;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTapMethod,
-      child: Container(
-        width: deviceSize.width * 0.9,
-        height: deviceSize.height * 0.07,
-        decoration: BoxDecoration(
-          color: Colors.orangeAccent,
-          borderRadius: BorderRadius.circular(30),
+    return Container(
+      width: deviceSize.width * 0.9,
+      height: deviceSize.height * 0.07,
+      child: ElevatedButton(
+        onPressed: isEnabled ? onTapMethod : null,
+        style: ElevatedButton.styleFrom(
+          elevation: 5.0,
+          backgroundColor: Colors.orangeAccent,
         ),
         child: Center(
           child: Text(
-            '로그인',
+            title,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
+              fontFamily: 'Pretendard',
               fontWeight: FontWeight.bold,
             ),
           ),

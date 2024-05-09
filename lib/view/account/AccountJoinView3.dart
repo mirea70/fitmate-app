@@ -2,16 +2,19 @@ import 'package:fitmate_app/view/account/AccountJoinView2.dart';
 import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
+import 'package:fitmate_app/widget/CustomInputWithButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AccountJoinView1 extends StatelessWidget {
-  const AccountJoinView1({super.key});
+class AccountJoinView3 extends StatelessWidget {
+  const AccountJoinView3({super.key});
 
   @override
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
+    final isCheckPhoneInputProvider = StateProvider((ref) => false);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -28,12 +31,12 @@ class AccountJoinView1 extends StatelessWidget {
                   Container(
                     color: Colors.orangeAccent,
                     height: 6,
-                    width: deviceSize.width / 4,
+                    width: deviceSize.width / 4 * 3,
                   ),
                   Container(
                     color: Colors.grey,
                     height: 6,
-                    width: deviceSize.width / 4 * 3,
+                    width: deviceSize.width / 4 * 1,
                   ),
                 ],
               ),
@@ -53,7 +56,7 @@ class AccountJoinView1 extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '아이디를 입력해주세요',
+                      '휴대 전화번호를 인증해 주세요',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
@@ -61,7 +64,7 @@ class AccountJoinView1 extends StatelessWidget {
                       height: deviceSize.height * 0.01,
                     ),
                     Text(
-                      '로그인 시 사용할 아이디를 입력해주세요.',
+                      '신뢰할 수 있는 커뮤니티를 위해 전화번호 인증이 필요해요.',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
@@ -75,11 +78,25 @@ class AccountJoinView1 extends StatelessWidget {
                       builder: (context, ref, child) {
                         final viewModel =
                             ref.watch(accountJoinViewModelProvider.notifier);
-                        return CustomInput(
+                        return CustomInputWithButton(
                           deviceSize: deviceSize,
                           onChangeMethod: (value) =>
-                              viewModel.setLoginName(value),
-                          hintText: 'amsidl777',
+                              viewModel.setPhone(value),
+                          hintText: '010-0000-0000',
+                          onPressMethod: (){},
+                        );
+                      },
+                    ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final viewModel =
+                        ref.watch(accountJoinViewModelProvider.notifier);
+                        return CustomInputWithButton(
+                          deviceSize: deviceSize,
+                          onChangeMethod: (value) =>
+                              viewModel.setPhone(value),
+                          hintText: '인증번호 6자리를 입력해주세요.',
+                          onPressMethod: (){},
                         );
                       },
                     ),

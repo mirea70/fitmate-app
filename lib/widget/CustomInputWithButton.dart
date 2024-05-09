@@ -1,10 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class CustomInput extends StatelessWidget {
-  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText});
+class CustomInputWithButton extends StatelessWidget {
+  const CustomInputWithButton({required this.deviceSize, required this.onChangeMethod,
+    required this.hintText, this.errorText, required this.onPressMethod});
   final Size deviceSize;
   final ValueChanged<String> onChangeMethod;
+  final VoidCallback onPressMethod;
   final String hintText;
   final String? errorText;
 
@@ -37,6 +39,15 @@ class CustomInput extends StatelessWidget {
             BorderRadius.all(Radius.circular(8.0)),
             borderSide: BorderSide(color: Colors.grey, width: 2.0),
           ),
+          suffix: ElevatedButton(
+            onPressed: onPressMethod,
+            child: Text(
+              '인증요청',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          )
         ),
       ),
     );

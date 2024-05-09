@@ -16,6 +16,9 @@ class FitMateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Pretendard',
+      ),
       home: HomeView(),
     );
   }

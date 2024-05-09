@@ -18,7 +18,8 @@ class CustomTextButton extends StatelessWidget {
         title,
         style: TextStyle(
           color: Colors.orangeAccent,
-          fontSize: 12,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );

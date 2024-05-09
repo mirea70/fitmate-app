@@ -1,12 +1,14 @@
-import 'package:fitmate_app/view/account/AccountJoinView2.dart';
+import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AccountJoinView1 extends StatelessWidget {
-  const AccountJoinView1({super.key});
+import 'AccountJoinView3.dart';
+
+class AccountJoinView2 extends StatelessWidget {
+  const AccountJoinView2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +30,12 @@ class AccountJoinView1 extends StatelessWidget {
                   Container(
                     color: Colors.orangeAccent,
                     height: 6,
-                    width: deviceSize.width / 4,
+                    width: deviceSize.width / 4 * 2,
                   ),
                   Container(
                     color: Colors.grey,
                     height: 6,
-                    width: deviceSize.width / 4 * 3,
+                    width: deviceSize.width / 4 * 2,
                   ),
                 ],
               ),
@@ -53,15 +55,14 @@ class AccountJoinView1 extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '아이디를 입력해주세요',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      '비밀번호를 입력해주세요',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(
                       height: deviceSize.height * 0.01,
                     ),
                     Text(
-                      '로그인 시 사용할 아이디를 입력해주세요.',
+                      '영문, 숫자, 특수문자를 포함해 8자리 이상으로 입력해주세요.',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
@@ -75,11 +76,30 @@ class AccountJoinView1 extends StatelessWidget {
                       builder: (context, ref, child) {
                         final viewModel =
                             ref.watch(accountJoinViewModelProvider.notifier);
+                        final errorViewModel =
+                            ref.watch(accountJoinErrorViewModelProvider);
+                        return CustomInput(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) => viewModel.setPassword(value),
+                            hintText: '비밀번호를 입력해 주세요',
+                            errorText: errorViewModel.accountJoinError.passwordError,
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      height: deviceSize.height * 0.1,
+                    ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final viewModel =
+                        ref.watch(accountJoinViewModelProvider.notifier);
+                        final errorViewModel =
+                        ref.watch(accountJoinErrorViewModelProvider);
                         return CustomInput(
                           deviceSize: deviceSize,
-                          onChangeMethod: (value) =>
-                              viewModel.setLoginName(value),
-                          hintText: 'amsidl777',
+                          onChangeMethod: (value) => errorViewModel.validateCheckPassword(viewModel.getPassword(), value),
+                          hintText: '비밀번호를 한 번 더 입력해 주세요',
+                          errorText: errorViewModel.accountJoinError.checkPasswordError,
                         );
                       },
                     ),
@@ -87,20 +107,26 @@ class AccountJoinView1 extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: deviceSize.height * 0.35,
+                height: deviceSize.height * 0.2,
               ),
               Center(
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final viewModel = ref.watch(accountJoinViewModelProvider);
+
+                    final viewModel = ref.watch(accountJoinViewModelProvider.notifier);
+                    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+                    String pwd = viewModel.getPassword();
+                    String? currentPwdError = errorViewModel.accountJoinError.passwordError;
+                    String? checkPwdError = errorViewModel.accountJoinError.checkPasswordError;
                     return CustomButton(
                       deviceSize: deviceSize,
                       onTapMethod: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AccountJoinView2())),
+                              builder: (context) => AccountJoinView3())),
                       title: '다음',
-                      isEnabled: viewModel.loginName != '',
+
+                      isEnabled: pwd != '' && currentPwdError == null && checkPwdError == null,
                     );
                   },
                 ),

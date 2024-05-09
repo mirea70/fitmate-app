@@ -32,108 +32,117 @@ class _LoginViewState extends ConsumerState<LoginView> {
           ),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: deviceSize.height * 0.1,
-          ),
-          Container(
-            padding: EdgeInsets.only(left: deviceSize.width * 0.05),
-            child: Text(
-              'FITMATE',
-              style: TextStyle(
-                color: Colors.orangeAccent,
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: deviceSize.height * 0.05,
-          ),
-          Center(
-            child: Container(
-              child: Column(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: deviceSize.width * 0.03),
-                        child: CustomInputTitle('아이디'),
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final viewModel =
-                              ref.watch(loginViewModelProvider.notifier);
-                          return CustomInput(
-                            deviceSize: deviceSize,
-                            onChangeMethod: (value) =>
-                                viewModel.setLoginName(value),
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: deviceSize.height * 0.05,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: deviceSize.width * 0.03),
-                        child: CustomInputTitle('비밀번호'),
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final viewModel =
-                              ref.watch(loginViewModelProvider.notifier);
-                          return CustomInput(
-                            deviceSize: deviceSize,
-                            onChangeMethod: (value) =>
-                                viewModel.setPassword(value),
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(
-            height: deviceSize.height * 0.03,
-          ),
-          Consumer(
-            builder: (context, ref, child) {
-              final viewModel = ref.watch(loginViewModelProvider.notifier);
-              return Center(
-                child: CustomButton(
-                  deviceSize: deviceSize,
-                  onTapMethod: () => viewModel.login(context),
-                ),
-              );
-            },
-          ),
-          SizedBox(
-            height: deviceSize.height * 0.02,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomTextButton('계정정보를 잊으셨나요?', AccountFindView()),
-              CustomTextButton('회원가입하기', AccountJoinView1()),
+              SizedBox(
+                height: deviceSize.height * 0.1,
+              ),
+              Container(
+                padding: EdgeInsets.only(left: deviceSize.width * 0.05),
+                child: Text(
+                  'FitMate',
+                  style: TextStyle(
+                    color: Colors.orangeAccent,
+                    fontSize: 30,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.05,
+              ),
+              Center(
+                child: Container(
+                  child: Column(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: deviceSize.width * 0.03),
+                            child: CustomInputTitle('아이디'),
+                          ),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final viewModel =
+                                  ref.watch(loginViewModelProvider.notifier);
+                              return CustomInput(
+                                deviceSize: deviceSize,
+                                onChangeMethod: (value) =>
+                                    viewModel.setLoginName(value),
+                                hintText: '아이디를 입력해주세요.'
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.05,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: deviceSize.width * 0.03),
+                            child: CustomInputTitle('비밀번호'),
+                          ),
+                          SizedBox(
+                            height: 7,
+                          ),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final viewModel =
+                                  ref.watch(loginViewModelProvider.notifier);
+                              return CustomInput(
+                                deviceSize: deviceSize,
+                                onChangeMethod: (value) =>
+                                    viewModel.setPassword(value),
+                                hintText: '비밀번호를 입력해주세요',
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.03,
+              ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final viewModel = ref.watch(loginViewModelProvider.notifier);
+                  return Center(
+                    child: CustomButton(
+                      deviceSize: deviceSize,
+                      onTapMethod: () => viewModel.login(context),
+                      title: '로그인',
+                    ),
+                  );
+                },
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.02,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomTextButton('계정정보를 잊으셨나요?', AccountFindView()),
+                  CustomTextButton('회원가입하기', AccountJoinView1()),
+                ],
+              )
             ],
-          )
-        ],
+          ),
+        ),
       ),
     );
   }
