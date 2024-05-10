@@ -2,14 +2,25 @@ import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final accountJoinViewModelProvider = StateNotifierProvider<AccountJoinViewModel, Account>(
-        (ref) {
-          return AccountJoinViewModel(errorViewModelProvider: ref.watch(accountJoinErrorViewModelProvider));
-        });
+final accountJoinViewModelProvider = NotifierProvider<AccountJoinViewModel, Account>(
+    () => AccountJoinViewModel());
 
-class AccountJoinViewModel extends StateNotifier<Account> {
-  AccountJoinViewModel({required this.errorViewModelProvider}) : super((Account.initial()));
-  final AccountJoinErrorViewModel errorViewModelProvider;
+class AccountJoinViewModel extends Notifier<Account> {
+  late AccountJoinErrorViewModel _errorViewModel;
+
+  @override
+  Account build() {
+    _errorViewModel = ref.watch(accountJoinErrorViewModelProvider.notifier);
+    return Account.initial();
+  }
+
+  void reset() {
+    state = new Account.initial();
+  }
+
+  String getLoginName() {
+    return state.loginName;
+  }
 
   void setLoginName(String value) {
     state = state.copyWith(loginName: value);
@@ -17,7 +28,7 @@ class AccountJoinViewModel extends StateNotifier<Account> {
 
   void setPassword(String value) {
     state = state.copyWith(password: value);
-    errorViewModelProvider.validatePassword(value);
+    _errorViewModel.validatePassword(value);
   }
 
   String getPassword() {
@@ -26,7 +37,7 @@ class AccountJoinViewModel extends StateNotifier<Account> {
 
   void setNickName(String value) {
     state = state.copyWith(nickName: value);
-    errorViewModelProvider.validateNickName(value);
+    _errorViewModel.validateNickName(value);
   }
 
   void setIntroduction(String value) {
@@ -35,17 +46,17 @@ class AccountJoinViewModel extends StateNotifier<Account> {
 
   void setName(String value) {
     state = state.copyWith(name: value);
-    errorViewModelProvider.validateName(value);
+    _errorViewModel.validateName(value);
   }
 
   void setPhone(String value) {
     state = state.copyWith(phone: value);
-    errorViewModelProvider.validatePhone(value);
+    _errorViewModel.validatePhone(value);
   }
 
   void setEmail(String value) {
     state = state.copyWith(email: value);
-    errorViewModelProvider.validateEmail(value);
+    _errorViewModel.validateEmail(value);
   }
 
   void setGender(String value) {
@@ -54,5 +65,9 @@ class AccountJoinViewModel extends StateNotifier<Account> {
 
   void setProfileImageId(int value) {
     state = state.copyWith(profileImageId: value);
+  }
+
+  void validatePhoneWithAPI() {
+    //TODO: 휴대번호 사용중인 회원 체크 API 연동
   }
 }

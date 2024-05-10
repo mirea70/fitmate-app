@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomTextButton extends StatelessWidget {
   const CustomTextButton(this.title, this.view);
-  final StatelessWidget view;
+  final Widget view;
   final String title;
 
   @override

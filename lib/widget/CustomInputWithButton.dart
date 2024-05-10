@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 class CustomInputWithButton extends StatelessWidget {
   const CustomInputWithButton({required this.deviceSize, required this.onChangeMethod,
-    required this.hintText, this.errorText, required this.onPressMethod});
+    required this.hintText, this.errorText, required this.onPressMethod, required this.buttonTitle});
   final Size deviceSize;
   final ValueChanged<String> onChangeMethod;
   final VoidCallback onPressMethod;
   final String hintText;
   final String? errorText;
+  final String buttonTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class CustomInputWithButton extends StatelessWidget {
           suffix: ElevatedButton(
             onPressed: onPressMethod,
             child: Text(
-              '인증요청',
+              buttonTitle,
               style: TextStyle(
                 color: Colors.black,
               ),

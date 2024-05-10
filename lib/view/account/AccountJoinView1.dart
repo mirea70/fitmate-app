@@ -5,13 +5,21 @@ import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AccountJoinView1 extends StatelessWidget {
+class AccountJoinView1 extends ConsumerStatefulWidget {
   const AccountJoinView1({super.key});
 
+  @override
+  ConsumerState<AccountJoinView1> createState() => _AccountJoinView1State();
+}
+
+class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
   @override
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
+    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+    final viewModel = ref.watch(accountJoinViewModelProvider);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -41,7 +49,10 @@ class AccountJoinView1 extends StatelessWidget {
                 height: deviceSize.height * 0.01,
               ),
               IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  viewModelNotifier.reset();
+                  Navigator.pop(context);
+                },
                 icon: Icon(Icons.arrow_back),
               ),
               SizedBox(
@@ -71,17 +82,10 @@ class AccountJoinView1 extends StatelessWidget {
                     SizedBox(
                       height: deviceSize.height * 0.1,
                     ),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final viewModel =
-                            ref.watch(accountJoinViewModelProvider.notifier);
-                        return CustomInput(
-                          deviceSize: deviceSize,
-                          onChangeMethod: (value) =>
-                              viewModel.setLoginName(value),
-                          hintText: 'amsidl777',
-                        );
-                      },
+                    CustomInput(
+                      deviceSize: deviceSize,
+                      onChangeMethod: (value) => viewModelNotifier.setLoginName(value),
+                      hintText: 'amsidl777',
                     ),
                   ],
                 ),
@@ -90,10 +94,7 @@ class AccountJoinView1 extends StatelessWidget {
                 height: deviceSize.height * 0.35,
               ),
               Center(
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final viewModel = ref.watch(accountJoinViewModelProvider);
-                    return CustomButton(
+                child: CustomButton(
                       deviceSize: deviceSize,
                       onTapMethod: () => Navigator.push(
                           context,
@@ -101,8 +102,6 @@ class AccountJoinView1 extends StatelessWidget {
                               builder: (context) => AccountJoinView2())),
                       title: '다음',
                       isEnabled: viewModel.loginName != '',
-                    );
-                  },
                 ),
               ),
             ],

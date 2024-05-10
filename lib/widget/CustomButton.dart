@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  CustomButton({required this.deviceSize, required this.onTapMethod, required this.title, this.isEnabled = true});
+  CustomButton({required this.deviceSize, required this.onTapMethod, required this.title, this.isEnabled = false});
 
   final Size deviceSize;
   final VoidCallback onTapMethod;
   final String title;
   final bool isEnabled;
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Container(
       width: deviceSize.width * 0.9,

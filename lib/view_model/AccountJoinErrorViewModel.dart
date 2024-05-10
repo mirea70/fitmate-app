@@ -5,9 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final accountJoinErrorViewModelProvider = ChangeNotifierProvider<AccountJoinErrorViewModel>((ref) => AccountJoinErrorViewModel());
 
 class AccountJoinErrorViewModel extends ChangeNotifier {
-  AccountJoinError _accountJoinError = new AccountJoinError();
 
-  AccountJoinError get accountJoinError => _accountJoinError;
+  AccountJoinError _errorModel = new AccountJoinError();
+
+  AccountJoinError get accountJoinError => _errorModel;
+
+  String? getPasswordError() {
+    return _errorModel.passwordError;
+  }
+
+  String? getCheckPasswordError() {
+    return _errorModel.checkPasswordError;
+  }
 
   void validatePassword(String value) {
     // String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$';
@@ -30,9 +39,9 @@ class AccountJoinErrorViewModel extends ChangeNotifier {
     String pattern = r'^[a-zA-Zㄱ-힣\d|s]*$';
     RegExp nickNameRegex = RegExp(pattern);
     if(value.length < 2 || value.length > 10 || !nickNameRegex.hasMatch(value))
-      _accountJoinError.nickNameError = '닉네임은 2~10자리의 문자이어야 합니다.';
+      _errorModel.nickNameError = '닉네임은 2~10자리의 문자이어야 합니다.';
     else
-      _accountJoinError.nickNameError = null;
+      _errorModel.nickNameError = null;
     notifyListeners();
   }
 
@@ -40,9 +49,9 @@ class AccountJoinErrorViewModel extends ChangeNotifier {
     String pattern = r'[가-힣]*';
     RegExp nameRegex = RegExp(pattern);
     if(value.length < 2 || value.length > 5 || !nameRegex.hasMatch(value))
-    _accountJoinError.nameError = '이름은 2~5자의 한글이어야 합니다.';
+      _errorModel.nameError = '이름은 2~5자의 한글이어야 합니다.';
     else
-      _accountJoinError.nameError = null;
+      _errorModel.nameError = null;
     notifyListeners();
   }
 
@@ -50,9 +59,9 @@ class AccountJoinErrorViewModel extends ChangeNotifier {
     String pattern = r'^010\d{4}\d{4}$';
     RegExp nameRegex = RegExp(pattern);
     if(!nameRegex.hasMatch(value))
-      _accountJoinError.phoneError = '휴대폰번호는 010으로 시작한 총 11자리의 숫자이어야 합니다.';
+      _errorModel.phoneError = '휴대폰번호는 010으로 시작한 총 11자리의 숫자이어야 합니다.';
     else
-      _accountJoinError.phoneError = null;
+      _errorModel.phoneError = null;
     notifyListeners();
   }
 
@@ -60,9 +69,9 @@ class AccountJoinErrorViewModel extends ChangeNotifier {
     String pattern = r'[a-z0-9]+@[a-z]+\.[a-z]{2,3}';
     RegExp emailRegex = RegExp(pattern);
     if(!emailRegex.hasMatch(pattern))
-      _accountJoinError.emailError = '올바른 이메일 형식이어야 합니다.';
+      _errorModel.emailError = '올바른 이메일 형식이어야 합니다.';
     else
-      _accountJoinError.emailError = null;
+      _errorModel.emailError = null;
     notifyListeners();
   }
 }

@@ -19,6 +19,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
+    final viewModelNotifier = ref.read(loginViewModelProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,24 +65,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(left: deviceSize.width * 0.03),
+                            padding:
+                                EdgeInsets.only(left: deviceSize.width * 0.03),
                             child: CustomInputTitle('아이디'),
                           ),
                           SizedBox(
                             height: 7,
                           ),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              final viewModel =
-                                  ref.watch(loginViewModelProvider.notifier);
-                              return CustomInput(
-                                deviceSize: deviceSize,
-                                onChangeMethod: (value) =>
-                                    viewModel.setLoginName(value),
-                                hintText: '아이디를 입력해주세요.'
-                              );
-                            },
-                          )
+                          CustomInput(
+                              deviceSize: deviceSize,
+                              onChangeMethod: (value) =>
+                                  viewModelNotifier.setLoginName(value),
+                              hintText: '아이디를 입력해주세요.')
                         ],
                       ),
                       SizedBox(
@@ -91,23 +86,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(left: deviceSize.width * 0.03),
+                            padding:
+                                EdgeInsets.only(left: deviceSize.width * 0.03),
                             child: CustomInputTitle('비밀번호'),
                           ),
                           SizedBox(
                             height: 7,
                           ),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              final viewModel =
-                                  ref.watch(loginViewModelProvider.notifier);
-                              return CustomInput(
-                                deviceSize: deviceSize,
-                                onChangeMethod: (value) =>
-                                    viewModel.setPassword(value),
-                                hintText: '비밀번호를 입력해주세요',
-                              );
-                            },
+                          CustomInput(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) =>
+                                viewModelNotifier.setPassword(value),
+                            hintText: '비밀번호를 입력해주세요',
                           )
                         ],
                       ),
@@ -118,17 +108,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
               SizedBox(
                 height: deviceSize.height * 0.03,
               ),
-              Consumer(
-                builder: (context, ref, child) {
-                  final viewModel = ref.watch(loginViewModelProvider.notifier);
-                  return Center(
-                    child: CustomButton(
-                      deviceSize: deviceSize,
-                      onTapMethod: () => viewModel.login(context),
-                      title: '로그인',
-                    ),
-                  );
-                },
+              Center(
+                child: CustomButton(
+                  deviceSize: deviceSize,
+                  onTapMethod: () => viewModelNotifier.login(context),
+                  title: '로그인',
+                ),
               ),
               SizedBox(
                 height: deviceSize.height * 0.02,

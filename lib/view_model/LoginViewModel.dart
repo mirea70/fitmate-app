@@ -2,9 +2,8 @@ import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final loginViewModelProvider =
-    StateNotifierProvider<LoginViewModel, LoginState>(
-        (ref) => LoginViewModel());
+final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
+        () => LoginViewModel());
 
 class LoginState {
   String loginName;
@@ -34,8 +33,12 @@ class LoginState {
   }
 }
 
-class LoginViewModel extends StateNotifier<LoginState> {
-  LoginViewModel() : super(LoginState.initial());
+class LoginViewModel extends Notifier<LoginState> {
+
+  @override
+  LoginState build() {
+    return LoginState.initial();
+  }
 
   void setLoginName(String value) {
     state = state.copyWith(loginName: value);
