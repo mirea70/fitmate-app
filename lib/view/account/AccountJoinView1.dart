@@ -5,6 +5,8 @@ import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../view_model/AccountJoinErrorViewModel.dart';
+
 class AccountJoinView1 extends ConsumerStatefulWidget {
   const AccountJoinView1({super.key});
 
@@ -19,6 +21,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
     final Size deviceSize = MediaQuery.of(context).size;
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
     final viewModel = ref.watch(accountJoinViewModelProvider);
+    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -86,6 +89,8 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                       deviceSize: deviceSize,
                       onChangeMethod: (value) => viewModelNotifier.setLoginName(value),
                       hintText: 'amsidl777',
+                      errorText: errorViewModel.getLoginNameError(),
+                      maxLength: 20,
                     ),
                   ],
                 ),
@@ -101,7 +106,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                           MaterialPageRoute(
                               builder: (context) => AccountJoinView2())),
                       title: '다음',
-                      isEnabled: viewModel.loginName != '',
+                      isEnabled: viewModel.loginName != '' && errorViewModel.getLoginNameError() == null,
                 ),
               ),
             ],

@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'AccountJoinView3.dart';
 
+
+
 class AccountJoinView2 extends ConsumerStatefulWidget {
   const AccountJoinView2({super.key});
 
@@ -22,9 +24,10 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
     final viewModel = ref.watch(accountJoinViewModelProvider);
     final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
 
-    String pwd = viewModel.password;
     String? currentPwdError = errorViewModel.getPasswordError();
     String? checkPwdError = errorViewModel.getCheckPasswordError();
+
+    final checkPasswordStateNotifier = ref.read(checkPasswordStateProvider.notifier);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -79,7 +82,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             height: deviceSize.height * 0.01,
                           ),
                           Text(
-                            '영문, 숫자, 특수문자를 포함해 8자리 이상으로 입력해주세요.',
+                            '영문 대문자, 소문자, 숫자, 특수문자를 각각 하나 이상 포함해 8자리 이상으로 입력해주세요.',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
@@ -95,18 +98,22 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             hintText: '비밀번호를 입력해 주세요',
                             errorText:
                                 errorViewModel.getPasswordError(),
+                            maxLength: 20,
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.1,
                           ),
                           CustomInput(
                             deviceSize: deviceSize,
-                            onChangeMethod: (value) =>
+                            onChangeMethod: (value) {
                                 ref.read(accountJoinErrorViewModelProvider.notifier).validateCheckPassword(
-                                    viewModel.password, value),
+                                    viewModel.password, value);
+                                checkPasswordStateNotifier.state = value;
+                            },
                             hintText: '비밀번호를 한 번 더 입력해 주세요',
                             errorText:
                                 errorViewModel.getCheckPasswordError(),
+                            maxLength: 20,
                           ),
                         ],
                       ),
@@ -120,7 +127,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             MaterialPageRoute(
                                 builder: (context) => AccountJoinView3())),
                         title: '다음',
-                        isEnabled: pwd != '' &&
+                        isEnabled: viewModel.password != '' && ref.watch(checkPasswordStateProvider) != '' &&
                             currentPwdError == null &&
                             checkPwdError == null,
                       ),

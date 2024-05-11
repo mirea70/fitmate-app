@@ -1,10 +1,15 @@
 class AccountJoinError {
+  String? _loginNameError;
   String? _passwordError;
   String? _checkPasswordError;
   String? _nickNameError;
   String? _nameError;
   String? _phoneError;
   String? _emailError;
+
+  set loginNameError(String? value) {
+    _loginNameError = value;
+  }
 
   set passwordError(String? value) {
     _passwordError = value;
@@ -29,6 +34,8 @@ class AccountJoinError {
   set nameError(String? value) {
     _nameError = value;
   }
+
+  String? get loginNameError => _loginNameError;
 
   String? get passwordError => _passwordError;
 

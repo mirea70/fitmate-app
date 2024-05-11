@@ -1,5 +1,6 @@
 import 'package:fitmate_app/view/account/AccountFindView.dart';
 import 'package:fitmate_app/view/account/AccountJoinView1.dart';
+import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/LoginViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
@@ -20,6 +21,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
     final viewModelNotifier = ref.read(loginViewModelProvider.notifier);
+    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+    final viewModel = ref.watch(loginViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -113,6 +116,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   deviceSize: deviceSize,
                   onTapMethod: () => viewModelNotifier.login(context),
                   title: '로그인',
+                  isEnabled: viewModel.loginName != '' && viewModel.password != '' &&
+                  errorViewModel.getLoginNameError() == null && errorViewModel.getPasswordError() == null,
                 ),
               ),
               SizedBox(
@@ -121,8 +126,25 @@ class _LoginViewState extends ConsumerState<LoginView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CustomTextButton('계정정보를 잊으셨나요?', AccountFindView()),
-                  CustomTextButton('회원가입하기', AccountJoinView1()),
+                  CustomTextButton(
+                      title: '계정정보를 잊으셨나요?',
+                      onPressed: () {
+                        errorViewModel.reset();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AccountFindView()),
+                        );
+                      },
+                  ),
+                  CustomTextButton(
+                      title: '회원가입하기',
+                      onPressed: () {
+                        errorViewModel.reset();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AccountJoinView1()),
+                        );
+                      }),
                 ],
               )
             ],

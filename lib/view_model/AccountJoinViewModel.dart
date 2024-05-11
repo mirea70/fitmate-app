@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final accountJoinViewModelProvider = NotifierProvider<AccountJoinViewModel, Account>(
     () => AccountJoinViewModel());
 
+final checkPasswordStateProvider = StateProvider<String>((ref) => '');
+
 class AccountJoinViewModel extends Notifier<Account> {
   late AccountJoinErrorViewModel _errorViewModel;
 
@@ -24,6 +26,7 @@ class AccountJoinViewModel extends Notifier<Account> {
 
   void setLoginName(String value) {
     state = state.copyWith(loginName: value);
+    _errorViewModel.validateLoginName(value);
   }
 
   void setPassword(String value) {

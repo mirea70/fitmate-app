@@ -2,11 +2,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class CustomInput extends StatelessWidget {
-  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText});
+  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength});
   final Size deviceSize;
   final ValueChanged<String> onChangeMethod;
   final String hintText;
   final String? errorText;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,7 @@ class CustomInput extends StatelessWidget {
       height: deviceSize.height * 0.08,
       width: deviceSize.width * 0.9,
       child: TextField(
+        maxLength: maxLength,
         onChanged: onChangeMethod,
         decoration: InputDecoration(
           hintText: hintText,

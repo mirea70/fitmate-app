@@ -1,4 +1,5 @@
 import 'package:fitmate_app/view/account/AccountJoinView2.dart';
+import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
 import 'package:fitmate_app/view_model/ValidateCodeViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
@@ -22,7 +23,9 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+    final viewModel = ref.read(accountJoinViewModelProvider);
     final codeViewModel = ref.watch(validateCodeViewModelProvider);
+    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -97,7 +100,10 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                 viewModelNotifier.validatePhoneWithAPI();
                                 codeViewModel.setVisibleCheckView(true);
                               },
-                              buttonTitle: '인증요청',
+                              buttonTitle: !codeViewModel.getIsVisibleCheckView() ?'인증요청' : '재요청',
+                              isEnableButton: viewModel.phone != '' && errorViewModel.getPhoneError() == null,
+                              maxLength: 11,
+                              isEnableInput: !codeViewModel.getIsVisibleCheckView(),
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.1,
@@ -111,6 +117,8 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                 onPressMethod: () =>
                                     codeViewModel.checkValidateCode(),
                                 buttonTitle: '인증확인',
+                                isEnableButton: codeViewModel.getCode() != null && codeViewModel.getCode() != '',
+                                maxLength: 6,
                               ),
                           ],
                         ),
@@ -125,7 +133,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                   builder: (context) => AccountJoinView2())),
                           title: '다음',
                           // TODO: 인증 확인시에만 활성화 로직 추가 필요
-                          // isEnabled: true,
+                          isEnabled: codeViewModel.getIsChecked(),
                         ),
                       ),
                       SizedBox(

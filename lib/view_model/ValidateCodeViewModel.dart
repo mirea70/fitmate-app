@@ -12,8 +12,18 @@ class ValidateCodeViewModel extends ChangeNotifier {
     return validateCode.isVisibleCheckView;
   }
 
+  bool getIsChecked() {
+    return validateCode.isChecked;
+  }
+
+  String? getCode() {
+    return validateCode.code;
+  }
+
   void checkValidateCode() {
     //TODO: 인증번호 체크 API 연동
+    validateCode.isChecked = true;
+    notifyListeners();
   }
 
   void setVisibleCheckView(bool value) {
