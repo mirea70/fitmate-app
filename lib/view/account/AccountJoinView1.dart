@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../view_model/AccountJoinErrorViewModel.dart';
+import '../../widget/CustomAppBar.dart';
 
 class AccountJoinView1 extends ConsumerStatefulWidget {
   const AccountJoinView1({super.key});
@@ -26,91 +27,79 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        appBar: CustomAppBar(
+          resetViewModel: viewModelNotifier,
+          deviceSize: deviceSize,
+          devicePadding: devicePadding,
+          step: 1,
+        ),
         resizeToAvoidBottomInset: true,
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: devicePadding.top,
-              ),
-              Row(
-                children: [
-                  Container(
-                    color: Colors.orangeAccent,
-                    height: 6,
-                    width: deviceSize.width / 4,
-                  ),
-                  Container(
-                    color: Colors.grey,
-                    height: 6,
-                    width: deviceSize.width / 4 * 3,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: deviceSize.height * 0.01,
-              ),
-              IconButton(
-                onPressed: () {
-                  viewModelNotifier.reset();
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.arrow_back),
-              ),
-              SizedBox(
-                height: deviceSize.height * 0.1,
-              ),
-              Container(
-                padding: EdgeInsets.only(left: deviceSize.width * 0.05),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '아이디를 입력해주세요',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: deviceSize.height * 0.01,
-                    ),
-                    Text(
-                      '로그인 시 사용할 아이디를 입력해주세요.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey,
+        body: LayoutBuilder(
+          builder: (context, constraint) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraint.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(left: deviceSize.width * 0.05),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '아이디를 입력해주세요',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.01,
+                            ),
+                            Text(
+                              '로그인 시 사용할 아이디를 입력해주세요.',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.1,
+                            ),
+                            CustomInput(
+                              deviceSize: deviceSize,
+                              onChangeMethod: (value) =>
+                                  viewModelNotifier.setLoginName(value),
+                              hintText: 'amsidl777',
+                              errorText: errorViewModel.getLoginNameError(),
+                              maxLength: 20,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: deviceSize.height * 0.1,
-                    ),
-                    CustomInput(
-                      deviceSize: deviceSize,
-                      onChangeMethod: (value) => viewModelNotifier.setLoginName(value),
-                      hintText: 'amsidl777',
-                      errorText: errorViewModel.getLoginNameError(),
-                      maxLength: 20,
-                    ),
-                  ],
+                      Expanded(child: SizedBox()),
+                      Center(
+                        child: CustomButton(
+                          deviceSize: deviceSize,
+                          onTapMethod: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccountJoinView2())),
+                          title: '다음',
+                          isEnabled: viewModel.loginName != '' &&
+                              errorViewModel.getLoginNameError() == null,
+                        ),
+                      ),
+                      SizedBox(
+                        height: devicePadding.bottom + deviceSize.height * 0.03,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(
-                height: deviceSize.height * 0.35,
-              ),
-              Center(
-                child: CustomButton(
-                      deviceSize: deviceSize,
-                      onTapMethod: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AccountJoinView2())),
-                      title: '다음',
-                      isEnabled: viewModel.loginName != '' && errorViewModel.getLoginNameError() == null,
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

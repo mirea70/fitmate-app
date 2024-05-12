@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'AccountJoinErrorViewModel.dart';
 
-final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
-        () => LoginViewModel());
+final loginViewModelProvider =
+    NotifierProvider<LoginViewModel, LoginState>(() => LoginViewModel());
 
 class LoginState {
   String loginName;
@@ -36,7 +36,6 @@ class LoginState {
 }
 
 class LoginViewModel extends Notifier<LoginState> {
-
   late AccountJoinErrorViewModel _errorViewModel;
 
   @override
@@ -59,10 +58,11 @@ class LoginViewModel extends Notifier<LoginState> {
     //TODO 로그인 로직 구현
     await Future.delayed(Duration(seconds: 2));
 
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (context) => MainView(),
       ),
+      (route) => false,
     );
   }
 }

@@ -30,6 +30,19 @@ class AccountJoinErrorViewModel extends ChangeNotifier {
     return _errorModel.phoneError;
   }
 
+  String? getNameError() {
+    return _errorModel.nameError;
+  }
+
+  String? getEmailError() {
+    return _errorModel.emailError;
+  }
+
+  String? getNickNameError() {
+    return _errorModel.nickNameError;
+  }
+
+
   void validateLoginName(String value) {
     String pattern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{1,20}$';
     RegExp loginNameRegex = RegExp(pattern);
@@ -73,9 +86,9 @@ class AccountJoinErrorViewModel extends ChangeNotifier {
   }
 
   void validateName(String value) {
-    String pattern = r'[가-힣]*';
+    String pattern = r'^[가-힣]{2,5}$';
     RegExp nameRegex = RegExp(pattern);
-    if((value.length < 2 || value.length > 5 || !nameRegex.hasMatch(value)) && value != '')
+    if((!nameRegex.hasMatch(value)) && value != '')
       _errorModel.nameError = '이름은 2~5자의 한글이어야 합니다.';
     else
       _errorModel.nameError = null;
@@ -95,7 +108,7 @@ class AccountJoinErrorViewModel extends ChangeNotifier {
   void validateEmail(String value) {
     String pattern = r'[a-z0-9]+@[a-z]+\.[a-z]{2,3}';
     RegExp emailRegex = RegExp(pattern);
-    if(!emailRegex.hasMatch(pattern) && value != '')
+    if(!emailRegex.hasMatch(value) && value != '')
       _errorModel.emailError = '올바른 이메일 형식이어야 합니다.';
     else
       _errorModel.emailError = null;

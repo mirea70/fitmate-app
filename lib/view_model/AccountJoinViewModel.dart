@@ -1,5 +1,6 @@
 import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
+import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final accountJoinViewModelProvider = NotifierProvider<AccountJoinViewModel, Account>(
@@ -7,7 +8,7 @@ final accountJoinViewModelProvider = NotifierProvider<AccountJoinViewModel, Acco
 
 final checkPasswordStateProvider = StateProvider<String>((ref) => '');
 
-class AccountJoinViewModel extends Notifier<Account> {
+class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
   late AccountJoinErrorViewModel _errorViewModel;
 
   @override
@@ -16,6 +17,7 @@ class AccountJoinViewModel extends Notifier<Account> {
     return Account.initial();
   }
 
+  @override
   void reset() {
     state = new Account.initial();
   }

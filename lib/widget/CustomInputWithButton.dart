@@ -60,6 +60,13 @@ class CustomInputWithButton extends StatelessWidget {
             ),
           )
         ),
+        buildCounter: (
+            BuildContext context,
+            {
+              required int currentLength,
+              required int? maxLength,
+              required bool isFocused
+            }) => null,
       ),
     );
   }

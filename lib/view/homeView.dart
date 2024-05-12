@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:fitmate_app/view/account/LoginView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_filters/flutter_image_filters.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});

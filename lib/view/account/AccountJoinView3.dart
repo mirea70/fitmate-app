@@ -10,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../widget/CustomAppBar.dart';
+import 'AccountJoinView4.dart';
+
 class AccountJoinView3 extends ConsumerStatefulWidget {
   const AccountJoinView3({super.key});
 
@@ -30,6 +33,11 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        appBar: CustomAppBar(
+          deviceSize: deviceSize,
+          devicePadding: devicePadding,
+          step: 3,
+        ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(
           builder: (context, constraint) {
@@ -40,33 +48,6 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: devicePadding.top,
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            color: Colors.orangeAccent,
-                            height: 6,
-                            width: deviceSize.width / 4 * 3,
-                          ),
-                          Container(
-                            color: Colors.grey,
-                            height: 6,
-                            width: deviceSize.width / 4 * 1,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.01,
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(Icons.arrow_back),
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.1,
-                      ),
                       Container(
                         padding: EdgeInsets.only(left: deviceSize.width * 0.05),
                         child: Column(
@@ -83,7 +64,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                             Text(
                               '신뢰할 수 있는 커뮤니티를 위해 전화번호 인증이 필요해요.',
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 15,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.grey,
                               ),
@@ -130,7 +111,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                           onTapMethod: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => AccountJoinView2())),
+                                  builder: (context) => AccountJoinView4())),
                           title: '다음',
                           // TODO: 인증 확인시에만 활성화 로직 추가 필요
                           isEnabled: codeViewModel.getIsChecked(),

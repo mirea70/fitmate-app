@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class CustomInput extends StatelessWidget {
-  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength});
+class CustomInputMiddle extends StatelessWidget {
+  const CustomInputMiddle({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength});
   final Size deviceSize;
   final ValueChanged<String> onChangeMethod;
   final String hintText;
@@ -12,9 +12,12 @@ class CustomInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: deviceSize.height * 0.08,
+      height: deviceSize.height * 0.16,
       width: deviceSize.width * 0.9,
       child: TextField(
+        maxLines: 3,
+        keyboardType: TextInputType.multiline,
+        textInputAction: TextInputAction.newline,
         maxLength: maxLength,
         onChanged: onChangeMethod,
         decoration: InputDecoration(

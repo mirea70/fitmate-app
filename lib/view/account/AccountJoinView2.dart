@@ -5,6 +5,7 @@ import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../widget/CustomAppBar.dart';
 import 'AccountJoinView3.dart';
 
 
@@ -32,6 +33,11 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        appBar: CustomAppBar(
+          deviceSize: deviceSize,
+          devicePadding: devicePadding,
+          step: 2,
+        ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(builder: (context, constraint) {
           return SingleChildScrollView(
@@ -41,33 +47,6 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: devicePadding.top,
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          color: Colors.orangeAccent,
-                          height: 6,
-                          width: deviceSize.width / 4 * 2,
-                        ),
-                        Container(
-                          color: Colors.grey,
-                          height: 6,
-                          width: deviceSize.width / 4 * 2,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: deviceSize.height * 0.01,
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.arrow_back),
-                    ),
-                    SizedBox(
-                      height: deviceSize.height * 0.1,
-                    ),
                     Container(
                       padding: EdgeInsets.only(left: deviceSize.width * 0.05),
                       child: Column(
@@ -84,7 +63,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                           Text(
                             '영문 대문자, 소문자, 숫자, 특수문자를 각각 하나 이상 포함해 8자리 이상으로 입력해주세요.',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 15,
                               fontWeight: FontWeight.w400,
                               color: Colors.grey,
                             ),
