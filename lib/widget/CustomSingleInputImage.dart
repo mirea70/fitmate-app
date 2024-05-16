@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fitmate_app/view_model/FileViewModel.dart';
+import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -57,66 +58,14 @@ class _CustomSingleInputImageState
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                        content: Text(
-                          '등록된 이미지를 삭제하시겠습니까?',
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        actions: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.orangeAccent,
-                                  ),
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      '취소',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: widget.deviceSize.width*0.05,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.orangeAccent,
-                                  ),
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      XFile image = fileViewModel.files[0];
-                                      fileViewModel.removeFile(image);
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      '확인',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 17,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      return CustomAlert(
+                        title: "등록된 이미지를 삭제하시겠습니까?",
+                        deviceSize: widget.deviceSize,
+                        action: () async {
+                          XFile image = fileViewModel.files[0];
+                          fileViewModel.removeFile(image);
+                          Navigator.of(context).pop();
+                        },
                       );
                     },
                   );

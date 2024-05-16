@@ -12,8 +12,8 @@ class Account {
   final String name;
   final String phone;
   final String email;
-  final String role;
-  final String gender;
+  final Role role;
+  final Gender? gender;
   final int? profileImageId;
 
   Account({
@@ -38,8 +38,8 @@ class Account {
       name: '',
       phone: '',
       email: '',
-      role: 'USER',
-      gender: '',
+      role: Role.USER,
+      gender: null,
       profileImageId: null,
     );
   }
@@ -52,8 +52,8 @@ class Account {
     String? name,
     String? phone,
     String? email,
-    String? role,
-    String? gender,
+    Role? role,
+    Gender? gender,
     int? profileImageId,
   }) =>
       Account(
@@ -90,8 +90,18 @@ class Account {
     "name": name,
     "phone": phone,
     "email": email,
-    "role": role,
-    "gender": gender,
+    "role": role.name,
+    "gender": gender!.name,
     "profileImageId": profileImageId,
   };
+}
+
+enum Gender {
+  MALE,
+  FEMALE,
+}
+
+enum Role {
+  USER,
+  ADMIN,
 }

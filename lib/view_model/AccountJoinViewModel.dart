@@ -1,7 +1,12 @@
+import 'package:fitmate_app/config/AppConfig.dart';
 import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import '../repository/account/AccountRepository.dart';
 
 final accountJoinViewModelProvider = NotifierProvider<AccountJoinViewModel, Account>(
     () => AccountJoinViewModel());
@@ -64,7 +69,7 @@ class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
     _errorViewModel.validateEmail(value);
   }
 
-  void setGender(String value) {
+  void setGender(Gender? value) {
     state = state.copyWith(gender: value);
   }
 
@@ -72,7 +77,31 @@ class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
     state = state.copyWith(profileImageId: value);
   }
 
-  void validatePhoneWithAPI() {
-    //TODO: 휴대번호 사용중인 회원 체크 API 연동
+  Future<AsyncValue<void>> validateDuplicatedLoginName() async {
+      final result = await ref.read(accountRepositoryProvider).validateDuplicatedLoginName(state.loginName);
+      if(result == false) {
+        String errorTitle = '이미 가입한 로그인ID 입니다.';
+        String errorContent = '다른 로그인ID를 입력해주세요.';
+        return AsyncValue.error(errorTitle + '||' + errorContent, StackTrace.empty);
+      }
+      else return AsyncValue.data(null);
+  }
+
+  Future<AsyncValue<void>> validateDuplicatedPhone() async {
+    final result = await ref.read(accountRepositoryProvider).validateDuplicatedPhone(state.phone);
+    if(result == false) {
+      String errorTitle = '이미 가입한 휴대폰번호 입니다.';
+      String errorContent = '가입한 계정을 찾거나 다른 휴대폰번호를 입력해주세요.';
+      return AsyncValue.error(errorTitle + '||' + errorContent, StackTrace.empty);
+    }
+    else return AsyncValue.data(null);
+  }
+
+  Future<AsyncValue<void>> join() async {
+    final result = await ref.read(accountRepositoryProvider).requestJoin(state);
+    if(result != null) {
+      return AsyncValue.error(result['message'], StackTrace.empty);
+    }
+    else return AsyncValue.data(null);
   }
 }

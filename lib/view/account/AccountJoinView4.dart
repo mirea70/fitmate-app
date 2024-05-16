@@ -1,4 +1,4 @@
-import 'package:fitmate_app/view/account/AccountJoinView2.dart';
+import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
 import 'package:fitmate_app/view_model/FileViewModel.dart';
@@ -6,13 +6,13 @@ import 'package:fitmate_app/widget/CustomAppBar.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:fitmate_app/widget/CustomInputMiddle.dart';
-import 'package:fitmate_app/widget/CustomSingleInputImage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../view_model/AccountJoinErrorViewModel.dart';
+import '../../widget/CustomAlert.dart';
 
 class AccountJoinView4 extends ConsumerStatefulWidget {
   const AccountJoinView4({super.key});
@@ -113,12 +113,11 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Radio(
-                                    value: '남성',
+                                    value: Gender.MALE,
                                     activeColor: Colors.orangeAccent,
                                     groupValue: viewModel.gender,
                                     onChanged: (value) {
-                                      viewModelNotifier
-                                          .setGender(value.toString());
+                                      viewModelNotifier.setGender(value);
                                     },
                                   ),
                                   Text(
@@ -132,12 +131,11 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                                     width: deviceSize.width * 0.2,
                                   ),
                                   Radio(
-                                    value: '여성',
+                                    value: Gender.FEMALE,
                                     activeColor: Colors.orangeAccent,
                                     groupValue: viewModel.gender,
                                     onChanged: (value) {
-                                      viewModelNotifier
-                                          .setGender(value.toString());
+                                      viewModelNotifier.setGender(value);
                                     },
                                   ),
                                   Text(
@@ -192,20 +190,6 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               height: deviceSize.height * 0.07,
                             ),
                             Text(
-                              '프로필 이미지',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.01,
-                            ),
-                            CustomSingleInputImage(
-                              deviceSize: deviceSize,
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.07,
-                            ),
-                            Text(
                               '간단 자기소개',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w600),
@@ -230,13 +214,55 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                       Center(
                         child: CustomButton(
                           deviceSize: deviceSize,
-                          onTapMethod: () =>
-                              Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (context) => MainView(),
-                            ),
-                            (route) => false,
-                          ),
+                          onTapMethod: () async {
+                            final joinResult = await viewModelNotifier.join();
+                            joinResult.when(
+                              data: (_) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => MainView(),
+                                  ),
+                                  (route) => false,
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.orangeAccent,
+                                    content: Column(
+                                      children: [
+                                        Text(
+                                            '환영합니다!',
+                                          style: TextStyle(
+                                            fontSize: 25,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: deviceSize.height*0.02,
+                                        ),
+                                        Text(
+                                          '지금 바로 운동 메이트를 만나보세요!',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              error: (error, stackTrace) => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CustomAlert(
+                                        title: '$error',
+                                        deviceSize: deviceSize);
+                                  }),
+                              loading: () => CircularProgressIndicator(),
+                            );
+                          },
                           title: '가입하기',
                           isEnabled: hasNotError(),
                         ),

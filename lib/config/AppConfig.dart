@@ -7,5 +7,5 @@ class AppConfig {
 
   AppConfig._privateConstructor();
 
-  final String apiBaseUri = 'http://localhost:8090/api';
+  final String host = '192.168.45.130:8090';
 }

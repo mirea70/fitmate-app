@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../widget/CustomAlert.dart';
 import '../../widget/CustomAppBar.dart';
 import 'AccountJoinView4.dart';
 
@@ -77,14 +78,36 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setPhone(value),
                               hintText: '010-0000-0000',
-                              onPressMethod: () {
-                                viewModelNotifier.validatePhoneWithAPI();
-                                codeViewModel.setVisibleCheckView(true);
+                              onPressMethod: () async {
+                                final validateResult = await viewModelNotifier
+                                    .validateDuplicatedPhone();
+                                validateResult.when(
+                                  data: (_) {
+                                    codeViewModel
+                                        .requestValidateCode(viewModel.phone);
+                                  },
+                                  error: (error, stackTrace) => showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        List<String> errorArr =
+                                            '$error'.split('||');
+                                        return CustomAlert(
+                                            title: errorArr[0],
+                                            content: errorArr[1],
+                                            deviceSize: deviceSize);
+                                      }),
+                                  loading: () => CircularProgressIndicator(),
+                                );
                               },
-                              buttonTitle: !codeViewModel.getIsVisibleCheckView() ?'인증요청' : '재요청',
-                              isEnableButton: viewModel.phone != '' && errorViewModel.getPhoneError() == null,
+                              buttonTitle:
+                                  !codeViewModel.getIsVisibleCheckView()
+                                      ? '인증요청'
+                                      : '재요청',
+                              isEnableButton: viewModel.phone != '' &&
+                                  errorViewModel.getPhoneError() == null,
                               maxLength: 11,
-                              isEnableInput: !codeViewModel.getIsVisibleCheckView(),
+                              isEnableInput:
+                                  !codeViewModel.getIsVisibleCheckView(),
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.1,
@@ -94,12 +117,32 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                 deviceSize: deviceSize,
                                 onChangeMethod: (value) =>
                                     codeViewModel.setCode(value),
-                                hintText: '인증번호 6자리를 입력해주세요.',
-                                onPressMethod: () =>
-                                    codeViewModel.checkValidateCode(),
+                                hintText: '인증번호 8자리를 입력해주세요.',
+                                onPressMethod: () async {
+                                  final checkResult =
+                                      await codeViewModel.checkValidateCode(
+                                          codeViewModel.getCode()!);
+                                  checkResult.when(
+                                    data: (_) => codeViewModel.setIsChecked(true),
+                                    error: (error, stackTrace) =>
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              List<String> errorArr = '$error'.split('||');
+                                              return CustomAlert(
+                                                  title: errorArr[0],
+                                                  content: errorArr[1],
+                                                  deviceSize: deviceSize
+                                              );
+                                            }),
+                                    loading: () => CircularProgressIndicator(),
+                                  );
+                                },
                                 buttonTitle: '인증확인',
-                                isEnableButton: codeViewModel.getCode() != null && codeViewModel.getCode() != '',
-                                maxLength: 6,
+                                isEnableButton:
+                                    codeViewModel.getCode() != null &&
+                                        codeViewModel.getCode() != '',
+                                maxLength: 8,
                               ),
                           ],
                         ),
