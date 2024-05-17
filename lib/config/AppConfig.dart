@@ -7,5 +7,5 @@ class AppConfig {
 
   AppConfig._privateConstructor();
 
-  final String host = '192.168.45.130:8090';
+  final String host = 'http://localhost:8090';
 }
