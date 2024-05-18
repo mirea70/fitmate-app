@@ -8,4 +8,5 @@ class AppConfig {
   AppConfig._privateConstructor();
 
   final String host = 'http://localhost:8090';
+  final String prefix = "/api";
 }

@@ -16,13 +16,11 @@ class AccountRepository {
   AccountRepository(this.dio);
 
   Future<bool> validateDuplicatedLoginName(String loginName) async {
-    String baseUri = AppConfig().host;
-    String endPoint = "/api/account/check/loginName";
+    String endPoint = "/account/check/loginName";
     Map<String, String> queryString = {"loginName": loginName};
-    String uri = baseUri + endPoint;
 
     try {
-      await dio.get(uri, queryParameters: queryString);
+      await dio.get(endPoint, queryParameters: queryString);
       return true;
     } on DioException catch (e) {
       if(e.response!.data['code'] == 'DUPLICATED_ACCOUNT_JOIN')
@@ -32,13 +30,11 @@ class AccountRepository {
   }
 
   Future<bool> validateDuplicatedPhone(String phone) async {
-    String baseUri = AppConfig().host;
-    String endPoint = "/api/account/check/phone";
+    String endPoint = "/account/check/phone";
     Map<String, String> queryString = {"phone": phone};
-    String uri = baseUri + endPoint;
 
     try {
-      await dio.get(uri, queryParameters: queryString);
+      await dio.get(endPoint, queryParameters: queryString);
       return true;
     } on DioException catch (e) {
       if(e.response!.data['code'] == 'DUPLICATED_ACCOUNT_JOIN')
@@ -48,16 +44,14 @@ class AccountRepository {
   }
 
   Future<bool> requestSmsCode(String phone) async {
-    String baseUri = AppConfig().host;
-    String endPoint = "/api/sms/request/code";
+    String endPoint = "/sms/request/code";
 
     Map<String, String> body = {
       "phone": phone
     };
 
-    String uri = baseUri + endPoint;
     try {
-      await dio.post(uri,
+      await dio.post(endPoint,
           options: Options(
             contentType: Headers.jsonContentType,
           ),
@@ -69,13 +63,11 @@ class AccountRepository {
   }
 
   Future<bool> checkValidateCode(String code) async {
-    String baseUri = AppConfig().host;
-    String endPoint = "/api/sms/check/code";
+    String endPoint = "/sms/check/code";
     Map<String, String> queryString = {"inputCode": code};
 
-    String uri = baseUri + endPoint;
     try {
-      await dio.get(uri, queryParameters: queryString);
+      await dio.get(endPoint, queryParameters: queryString);
       return true;
     } on DioException catch (e) {
       return false;
@@ -83,14 +75,12 @@ class AccountRepository {
   }
 
   Future<dynamic> requestJoin(Account account) async {
-    String baseUri = AppConfig().host;
-    String endPoint = "/api/account/join";
+    String endPoint = "/account/join";
     Map<String, dynamic> body = account.toJson();
     body.remove('profileImageId');
 
-    String uri = baseUri + endPoint;
     try {
-      await dio.post(uri,
+      await dio.post(endPoint,
           options: Options(
             contentType: Headers.jsonContentType,
           ),

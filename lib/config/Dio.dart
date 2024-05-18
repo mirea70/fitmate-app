@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:fitmate_app/config/AppConfig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio();
+  dio.options.baseUrl = AppConfig().host + AppConfig().prefix;
   dio.interceptors.add(
       CustomInterceptor()
   );
