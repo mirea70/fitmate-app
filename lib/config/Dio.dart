@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio();
-  dio.options.baseUrl = AppConfig().host + AppConfig().prefix;
+  dio.options.baseUrl = AppConfig().baseUrl;
   dio.interceptors.add(
       CustomInterceptor()
   );
