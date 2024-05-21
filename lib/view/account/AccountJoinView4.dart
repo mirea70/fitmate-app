@@ -1,6 +1,7 @@
 import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
-import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
+import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
+import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/widget/CustomAppBar.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../view_model/AccountJoinErrorViewModel.dart';
 import '../../widget/CustomAlert.dart';
 
 class AccountJoinView4 extends ConsumerStatefulWidget {

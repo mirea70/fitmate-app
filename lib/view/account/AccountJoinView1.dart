@@ -1,12 +1,12 @@
 import 'package:fitmate_app/view/account/AccountJoinView2.dart';
-import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
+import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
+import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../view_model/AccountJoinErrorViewModel.dart';
 import '../../widget/CustomAppBar.dart';
 
 class AccountJoinView1 extends ConsumerStatefulWidget {

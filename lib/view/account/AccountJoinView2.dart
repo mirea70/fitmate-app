@@ -1,5 +1,5 @@
-import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
-import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
+import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
+import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:flutter/material.dart';
