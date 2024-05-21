@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fitmate_app/config/AppConfig.dart';
 import 'package:fitmate_app/config/Const.dart';
 import 'package:fitmate_app/config/SecureStorage.dart';
-import 'package:fitmate_app/view_model/LoginViewModel.dart';
+import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as Storage;
 

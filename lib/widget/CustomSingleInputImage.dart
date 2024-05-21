@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:fitmate_app/view_model/FileViewModel.dart';
+import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

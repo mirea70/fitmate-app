@@ -5,11 +5,11 @@ import 'package:fitmate_app/config/Const.dart';
 import 'package:fitmate_app/config/SecureStorage.dart';
 import 'package:fitmate_app/repository/auth/AuthRepository.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
+import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'AccountJoinErrorViewModel.dart';
 
 final loginViewModelProvider =
     NotifierProvider<LoginViewModel, LoginState>(() => LoginViewModel());

@@ -1,7 +1,7 @@
 import 'package:fitmate_app/view/account/AccountJoinView2.dart';
 import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/AccountJoinViewModel.dart';
-import 'package:fitmate_app/view_model/ValidateCodeViewModel.dart';
+import 'package:fitmate_app/view_model/code/ValidateCodeViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:fitmate_app/widget/CustomInputWithButton.dart';
