@@ -1,11 +1,18 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../config/Dio.dart';
 import '../../model/login/LoginResponse.dart';
+
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final dio = ref.watch(dioProvider);
+  return AuthRepository(dio);
+});
 
 class AuthRepository {
   final Dio dio;
 
-  AuthRepository({required this.dio});
+  AuthRepository(this.dio);
 
   Future<LoginResponse> login({
     required String loginName,
@@ -25,6 +32,9 @@ class AuthRepository {
       data: body,
     );
 
-    return LoginResponse.fromJson(response.data);
+    String? accessToken = response.headers.value('access');
+    String? refreshToken = response.headers.value('refresh');
+
+    return LoginResponse(accessToken: accessToken!, refreshToken: refreshToken!);
   }
 }

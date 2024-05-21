@@ -4,7 +4,17 @@ Account accountFromJson(String str) => Account.fromJson(json.decode(str));
 
 String accountToJson(Account data) => json.encode(data.toJson());
 
-class Account {
+abstract class AccountModelBase {}
+
+class AccountError extends AccountModelBase {
+  final String message;
+
+  AccountError({required this.message});
+}
+
+class AccountModelLoading extends AccountModelBase {}
+
+class Account extends AccountModelBase {
   final String loginName;
   final String password;
   final String nickName;

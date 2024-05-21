@@ -9,6 +9,8 @@ import 'package:fitmate_app/widget/CustomTextButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../widget/CustomAlert.dart';
+
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
 
@@ -114,10 +116,26 @@ class _LoginViewState extends ConsumerState<LoginView> {
               Center(
                 child: CustomButton(
                   deviceSize: deviceSize,
-                  onTapMethod: () => viewModelNotifier.login(context),
+                  onTapMethod: () async {
+                    final result = await viewModelNotifier.login(context);
+                    result.when(
+                      data: (_){},
+                      loading: () => CircularProgressIndicator(),
+                      error: (error, stackTrace) =>
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CustomAlert(
+                                  title: '$error',
+                                  deviceSize: deviceSize);
+                            }),
+                    );
+                  },
                   title: '로그인',
-                  isEnabled: viewModel.loginName != '' && viewModel.password != '' &&
-                  errorViewModel.getLoginNameError() == null && errorViewModel.getPasswordError() == null,
+                  isEnabled: viewModel.loginName != '' &&
+                      viewModel.password != '' &&
+                      errorViewModel.getLoginNameError() == null &&
+                      errorViewModel.getPasswordError() == null,
                 ),
               ),
               SizedBox(
@@ -127,14 +145,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomTextButton(
-                      title: '계정정보를 잊으셨나요?',
-                      onPressed: () {
-                        errorViewModel.reset();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => AccountFindView()),
-                        );
-                      },
+                    title: '계정정보를 잊으셨나요?',
+                    onPressed: () {
+                      errorViewModel.reset();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AccountFindView()),
+                      );
+                    },
                   ),
                   CustomTextButton(
                       title: '회원가입하기',
@@ -142,7 +161,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         errorViewModel.reset();
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => AccountJoinView1()),
+                          MaterialPageRoute(
+                              builder: (context) => AccountJoinView1()),
                         );
                       }),
                 ],

@@ -1,10 +1,7 @@
-import 'package:fitmate_app/config/AppConfig.dart';
 import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/view_model/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 import '../repository/account/AccountRepository.dart';
 
