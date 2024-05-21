@@ -65,6 +65,7 @@ class CustomAlert extends StatelessWidget {
                 ),
               ),
             ),
+            if(action != null)
             SizedBox(
               width: deviceSize.width*0.05,
             ),
