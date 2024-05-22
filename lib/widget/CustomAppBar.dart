@@ -8,12 +8,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.deviceSize,
     required this.devicePadding,
     required this.step,
+    required this.totalStep,
   });
 
   final BaseViewModel? resetViewModel;
   final Size deviceSize;
   final EdgeInsets devicePadding;
   final int step;
+  final int totalStep;
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +32,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               Container(
                 color: Colors.orangeAccent,
                 height: 6,
-                width: deviceSize.width / 4 * step,
+                width: deviceSize.width / totalStep * step,
               ),
               Container(
                 color: Colors.grey,
                 height: 6,
-                width: deviceSize.width / 4 * (4 - step),
+                width: deviceSize.width / totalStep * (totalStep - step),
               ),
             ],
           ),

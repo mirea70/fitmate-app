@@ -39,6 +39,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
           deviceSize: deviceSize,
           devicePadding: devicePadding,
           step: 4,
+          totalStep: 4,
         ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(

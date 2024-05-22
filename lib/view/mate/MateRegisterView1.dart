@@ -4,30 +4,30 @@ import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
+import 'package:fitmate_app/widget/CustomInputBox.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
 
-class AccountJoinView1 extends ConsumerStatefulWidget {
-  const AccountJoinView1({super.key});
+class MateRegisterView1 extends ConsumerStatefulWidget {
+  const MateRegisterView1({super.key});
 
   @override
-  ConsumerState<AccountJoinView1> createState() => _AccountJoinView1State();
+  ConsumerState<MateRegisterView1> createState() => _MateRegisterView1State();
 }
 
-class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
+class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
   @override
   Widget build(BuildContext context) {
-    final EdgeInsets devicePadding = MediaQuery
-        .of(context)
-        .padding;
-    final Size deviceSize = MediaQuery
-        .of(context)
-        .size;
+    final EdgeInsets devicePadding = MediaQuery.of(context).padding;
+    final Size deviceSize = MediaQuery.of(context).size;
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
     final viewModel = ref.watch(accountJoinViewModelProvider);
     final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+    final selectNumNotifier = ref.read(selectNumProvider.notifier);
+    final selectNum = ref.watch(selectNumProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -37,7 +37,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
           deviceSize: deviceSize,
           devicePadding: devicePadding,
           step: 1,
-          totalStep: 4,
+          totalStep: 6,
         ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(
@@ -50,36 +50,47 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.only(left: deviceSize.width * 0.05),
+                        padding: EdgeInsets.fromLTRB(deviceSize.width * 0.05, 0,
+                            deviceSize.width * 0.05, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '아이디를 입력해주세요',
+                              '운동 카테고리를 골라주세요',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
-                              height: deviceSize.height * 0.01,
+                              height: deviceSize.height * 0.05,
                             ),
-                            Text(
-                              '로그인 시 사용할 아이디를 입력해주세요.',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey,
+                            Container(
+                              child: Column(
+                                children: [
+                                  CustomInputBox(
+                                    onTap: () {
+                                      selectNumNotifier.setSelectNum(1);
+                                    },
+                                    index: 1,
+                                    title: '헬스',
+                                    imagePath: 'assets/images/fit_category1.png',
+                                    deviceSize: deviceSize,
+                                    selectNum: selectNum,
+                                  ),
+                                  SizedBox(
+                                    height: deviceSize.height*0.02,
+                                  ),
+                                  CustomInputBox(
+                                    onTap: () {
+                                      selectNumNotifier.setSelectNum(2);
+                                    },
+                                    index: 2,
+                                    title: '크로스핏',
+                                    imagePath: 'assets/images/fit_category2.png',
+                                    deviceSize: deviceSize,
+                                    selectNum: selectNum,
+                                  ),
+                                ],
                               ),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.1,
-                            ),
-                            CustomInput(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) =>
-                                  viewModelNotifier.setLoginName(value),
-                              hintText: 'amsidl777',
-                              errorText: errorViewModel.getLoginNameError(),
-                              maxLength: 20,
                             ),
                           ],
                         ),
@@ -95,17 +106,17 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                               data: (_) => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => AccountJoinView2())),
-                              error: (error, stackTrace) =>
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        List<String> errorArr = '$error'.split('||');
+                                      builder: (context) =>
+                                          AccountJoinView2())),
+                              error: (error, stackTrace) => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    List<String> errorArr =
+                                        '$error'.split('||');
                                     return CustomAlert(
                                         title: errorArr[0],
                                         content: errorArr[1],
-                                        deviceSize: deviceSize
-                                    );
+                                        deviceSize: deviceSize);
                                   }),
                               loading: () => CircularProgressIndicator(),
                             );
@@ -127,5 +138,19 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
         ),
       ),
     );
+  }
+}
+
+final selectNumProvider =
+    NotifierProvider<SelectNumNotifier, int>(() => SelectNumNotifier());
+
+class SelectNumNotifier extends Notifier<int> {
+  @override
+  int build() {
+    return 0;
+  }
+
+  void setSelectNum(int num) {
+    state = num;
   }
 }
