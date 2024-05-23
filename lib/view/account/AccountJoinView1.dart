@@ -67,7 +67,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.grey,
+                                color: Color(0xffE8E8E8),
                               ),
                             ),
                             SizedBox(

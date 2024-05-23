@@ -27,7 +27,7 @@ class CustomInputWithButton extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
-            color: Colors.grey,
+            color: Color(0xffE8E8E8),
             fontSize: 15,
             fontWeight: FontWeight.w200,
           ),
@@ -44,7 +44,7 @@ class CustomInputWithButton extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius:
             BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+            borderSide: BorderSide(color: Color(0xffE8E8E8), width: 2.0),
           ),
           suffix: ElevatedButton(
             onPressed: isEnableButton ? onPressMethod : null,

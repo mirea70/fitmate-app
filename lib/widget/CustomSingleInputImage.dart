@@ -50,7 +50,7 @@ class _CustomSingleInputImageState
               width: widget.deviceSize.width * 0.08,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.grey,
+                color: Color(0xffE8E8E8),
               ),
               child: IconButton(
                 padding: EdgeInsets.zero,

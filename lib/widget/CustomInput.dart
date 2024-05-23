@@ -21,13 +21,13 @@ class CustomInput extends StatelessWidget {
           hintText: hintText,
           hintStyle: TextStyle(
             color: Colors.grey,
-            fontSize: 15,
-            fontWeight: FontWeight.w200,
+            fontSize: 17,
+            fontWeight: FontWeight.w400,
           ),
           errorText: errorText,
           errorStyle: TextStyle(
             color: Colors.redAccent,
-            fontSize: 15
+            fontSize: 17
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius:
@@ -37,7 +37,7 @@ class CustomInput extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius:
             BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.grey, width: 2.0),
+            borderSide: BorderSide(color: Color(0xffE8E8E8), width: 2.0),
           ),
         ),
         buildCounter: (

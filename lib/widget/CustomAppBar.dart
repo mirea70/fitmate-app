@@ -35,7 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 width: deviceSize.width / totalStep * step,
               ),
               Container(
-                color: Colors.grey,
+                color: Color(0xffE8E8E8),
                 height: 6,
                 width: deviceSize.width / totalStep * (totalStep - step),
               ),

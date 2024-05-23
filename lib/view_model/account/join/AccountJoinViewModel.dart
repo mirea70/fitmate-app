@@ -22,7 +22,7 @@ class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
 
   @override
   void reset() {
-    state = new Account.initial();
+    state = Account.initial();
   }
 
   String getLoginName() {

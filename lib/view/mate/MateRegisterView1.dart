@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
+import 'MateRegisterView2.dart';
 
 class MateRegisterView1 extends ConsumerStatefulWidget {
   const MateRegisterView1({super.key});
@@ -107,7 +108,7 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          AccountJoinView2())),
+                                          MateRegisterView2())),
                               error: (error, stackTrace) => showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -122,8 +123,7 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                             );
                           },
                           title: '다음',
-                          isEnabled: viewModel.loginName != '' &&
-                              errorViewModel.getLoginNameError() == null,
+                          isEnabled: true,
                         ),
                       ),
                       SizedBox(

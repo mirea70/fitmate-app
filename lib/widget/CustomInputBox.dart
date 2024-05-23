@@ -18,7 +18,7 @@ class CustomInputBox extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: selectNum == index ? Colors.orangeAccent : Colors.grey,
+            color: selectNum == index ? Colors.orangeAccent : Color(0xffE8E8E8),
             width: 5,
           ),
         ),
