@@ -14,16 +14,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
-import 'MateRegisterView3.dart';
 
-class MateRegisterView2 extends ConsumerStatefulWidget {
-  const MateRegisterView2({super.key});
+class MateRegisterView3 extends ConsumerStatefulWidget {
+  const MateRegisterView3({super.key});
 
   @override
-  ConsumerState<MateRegisterView2> createState() => _MateRegisterView2State();
+  ConsumerState<MateRegisterView3> createState() => _MateRegisterView3State();
 }
 
-class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
+class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
   @override
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
@@ -37,7 +36,7 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
         appBar: CustomAppBar(
           deviceSize: deviceSize,
           devicePadding: devicePadding,
-          step: 2,
+          step: 3,
           totalStep: 6,
         ),
         resizeToAvoidBottomInset: true,
@@ -57,7 +56,7 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '어디서 만날까요?',
+                              '일정에 대해 소개해봐요!',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w600),
                             ),
@@ -239,7 +238,7 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        MateRegisterView3()));
+                                        AccountJoinView2()));
                           },
                           title: '다음',
                           isEnabled: viewModel.fitPlaceName != ''

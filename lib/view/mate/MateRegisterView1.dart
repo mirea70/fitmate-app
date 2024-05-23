@@ -1,6 +1,8 @@
+import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view/account/AccountJoinView2.dart';
 import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
@@ -24,9 +26,8 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
-    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
-    final viewModel = ref.watch(accountJoinViewModelProvider);
-    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
+    final viewModel = ref.watch(mateRegisterViewModelProvider);
     final selectNumNotifier = ref.read(selectNumProvider.notifier);
     final selectNum = ref.watch(selectNumProvider);
 
@@ -70,6 +71,7 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                                   CustomInputBox(
                                     onTap: () {
                                       selectNumNotifier.setSelectNum(1);
+                                      viewModelNotifier.setFitCategory(FitCategory.FITNESS);
                                     },
                                     index: 1,
                                     title: '헬스',
@@ -83,6 +85,7 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                                   CustomInputBox(
                                     onTap: () {
                                       selectNumNotifier.setSelectNum(2);
+                                      viewModelNotifier.setFitCategory(FitCategory.CROSSFIT);
                                     },
                                     index: 2,
                                     title: '크로스핏',
@@ -101,29 +104,14 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                         child: CustomButton(
                           deviceSize: deviceSize,
                           onTapMethod: () async {
-                            final validateResult = await viewModelNotifier
-                                .validateDuplicatedLoginName();
-                            validateResult.when(
-                              data: (_) => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          MateRegisterView2())),
-                              error: (error, stackTrace) => showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    List<String> errorArr =
-                                        '$error'.split('||');
-                                    return CustomAlert(
-                                        title: errorArr[0],
-                                        content: errorArr[1],
-                                        deviceSize: deviceSize);
-                                  }),
-                              loading: () => CircularProgressIndicator(),
-                            );
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        MateRegisterView2()));
                           },
                           title: '다음',
-                          isEnabled: true,
+                          isEnabled: viewModel.fitCategory != null,
                         ),
                       ),
                       SizedBox(
