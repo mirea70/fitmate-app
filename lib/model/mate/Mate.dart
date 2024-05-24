@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 Mate mateFromJson(String str) => Mate.fromJson(json.decode(str));
 
 String mateToJson(Mate data) => json.encode(data.toJson());
@@ -38,12 +40,16 @@ class Mate {
   });
 
   factory Mate.initial() {
+    final defaultDate = DateTime.now().add(Duration(days: 3));
+    final defaultTime = TimeOfDay(hour: 18, minute: 0);
+    final selectDateTime = DateTime(defaultDate.year, defaultDate.month, defaultDate.day, defaultTime.hour, defaultTime.minute);
+
     return Mate(
       fitCategory: null,
       title: '',
       introduction: '',
       introImageIds: [],
-      mateAt: null,
+      mateAt: selectDateTime,
       fitPlaceName: '',
       fitPlaceAddress: '',
       gatherType: null,

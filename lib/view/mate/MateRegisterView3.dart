@@ -19,6 +19,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
+import 'MateRegisterView4.dart';
 
 class MateRegisterView3 extends ConsumerStatefulWidget {
   const MateRegisterView3({super.key});
@@ -149,7 +150,7 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          AccountJoinView2()));
+                                          MateRegisterView4()));
                             },
                             title: '다음',
                             isEnabled: viewModel.title.length >= 5),
