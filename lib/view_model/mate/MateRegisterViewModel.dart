@@ -23,4 +23,12 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
   void setPlace(String name, String address) {
     state = state.copyWith(fitPlaceName: name, fitPlaceAddress: address);
   }
+
+  void setTitle(String value) {
+    state = state.copyWith(title: value);
+  }
+
+  void setIntroduction(String value) {
+    state = state.copyWith(introduction: value);
+  }
 }

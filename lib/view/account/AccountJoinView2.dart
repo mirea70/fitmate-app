@@ -28,6 +28,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
     String? currentPwdError = errorViewModel.getPasswordError();
     String? checkPwdError = errorViewModel.getCheckPasswordError();
 
+    final checkPasswordState = ref.watch(checkPasswordStateProvider);
     final checkPasswordStateNotifier = ref.read(checkPasswordStateProvider.notifier);
 
     return GestureDetector(
@@ -79,6 +80,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             errorText:
                                 errorViewModel.getPasswordError(),
                             maxLength: 20,
+                            text: viewModel.password,
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.1,
@@ -94,6 +96,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             errorText:
                                 errorViewModel.getCheckPasswordError(),
                             maxLength: 20,
+                            text: checkPasswordState,
                           ),
                         ],
                       ),

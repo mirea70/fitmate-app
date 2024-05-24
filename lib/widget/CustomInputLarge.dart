@@ -1,26 +1,20 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class CustomInputWithButton extends StatefulWidget {
-  const CustomInputWithButton({required this.deviceSize, required this.onChangeMethod,
-    required this.hintText, this.errorText, required this.onPressMethod, required this.buttonTitle,
-    this.isEnableButton = false, this.maxLength, this.isEnableInput = true, required this.text});
+class CustomInputLarge extends StatefulWidget {
+  const CustomInputLarge({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength, required this.text});
   final Size deviceSize;
   final ValueChanged<String> onChangeMethod;
-  final VoidCallback onPressMethod;
   final String hintText;
   final String? errorText;
-  final String buttonTitle;
-  final bool isEnableButton;
   final int? maxLength;
-  final bool isEnableInput;
   final String text;
 
   @override
-  State<CustomInputWithButton> createState() => _CustomInputWithButtonState();
+  State<CustomInputLarge> createState() => _CustomInputLargeState();
 }
 
-class _CustomInputWithButtonState extends State<CustomInputWithButton> {
+class _CustomInputLargeState extends State<CustomInputLarge> {
   late TextEditingController _textController;
 
   @override
@@ -30,7 +24,7 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
   }
 
   @override
-  void didUpdateWidget(covariant CustomInputWithButton oldWidget) {
+  void didUpdateWidget(covariant CustomInputLarge oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.text != oldWidget.text) {
       _textController.text = widget.text;
@@ -43,19 +37,22 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: widget.deviceSize.height * 0.08,
+      height: widget.deviceSize.height * 0.32,
       width: widget.deviceSize.width * 0.9,
       child: TextField(
         controller: _textController,
-        enabled: widget.isEnableInput,
+        maxLines: null,
+        minLines: 10,
+        keyboardType: TextInputType.multiline,
+        textInputAction: TextInputAction.newline,
         maxLength: widget.maxLength,
         onChanged: widget.onChangeMethod,
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: TextStyle(
-            color: Color(0xffE8E8E8),
+            color: Colors.grey,
             fontSize: 15,
-            fontWeight: FontWeight.w200,
+            fontWeight: FontWeight.w300,
           ),
           errorText: widget.errorText,
           errorStyle: TextStyle(
@@ -72,19 +69,6 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
             BorderRadius.all(Radius.circular(8.0)),
             borderSide: BorderSide(color: Color(0xffE8E8E8), width: 2.0),
           ),
-          suffix: ElevatedButton(
-            onPressed: widget.isEnableButton ? widget.onPressMethod : null,
-            style: ElevatedButton.styleFrom(
-              elevation: 5.0,
-              backgroundColor: Colors.orangeAccent,
-            ),
-            child: Text(
-              widget.buttonTitle,
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          )
         ),
         buildCounter: (
             BuildContext context,

@@ -95,6 +95,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               hintText: '홍길동',
                               errorText: errorViewModel.getNameError(),
                               maxLength: 5,
+                              text: viewModel.name,
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.07,
@@ -167,6 +168,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               hintText: 'abc@naver.com',
                               errorText: errorViewModel.getEmailError(),
                               maxLength: 30,
+                              text: viewModel.email,
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.07,
@@ -186,6 +188,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               hintText: '가지',
                               errorText: errorViewModel.getNickNameError(),
                               maxLength: 10,
+                              text: viewModel.nickName,
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.07,
@@ -204,6 +207,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                                   viewModelNotifier.setIntroduction(value),
                               hintText: '안녕하세요...',
                               maxLength: 50,
+                              text: viewModel.introduction,
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.02,

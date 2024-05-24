@@ -81,7 +81,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               deviceSize: deviceSize,
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setLoginName(value),
-                              hintText: '아이디를 입력해주세요.')
+                              hintText: '아이디를 입력해주세요.',
+                            text: viewModel.loginName,
+                          )
                         ],
                       ),
                       SizedBox(
@@ -103,6 +105,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             onChangeMethod: (value) =>
                                 viewModelNotifier.setPassword(value),
                             hintText: '비밀번호를 입력해주세요',
+                            text: viewModel.password,
                           )
                         ],
                       ),

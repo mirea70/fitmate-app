@@ -1,30 +1,56 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class CustomInput extends StatelessWidget {
-  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength});
+class CustomInput extends StatefulWidget {
+  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength, required this.text});
   final Size deviceSize;
   final ValueChanged<String> onChangeMethod;
   final String hintText;
   final String? errorText;
   final int? maxLength;
+  final String text;
+
+  @override
+  State<CustomInput> createState() => _CustomInputState();
+}
+
+class _CustomInputState extends State<CustomInput> {
+  late TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController(text: widget.text);
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.text != oldWidget.text) {
+      _textController.text = widget.text;
+      _textController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _textController.text.length),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: deviceSize.height * 0.08,
-      width: deviceSize.width * 0.9,
+      height: widget.deviceSize.height * 0.08,
+      width: widget.deviceSize.width * 0.9,
       child: TextField(
-        maxLength: maxLength,
-        onChanged: onChangeMethod,
+        controller: _textController,
+        maxLength: widget.maxLength,
+        onChanged: widget.onChangeMethod,
         decoration: InputDecoration(
-          hintText: hintText,
+          hintText: widget.hintText,
           hintStyle: TextStyle(
             color: Colors.grey,
             fontSize: 17,
             fontWeight: FontWeight.w400,
           ),
-          errorText: errorText,
+          errorText: widget.errorText,
           errorStyle: TextStyle(
             color: Colors.redAccent,
             fontSize: 17

@@ -80,6 +80,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                               hintText: 'amsidl777',
                               errorText: errorViewModel.getLoginNameError(),
                               maxLength: 20,
+                              text: viewModel.loginName,
                             ),
                           ],
                         ),

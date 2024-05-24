@@ -14,18 +14,23 @@ class FileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addFiles(List<XFile> files) {
+    this.files.addAll(files);
+    notifyListeners();
+  }
+
   void removeFile(XFile file) {
-    files.remove(file);
+    this.files.remove(file);
     notifyListeners();
   }
 
   bool exist() {
-    return !files.isEmpty;
+    return !this.files.isEmpty;
   }
 
   // 메이트 소개 이미지용
-  bool isOver() {
-    if(files.length >= 3) return true;
+  bool isOver(List<XFile> newFiles) {
+    if(files.length + newFiles.length > 3) return true;
     else return false;
   }
 }

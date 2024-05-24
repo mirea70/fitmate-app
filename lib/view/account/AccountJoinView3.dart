@@ -107,6 +107,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                               maxLength: 11,
                               isEnableInput:
                                   !codeViewModel.getIsVisibleCheckView(),
+                              text: viewModel.phone,
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.1,
@@ -142,6 +143,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                     codeViewModel.getCode() != null &&
                                         codeViewModel.getCode() != '',
                                 maxLength: 8,
+                                text: codeViewModel.validateCode.code ?? '',
                               ),
                           ],
                         ),

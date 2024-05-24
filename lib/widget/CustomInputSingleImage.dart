@@ -8,18 +8,18 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CustomSingleInputImage extends ConsumerStatefulWidget {
-  const CustomSingleInputImage({super.key, required this.deviceSize});
+class CustomInputSingleImage extends ConsumerStatefulWidget {
+  const CustomInputSingleImage({super.key, required this.deviceSize});
 
   final Size deviceSize;
 
   @override
-  ConsumerState<CustomSingleInputImage> createState() =>
-      _CustomSingleInputImageState();
+  ConsumerState<CustomInputSingleImage> createState() =>
+      _CustomInputSingleImageState();
 }
 
-class _CustomSingleInputImageState
-    extends ConsumerState<CustomSingleInputImage> {
+class _CustomInputSingleImageState
+    extends ConsumerState<CustomInputSingleImage> {
   @override
   Widget build(BuildContext context) {
     final fileViewModel = ref.watch(fileViewModelProvider);
