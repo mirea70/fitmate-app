@@ -119,7 +119,6 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
                                   SizedBox(
                                     height: deviceSize.height * 0.03,
                                   ),
-
                                   GestureDetector(
                                     onTap: () async {
                                       final TimeOfDay? selectTime = await showTimePicker(
