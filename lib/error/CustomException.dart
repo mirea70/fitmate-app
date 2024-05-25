@@ -14,4 +14,5 @@ enum ErrorDomain {
 
 enum ErrorType {
   LIMIT_OVER,
+  INVALID_INPUT,
 }

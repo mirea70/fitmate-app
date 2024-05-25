@@ -1,6 +1,9 @@
+import 'package:fitmate_app/error/CustomException.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
+import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
+import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:fitmate_app/widget/CustomInputSmall.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +25,8 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
+    final ScrollController _scrollController = ScrollController();
+
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
     final viewModel = ref.watch(mateRegisterViewModelProvider);
 
@@ -30,6 +35,7 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
 
     final mateFeeState = ref.watch(mateFeeStateProvider);
     final mateFeeStateNotifier = ref.read(mateFeeStateProvider.notifier);
+    final totalFee = viewModel.mateFees.map((mateFee) => mateFee.fee).reduce((current, next) => current + next);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -41,11 +47,10 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
           totalStep: 6,
         ),
         resizeToAvoidBottomInset: true,
-        body:
-        LayoutBuilder(
+        body: LayoutBuilder(
           builder: (context, constraint) {
-            return
-              SingleChildScrollView(
+            return SingleChildScrollView(
+              controller: _scrollController,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraint.maxHeight,
@@ -195,8 +200,41 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
-                                        Icon(Icons.add_circle_outlined),
+                                        CustomIconButton(
+                                          onPressed: () {
+                                            try {
+                                              viewModelNotifier.addMateFee(mateFeeState);
+                                              mateFeeStateNotifier.reset();
+                                              _scrollController.animateTo(
+                                                _scrollController.position.maxScrollExtent,
+                                                duration: Duration(milliseconds: 500),
+                                                curve: Curves.easeInOut,
+                                              );
+                                            } on CustomException catch (e) {
+                                              if (e.domain == ErrorDomain.MATE &&
+                                                  e.type == ErrorType.INVALID_INPUT)
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return CustomAlert(title: e.msg, deviceSize: deviceSize);
+                                                  },
+                                                );
+                                              else throw 'UnKnown Exception';
+                                            }
+                                          },
+                                          icon: Icon(Icons.add_circle_outlined, color: Colors.orangeAccent,),
+                                          // padding: EdgeInsets.zero,
+                                          // constraints: BoxConstraints(
+                                          //   minHeight: 0,
+                                          //   minWidth: 0,
+                                          // ),
+                                          // visualDensity: VisualDensity.compact,
+                                          // visualDensity: const VisualDensity(horizontal: -4),
+                                          // color: Colors.orangeAccent,
+                                          // disabledColor: Colors.black,
+                                        ),
                                         SizedBox(
                                           width: deviceSize.width * 0.02,
                                         ),
@@ -210,7 +248,18 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                                       ],
                                     ),
                                     SizedBox(
-                                      height: deviceSize.height * 0.02,
+                                      height: deviceSize.height * 0.01,
+                                    ),
+                                    Text(
+                                      '참가비를 직접 추가해보세요!',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: deviceSize.height * 0.05,
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(
@@ -268,19 +317,19 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                                 ),
                               ),
                               SizedBox(
-                                height: deviceSize.height * 0.02,
+                                height: deviceSize.height * 0.05,
                               ),
                               Container(
                                 child: Column(
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(Icons.info),
+                                        Icon(Icons.info, color: Colors.orangeAccent,),
                                         SizedBox(
                                           width: deviceSize.width * 0.02,
                                         ),
                                         Text(
-                                          '참가비 정보',
+                                          '총 ${totalFee}원',
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w600,
@@ -291,76 +340,72 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                                     SizedBox(
                                       height: deviceSize.height * 0.02,
                                     ),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        primary: false,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: viewModel.mateFees.length,
-                                        itemBuilder: (context, index) {
+                                    Column(
+                                      children: List.generate(
+                                        viewModel.mateFees.length,
+                                        (index) {
                                           String name =
                                               viewModel.mateFees[index].name;
                                           int fee =
                                               viewModel.mateFees[index].fee;
-                                          return Text('test');
-                                          // return Column(
-                                          //   children: [
-                                          //     Text(
-                                          //       name,
-                                          //       style: TextStyle(
-                                          //         fontSize: 15,
-                                          //         fontWeight: FontWeight.w600,
-                                          //       ),
-                                          //     ),
-                                          //     SizedBox(
-                                          //       height:
-                                          //           deviceSize.height * 0.01,
-                                          //     ),
-                                          //     Row(
-                                          //       children: [
-                                          //         Icon(Icons.attach_money),
-                                          //         SizedBox(
-                                          //           width:
-                                          //               deviceSize.width * 0.01,
-                                          //         ),
-                                          //         Text(
-                                          //           fee.toString(),
-                                          //           style: TextStyle(
-                                          //             fontSize: 15,
-                                          //             fontWeight:
-                                          //                 FontWeight.w400,
-                                          //           ),
-                                          //         ),
-                                          //       ],
-                                          //     ),
-                                          //   ],
-                                          // );
+                                          // return Text('test');
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(15),
+                                                  color: Color(0xffE8E8E8),
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                                  child: Text(
+                                                    name,
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height:
+                                                    deviceSize.height * 0.01,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.attach_money, color: Colors.orangeAccent,),
+                                                  SizedBox(
+                                                    width:
+                                                        deviceSize.width * 0.01,
+                                                  ),
+                                                  Text(
+                                                    fee.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height: deviceSize.height * 0.02,
+                                              ),
+                                            ],
+                                          );
                                         },
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
+                              SizedBox(
+                                height: deviceSize.height * 0.05,
+                              ),
                             ],
                           ),
-                        Expanded(child: SizedBox()),
-                        Center(
-                          child: CustomButton(
-                              deviceSize: deviceSize,
-                              onTapMethod: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            MateRegisterView3()));
-                              },
-                              title: '다음',
-                              isEnabled: viewModel.mateAt != null),
-                        ),
-                        SizedBox(
-                          height:
-                              devicePadding.bottom + deviceSize.height * 0.03,
-                        ),
                       ],
                     ),
                   ),
@@ -368,6 +413,31 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
               ),
             );
           },
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
+          elevation: 0,
+          child: Column(
+            children: [
+              Center(
+                child: CustomButton(
+                    deviceSize: deviceSize,
+                    onTapMethod: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MateRegisterView3()));
+                    },
+                    title: '다음',
+                    isEnabled: viewModel.mateAt != null),
+              ),
+              // SizedBox(
+              //   height:
+              //   devicePadding.bottom + deviceSize.height * 0.03,
+              // ),
+            ],
+          ),
         ),
       ),
     );
