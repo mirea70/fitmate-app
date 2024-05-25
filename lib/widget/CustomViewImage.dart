@@ -22,11 +22,11 @@ class CustomViewImage extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          height: deviceSize.height * 0.09,
-          width: deviceSize.width * 0.2,
+          height: 77,
+          width: 77,
           decoration: BoxDecoration(
             image: DecorationImage(
-              fit: BoxFit.fitHeight,
+              fit: BoxFit.cover,
               image: FileImage(
                 File(
                   fileViewModel.files[index].path,

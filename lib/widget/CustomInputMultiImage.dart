@@ -28,8 +28,8 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
     return Stack(
       children: [
         Container(
-          height: widget.deviceSize.height * 0.09,
-          width: widget.deviceSize.width * 0.2,
+          height: 77,
+          width: 77,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
