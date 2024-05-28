@@ -52,11 +52,11 @@ class Mate {
       mateAt: selectDateTime,
       fitPlaceName: '',
       fitPlaceAddress: '',
-      gatherType: null,
-      permitGender: null,
-      permitMaxAge: null,
-      permitMinAge: null,
-      permitPeopleCnt: null,
+      gatherType: GatherType.FAST,
+      permitGender: PermitGender.ALL,
+      permitMaxAge: 50,
+      permitMinAge: 20,
+      permitPeopleCnt: 3,
       mateFees: [],
       applyQuestion: ''
     );

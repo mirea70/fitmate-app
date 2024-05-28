@@ -19,6 +19,10 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
     state = Mate.initial();
   }
 
+  void resetMateFees() {
+    state = state.copyWith(mateFees: []);
+  }
+
   void setFitCategory(FitCategory value) {
     state = state.copyWith(fitCategory: value);
   }
@@ -65,5 +69,40 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
         type: ErrorType.INVALID_INPUT,
         msg: '참가비 종류는 2~15자의 한글로 입력해야 합니다.',
       );
+  }
+
+  void setPermitPeopleCnt(int value) {
+    state = state.copyWith(permitPeopleCnt: value);
+  }
+
+  void plusPermitPeopleCnt() {
+    if(state.permitPeopleCnt! + 1 > 50) return;
+    state = state.copyWith(permitPeopleCnt: state.permitPeopleCnt!+1);
+  }
+
+  void minusPermitPeopleCnt() {
+    if(state.permitPeopleCnt! - 1 < 2) return;
+    state = state.copyWith(permitPeopleCnt: state.permitPeopleCnt!-1);
+  }
+
+  void validatePermitPeopleCnt(int value) {
+    if(value < 2 || value > 50)
+      throw CustomException(domain: ErrorDomain.MATE, type: ErrorType.INVALID_INPUT, msg: '최대인원은 2~50명 사이로 설정 가능합니다.');
+  }
+
+  void setGatherType(GatherType value) {
+    state = state.copyWith(gatherType: value);
+  }
+
+  void setPermitMinAge(int value) {
+    state = state.copyWith(permitMinAge: value);
+  }
+
+  void setPermitMaxAge(int value) {
+    state = state.copyWith(permitMaxAge: value);
+  }
+
+  void setPermitGender(PermitGender value) {
+    state = state.copyWith(permitGender: value);
   }
 }

@@ -5,13 +5,11 @@ import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:fitmate_app/widget/CustomInputSmall.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
-import 'MateRegisterView3.dart';
+import 'MateRegisterView6.dart';
 
 class MateRegisterView5 extends ConsumerStatefulWidget {
   const MateRegisterView5({super.key});
@@ -35,7 +33,9 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
 
     final mateFeeState = ref.watch(mateFeeStateProvider);
     final mateFeeStateNotifier = ref.read(mateFeeStateProvider.notifier);
-    final totalFee = viewModel.mateFees.map((mateFee) => mateFee.fee).reduce((current, next) => current + next);
+    final totalFee = viewModel.mateFees.isNotEmpty ?
+    viewModel.mateFees.map((mateFee) => mateFee.fee).reduce((current, next) => current + next)
+    : 0;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -423,14 +423,16 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                 child: CustomButton(
                     deviceSize: deviceSize,
                     onTapMethod: () {
+                      if(!hasMateFee)
+                        viewModelNotifier.resetMateFees();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MateRegisterView3()));
+                                  MateRegisterView6()));
                     },
                     title: '다음',
-                    isEnabled: viewModel.mateAt != null),
+                    isEnabled: true),
               ),
               // SizedBox(
               //   height:

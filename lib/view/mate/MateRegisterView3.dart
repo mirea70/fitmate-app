@@ -1,17 +1,9 @@
-import 'package:fitmate_app/error/ErrorBoundary.dart';
-import 'package:fitmate_app/view/account/AccountJoinView2.dart';
-import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
-import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
-import 'package:fitmate_app/view_model/mate/SearchViewModel.dart';
-import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
-import 'package:fitmate_app/widget/CustomInputBox.dart';
 import 'package:fitmate_app/widget/CustomInputLarge.dart';
 import 'package:fitmate_app/widget/CustomInputMultiImage.dart';
-import 'package:fitmate_app/widget/CustomInputWithoutFocus.dart';
 import 'package:fitmate_app/widget/CustomViewImage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
