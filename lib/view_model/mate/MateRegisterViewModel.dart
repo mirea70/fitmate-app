@@ -1,8 +1,11 @@
 import 'package:fitmate_app/error/CustomException.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
+import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
+import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 final mateRegisterViewModelProvider =
     NotifierProvider<MateRegisterViewModel, Mate>(
@@ -35,6 +38,17 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
     state = state.copyWith(title: value);
   }
 
+  void validateTitle(String value) {
+    String pattern = r'^[가-힣\s?!~]{5,20}$';
+    RegExp nameRegex = RegExp(pattern);
+    if ((!nameRegex.hasMatch(value)))
+      throw CustomException(
+        domain: ErrorDomain.MATE,
+        type: ErrorType.INVALID_INPUT,
+        msg: '제목은 5~20자의 한글 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
+      );
+  }
+
   void setIntroduction(String value) {
     state = state.copyWith(introduction: value);
   }
@@ -57,7 +71,7 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
 
   void addMateFee(MateFee mateFee) {
     _validateMateFeeName(mateFee.name);
-    state = state.copyWith(mateFees: [...state.mateFees, mateFee]);
+    state = state.copyWith(mateFees: [...state.mateFees, mateFee], totalFee: state.totalFee! + mateFee.fee);
   }
 
   void _validateMateFeeName(String value) {
@@ -104,5 +118,34 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
 
   void setPermitGender(PermitGender value) {
     state = state.copyWith(permitGender: value);
+  }
+
+  void setApplyQuestion(String value) {
+    state = state.copyWith(applyQuestion: value);
+  }
+
+  void validateApplyQuestion(String value) {
+    String pattern = r'^[가-힣\s?!~]{5,20}$';
+    RegExp nameRegex = RegExp(pattern);
+    if ((!nameRegex.hasMatch(value)))
+      throw CustomException(
+        domain: ErrorDomain.MATE,
+        type: ErrorType.INVALID_INPUT,
+        msg: '참여자 질문은 5~20자의 한글 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
+      );
+  }
+
+  Future<AsyncValue<void>> register() async {
+    List<XFile> introImages = ref.read(fileViewModelProvider).files;
+    List<String> introImagePaths = List.generate(introImages.length, (index) => introImages[index].path);
+    final result = await ref.read(mateRepositoryProvider).requestRegister(state, introImagePaths);
+    if(result != null) {
+      if(result == "")
+        return AsyncValue.error('알수없는 에러가 발생하였습니다.', StackTrace.empty);
+      else if(result['error'] != null && result['error'] == 'Unauthorized')
+        return AsyncValue.error('로그인이 만료되었습니다.', StackTrace.empty);
+      return AsyncValue.error(result['message'] ?? '알수없는 에러가 발생하였습니다.', StackTrace.empty);
+    }
+    else return AsyncValue.data(null);
   }
 }

@@ -9,6 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.devicePadding,
     required this.step,
     required this.totalStep,
+    this.onPressed,
   });
 
   final BaseViewModel? resetViewModel;
@@ -16,6 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final EdgeInsets devicePadding;
   final int step;
   final int totalStep;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Padding(
             padding: EdgeInsets.only(left: deviceSize.width * 0.02),
             child: IconButton(
-              onPressed: () {
+              onPressed: onPressed != null
+                  ? onPressed
+                  : () {
                 if (resetViewModel != null) resetViewModel!.reset();
                 Navigator.pop(context);
               },

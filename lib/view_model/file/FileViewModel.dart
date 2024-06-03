@@ -33,4 +33,9 @@ class FileViewModel extends ChangeNotifier {
     if(files.length + newFiles.length > 3) return true;
     else return false;
   }
+
+  void reset() {
+    this.files = [];
+    notifyListeners();
+  }
 }

@@ -1,5 +1,7 @@
+import 'package:fitmate_app/error/CustomException.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
+import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:fitmate_app/widget/CustomInputLarge.dart';
@@ -32,11 +34,12 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: CustomAppBar(
           deviceSize: deviceSize,
           devicePadding: devicePadding,
           step: 3,
-          totalStep: 6,
+          totalStep: 7,
         ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(
@@ -133,29 +136,51 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
                           ],
                         ),
                       ),
-                      Expanded(child: SizedBox()),
-                      Center(
-                        child: CustomButton(
-                            deviceSize: deviceSize,
-                            onTapMethod: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          MateRegisterView4()));
-                            },
-                            title: '다음',
-                            isEnabled: viewModel.title.length >= 5),
-                      ),
-                      SizedBox(
-                        height: devicePadding.bottom + deviceSize.height * 0.03,
-                      ),
                     ],
                   ),
                 ),
               ),
             );
           },
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
+          elevation: 0,
+          child: Column(
+            children: [
+              Center(
+                child: CustomButton(
+                    deviceSize: deviceSize,
+                    onTapMethod: () {
+                      try {
+                        viewModelNotifier.validateTitle(viewModel.title);
+                      } on CustomException catch (e) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return CustomAlert(
+                              title: e.msg,
+                              deviceSize: deviceSize,
+                            );
+                          },
+                        );
+                        return;
+                      }
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MateRegisterView4()));
+                    },
+                    title: '다음',
+                    isEnabled: viewModel.title.length >= 5),
+              ),
+              // SizedBox(
+              //   height:
+              //   devicePadding.bottom + deviceSize.height * 0.03,
+              // ),
+            ],
+          ),
         ),
       ),
     );

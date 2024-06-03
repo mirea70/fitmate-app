@@ -5,15 +5,13 @@ import 'package:fitmate_app/config/SecureStorage.dart';
 import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as Storage;
+import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 
 final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio();
-  dio.options.baseUrl = AppConfig().baseUrl;
   final storage = ref.watch(secureStorageProvider);
-
-  dio.interceptors.add(
-      CustomInterceptor(storage: storage, ref: ref),
-  );
+  final dio = Dio(BaseOptions(baseUrl: AppConfig().baseUrl))
+    ..interceptors.add(CurlLoggerDioInterceptor())
+    ..interceptors.add(CustomInterceptor(storage: storage, ref: ref));
   return dio;
 });
 
@@ -29,7 +27,7 @@ class CustomInterceptor extends Interceptor {
       RequestOptions options,
       RequestInterceptorHandler handler,
       ) async {
-    if(options.headers['accessToken'] == 'true') {
+    if(options.headers['accessToken'] == true) {
       options.headers.remove('accessToken');
       final token = await storage.read(key: accessTokenKey);
 
@@ -37,7 +35,7 @@ class CustomInterceptor extends Interceptor {
         'Authorization': token,
       });
     }
-    else if(options.headers['refreshToken'] == 'true') {
+    else if(options.headers['refreshToken'] == true) {
       options.headers.remove('refreshToken');
       final token = await storage.read(key: accessTokenKey);
 

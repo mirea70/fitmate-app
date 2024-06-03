@@ -39,11 +39,12 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: CustomAppBar(
           deviceSize: deviceSize,
           devicePadding: devicePadding,
           step: 4,
-          totalStep: 6,
+          totalStep: 7,
         ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(
@@ -169,30 +170,38 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
                           ],
                         ),
                       ),
-                      Expanded(child: SizedBox()),
-                      Center(
-                        child: CustomButton(
-                          deviceSize: deviceSize,
-                          onTapMethod: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        MateRegisterView5()));
-                          },
-                          title: '다음',
-                          isEnabled: viewModel.mateAt != null
-                        ),
-                      ),
-                      SizedBox(
-                        height: devicePadding.bottom + deviceSize.height * 0.03,
-                      ),
                     ],
                   ),
                 ),
               ),
             );
           },
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
+          elevation: 0,
+          child: Column(
+            children: [
+              Center(
+                child: CustomButton(
+                    deviceSize: deviceSize,
+                    onTapMethod: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MateRegisterView5()));
+                    },
+                    title: '다음',
+                    isEnabled: viewModel.mateAt != null
+                ),
+              ),
+              // SizedBox(
+              //   height:
+              //   devicePadding.bottom + deviceSize.height * 0.03,
+              // ),
+            ],
+          ),
         ),
       ),
     );

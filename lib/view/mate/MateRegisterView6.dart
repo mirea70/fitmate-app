@@ -11,7 +11,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
+import 'MateRegisterPreview.dart';
 import 'MateRegisterView3.dart';
+import 'MateRegisterView7.dart';
 
 class MateRegisterView6 extends ConsumerStatefulWidget {
   const MateRegisterView6({super.key});
@@ -61,11 +63,12 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
         _isPermitAgesEditing = false;
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: CustomAppBar(
           deviceSize: deviceSize,
           devicePadding: devicePadding,
           step: 6,
-          totalStep: 6,
+          totalStep: 7,
         ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(
@@ -731,10 +734,12 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MateRegisterView3()));
+                              builder: (context) =>
+                                  MateRegisterView7()));
                     },
-                    title: '미리보기',
-                    isEnabled: true),
+                    title: '다음',
+                    isEnabled: true
+                ),
               ),
               // SizedBox(
               //   height:

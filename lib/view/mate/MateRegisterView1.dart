@@ -29,12 +29,18 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: CustomAppBar(
           resetViewModel: viewModelNotifier,
+          onPressed: () {
+            viewModelNotifier.reset();
+            selectNumNotifier.reset();
+            Navigator.pop(context);
+          },
           deviceSize: deviceSize,
           devicePadding: devicePadding,
           step: 1,
-          totalStep: 6,
+          totalStep: 7,
         ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(
@@ -94,30 +100,38 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                           ],
                         ),
                       ),
-                      Expanded(child: SizedBox()),
-                      Center(
-                        child: CustomButton(
-                          deviceSize: deviceSize,
-                          onTapMethod: () async {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        MateRegisterView2()));
-                          },
-                          title: '다음',
-                          isEnabled: viewModel.fitCategory != null,
-                        ),
-                      ),
-                      SizedBox(
-                        height: devicePadding.bottom + deviceSize.height * 0.03,
-                      ),
                     ],
                   ),
                 ),
               ),
             );
           },
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
+          elevation: 0,
+          child: Column(
+            children: [
+              Center(
+                child: CustomButton(
+                  deviceSize: deviceSize,
+                  onTapMethod: () async {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                MateRegisterView2()));
+                  },
+                  title: '다음',
+                  isEnabled: viewModel.fitCategory != null,
+                ),
+              ),
+              // SizedBox(
+              //   height:
+              //   devicePadding.bottom + deviceSize.height * 0.03,
+              // ),
+            ],
+          ),
         ),
       ),
     );
@@ -135,5 +149,9 @@ class SelectNumNotifier extends Notifier<int> {
 
   void setSelectNum(int num) {
     state = num;
+  }
+
+  void reset() {
+    state = 0;
   }
 }

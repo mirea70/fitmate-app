@@ -20,7 +20,10 @@ class Mate {
   final int? permitMinAge;
   final int? permitPeopleCnt;
   final List<MateFee> mateFees;
+  final int? totalFee;
   final String applyQuestion;
+  final List<int> waitingAccountIds;
+  final List<int> approvedAccountIds;
 
   Mate({
     required this.fitCategory,
@@ -36,7 +39,10 @@ class Mate {
     required this.permitMinAge,
     required this.permitPeopleCnt,
     required this.mateFees,
+    required this.totalFee,
     required this.applyQuestion,
+    required this.waitingAccountIds,
+    required this.approvedAccountIds,
   });
 
   factory Mate.initial() {
@@ -58,7 +64,10 @@ class Mate {
       permitMinAge: 20,
       permitPeopleCnt: 3,
       mateFees: [],
-      applyQuestion: ''
+      totalFee: 0,
+      applyQuestion: '',
+      waitingAccountIds: [],
+      approvedAccountIds: [],
     );
   }
 
@@ -76,7 +85,10 @@ class Mate {
     int? permitMinAge,
     int? permitPeopleCnt,
     List<MateFee>? mateFees,
+    int? totalFee,
     String? applyQuestion,
+    List<int> ? waitingAccountIds,
+    List<int> ? approvedAccountIds,
   }) =>
       Mate(
         fitCategory: fitCategory ?? this.fitCategory,
@@ -92,7 +104,10 @@ class Mate {
         permitMinAge: permitMinAge ?? this.permitMinAge,
         permitPeopleCnt: permitPeopleCnt ?? this.permitPeopleCnt,
         mateFees: mateFees ?? this.mateFees,
+        totalFee: totalFee ?? this.totalFee,
         applyQuestion: applyQuestion ?? this.applyQuestion,
+        waitingAccountIds: waitingAccountIds ?? this.waitingAccountIds,
+        approvedAccountIds: approvedAccountIds ?? this.approvedAccountIds,
       );
 
   factory Mate.fromJson(Map<String, dynamic> json) => Mate(
@@ -109,7 +124,10 @@ class Mate {
     permitMinAge: json["permitMinAge"],
     permitPeopleCnt: json["permitPeopleCnt"],
     mateFees: List<MateFee>.from(json["mateFees"].map((x) => MateFee.fromJson(x))),
+    totalFee: json["totalFee"],
     applyQuestion: json["applyQuestion"],
+    waitingAccountIds: List<int>.from(json['waitingAccountIds'].map((x) => x)),
+    approvedAccountIds: List<int>.from(json['approvedAccountIds'].map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
@@ -126,7 +144,10 @@ class Mate {
     "permitMinAge": permitMinAge,
     "permitPeopleCnt": permitPeopleCnt,
     "mateFees": List<dynamic>.from(mateFees.map((x) => x.toJson())),
+    "totalFee": totalFee,
     "applyQuestion": applyQuestion,
+    "waitingAccountIds": List<dynamic>.from(waitingAccountIds.map((x) => x)),
+    "approvedAccountIds": List<dynamic>.from(approvedAccountIds.map((x) => x)),
   };
 }
 
@@ -160,13 +181,33 @@ class MateFee {
 }
 
 enum FitCategory {
-  FITNESS,
-  CROSSFIT,
+  FITNESS('FITNESS','헬스'),
+  CROSSFIT('CROSSFIT', '크로스핏'),
+  undefined('undefined', '');
+
+  final String code;
+  final String label;
+  const FitCategory(this.code, this.label);
+
+  factory FitCategory.getByCode(String code) {
+    return FitCategory.values.firstWhere((value) => value.code == code,
+        orElse: () => FitCategory.undefined);
+  }
 }
 
 enum GatherType {
-  FAST,
-  AGREE,
+  FAST('FAST', '선착순'),
+  AGREE('AGREE', '승인제'),
+  undefined('undefined', '');
+
+  final String code;
+  final String label;
+  const GatherType(this.code, this.label);
+
+  factory GatherType.getByCode(String code) {
+    return GatherType.values.firstWhere((value) => value.code == code,
+        orElse: () => GatherType.undefined);
+  }
 }
 
 enum PermitGender {

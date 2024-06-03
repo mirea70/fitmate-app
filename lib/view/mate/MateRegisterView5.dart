@@ -33,18 +33,16 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
 
     final mateFeeState = ref.watch(mateFeeStateProvider);
     final mateFeeStateNotifier = ref.read(mateFeeStateProvider.notifier);
-    final totalFee = viewModel.mateFees.isNotEmpty ?
-    viewModel.mateFees.map((mateFee) => mateFee.fee).reduce((current, next) => current + next)
-    : 0;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: CustomAppBar(
           deviceSize: deviceSize,
           devicePadding: devicePadding,
           step: 5,
-          totalStep: 6,
+          totalStep: 7,
         ),
         resizeToAvoidBottomInset: true,
         body: LayoutBuilder(
@@ -329,7 +327,7 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                                           width: deviceSize.width * 0.02,
                                         ),
                                         Text(
-                                          '총 ${totalFee}원',
+                                          '총 ${viewModel.totalFee}원',
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.w600,
@@ -430,9 +428,11 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                           MaterialPageRoute(
                               builder: (context) =>
                                   MateRegisterView6()));
+                      mateFeeStateNotifier.reset();
                     },
                     title: '다음',
-                    isEnabled: true),
+                    isEnabled: true
+                ),
               ),
               // SizedBox(
               //   height:
