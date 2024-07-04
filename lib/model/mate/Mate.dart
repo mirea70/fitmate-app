@@ -111,21 +111,21 @@ class Mate {
       );
 
   factory Mate.fromJson(Map<String, dynamic> json) => Mate(
-    fitCategory: json["fitCategory"],
+    fitCategory: FitCategory.getByCode(json["fitCategory"]),
     title: json["title"],
-    introduction: json["introduction"],
-    introImageIds: List<int>.from(json["introImageIds"].map((x) => x)),
+    introduction: json["introduction"] != null ? json["introduction"] : '',
+    introImageIds: json["introImageIds"] != null ? List<int>.from(json["introImageIds"].map((x) => x as int)) : [],
     mateAt: DateTime.parse(json["mateAt"]),
     fitPlaceName: json["fitPlaceName"],
     fitPlaceAddress: json["fitPlaceAddress"],
-    gatherType: json["gatherType"],
-    permitGender: json["permitGender"],
+    gatherType: GatherType.getByCode(json["gatherType"]),
+    permitGender: PermitGender.valueOf(json["permitGender"]),
     permitMaxAge: json["permitMaxAge"],
     permitMinAge: json["permitMinAge"],
     permitPeopleCnt: json["permitPeopleCnt"],
-    mateFees: List<MateFee>.from(json["mateFees"].map((x) => MateFee.fromJson(x))),
-    totalFee: json["totalFee"],
-    applyQuestion: json["applyQuestion"],
+    mateFees: json["mateFees"] != null ? List<MateFee>.from(json["mateFees"].map((x) => MateFee.fromJson(x))) : [],
+    totalFee: json["totalFee"] != null ? json["totalFee"] as int : 0,
+    applyQuestion: json["applyQuestion"] != null ? json["applyQuestion"] : '',
     waitingAccountIds: List<int>.from(json['waitingAccountIds'].map((x) => x)),
     approvedAccountIds: List<int>.from(json['approvedAccountIds'].map((x) => x)),
   );
@@ -213,5 +213,18 @@ enum GatherType {
 enum PermitGender {
   ALL,
   MALE,
-  FEMALE,
+  FEMALE;
+
+  factory PermitGender.valueOf(String code) {
+    PermitGender result = PermitGender.ALL;
+    switch (code) {
+      case 'ALL': result = PermitGender.ALL;
+      break;
+      case 'MALE': result = PermitGender.MALE;
+      break;
+      case 'FEMALE': result = PermitGender.FEMALE;
+      break;
+    }
+    return result;
+  }
 }

@@ -3,6 +3,7 @@ import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -135,17 +136,18 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
       );
   }
 
-  Future<AsyncValue<void>> register() async {
-    List<XFile> introImages = ref.read(fileViewModelProvider).files;
-    List<String> introImagePaths = List.generate(introImages.length, (index) => introImages[index].path);
-    final result = await ref.read(mateRepositoryProvider).requestRegister(state, introImagePaths);
-    if(result != null) {
-      if(result == "")
-        return AsyncValue.error('알수없는 에러가 발생하였습니다.', StackTrace.empty);
-      else if(result['error'] != null && result['error'] == 'Unauthorized')
-        return AsyncValue.error('로그인이 만료되었습니다.', StackTrace.empty);
-      return AsyncValue.error(result['message'] ?? '알수없는 에러가 발생하였습니다.', StackTrace.empty);
-    }
-    else return AsyncValue.data(null);
+  Future<void> register() async {
+    // List<XFile> introImages = ref.read(fileViewModelProvider).files;
+    // List<String> introImagePaths = List.generate(introImages.length, (index) => introImages[index].path);
+    // ref.read(mateAsyncViewModelProvider.notifier).addMate(state, introImagePaths);
+    // final result = await ref.read(mateRepositoryProvider).requestRegister(state, introImagePaths);
+    // if(result != null) {
+    //   if(result == "")
+    //     return AsyncValue.error('알수없는 에러가 발생하였습니다.', StackTrace.empty);
+    //   else if(result['error'] != null && result['error'] == 'Unauthorized')
+    //     return AsyncValue.error('로그인이 만료되었습니다.', StackTrace.empty);
+    //   return AsyncValue.error(result['message'] ?? '알수없는 에러가 발생하였습니다.', StackTrace.empty);
+    // }
+    // else return AsyncValue.data(null);
   }
 }

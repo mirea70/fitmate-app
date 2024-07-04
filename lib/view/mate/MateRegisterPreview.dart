@@ -4,6 +4,7 @@ import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class MateRegisterPreview extends ConsumerStatefulWidget {
@@ -111,7 +113,8 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                       setState(
                         () {
                           if (fileViewModel.files.isNotEmpty) {
-                            if (_currentImage < fileViewModel.files.length - 1) {
+                            if (_currentImage <
+                                fileViewModel.files.length - 1) {
                               _currentImage++;
                             } else {
                               // 이미지가 마지막일 때 다음 버튼을 누르면 첫 번째 이미지로 이동
@@ -171,8 +174,11 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                     ),
                     Center(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, deviceSize.height * 0.01,
-                            0, deviceSize.height * 0.01),
+                        padding: EdgeInsets.fromLTRB(
+                            0,
+                            deviceSize.height * 0.01,
+                            0,
+                            deviceSize.height * 0.01),
                         child: Text('하루'),
                       ),
                     ),
@@ -226,183 +232,187 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                 child: Container(
                   padding: EdgeInsets.only(left: deviceSize.width * 0.05),
                   // child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '안내사항',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w500,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '안내사항',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.01,
+                      ),
+                      Text(
+                        '자세한 정보를 알려드릴게요',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.03,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.category_rounded,
+                            size: 20,
                           ),
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.01,
-                        ),
-                        Text(
-                          '자세한 정보를 알려드릴게요',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
                           ),
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.03,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.category_rounded,
+                          Text(
+                            viewModel.fitCategory != null
+                                ? viewModel.fitCategory!.label
+                                : '미지정',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.02,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.group,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
+                          ),
+                          Text(
+                            '최대 ${viewModel.permitPeopleCnt}명 => ${viewModel.gatherType!.label}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.02,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.attach_money_rounded,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
+                          ),
+                          Text(
+                            viewModel.mateFees.isEmpty
+                                ? '무료'
+                                : '${viewModel.totalFee}원',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.02,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.compare_arrows_rounded,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
+                          ),
+                          Text(
+                            getTextPermitAges(viewModel.permitMinAge!,
+                                viewModel.permitMaxAge!),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.02,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_month_rounded,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
+                          ),
+                          Text(
+                            formatDate(viewModel.mateAt!),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.02,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.only(top: deviceSize.height * 0.003),
+                            child: Icon(
+                              Icons.place_rounded,
                               size: 20,
                             ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Text(
-                              viewModel.fitCategory != null ? viewModel.fitCategory!.label : '미지정',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.group,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Text(
-                              '최대 ${viewModel.permitPeopleCnt}명 => ${viewModel.gatherType!.label}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.attach_money_rounded,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Text(
-                              viewModel.mateFees.isEmpty
-                                  ? '무료'
-                                  : '${viewModel.totalFee}원',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.compare_arrows_rounded,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Text(
-                              getTextPermitAges(viewModel.permitMinAge!,
-                                  viewModel.permitMaxAge!),
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.calendar_month_rounded,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Text(
-                              formatDate(viewModel.mateAt!),
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.02,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: deviceSize.height * 0.003),
-                              child: Icon(
-                                Icons.place_rounded,
-                                size: 20,
-                              ),
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${viewModel.fitPlaceName}',
+                          ),
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${viewModel.fitPlaceName}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      right: deviceSize.width * 0.05),
+                                  child: Text(
+                                    '${viewModel.fitPlaceAddress}',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
                                     ),
+                                    // overflow: TextOverflow.ellipsis,
+                                    // maxLines: 2,
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(right: deviceSize.width * 0.05),
-                                    child: Text(
-                                      '${viewModel.fitPlaceAddress}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      // overflow: TextOverflow.ellipsis,
-                                      // maxLines: 2,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
+              ),
               // ),
             ],
           ),
@@ -417,58 +427,62 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
               child: CustomButton(
                   deviceSize: deviceSize,
                   onTapMethod: () async {
-                    final registerResult = await viewModelNotifier.register();
+                    List<XFile> introImages =
+                        ref.read(fileViewModelProvider).files;
+                    List<String> introImagePaths = List.generate(
+                        introImages.length, (index) => introImages[index].path);
 
-                    registerResult.when(
-                        data: (_){
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (context) => MainView(),
-                            ),
-                                (route) => false,
-                          );
-                          viewModelNotifier.reset();
-                          fileViewModel.reset();
-                          ref.read(selectNumProvider.notifier).reset();
+                    try {
+                      ref.watch(mateAsyncViewModelProvider.notifier).addMate(viewModel, introImagePaths);
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.orangeAccent,
-                              content: Column(
-                                children: [
-                                  Text(
-                                    '메이트 모집 등록이 완료되었습니다.',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: deviceSize.height*0.02,
-                                  ),
-                                  Text(
-                                    '운동 메이트와 함께하세요!',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => MainView(),
+                        ),
+                            (route) => false,
+                      );
+                      viewModelNotifier.reset();
+                      fileViewModel.reset();
+                      ref.read(selectNumProvider.notifier).reset();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.orangeAccent,
+                          content: Column(
+                            children: [
+                              Text(
+                                '메이트 모집 등록이 완료되었습니다.',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        error: (error, stackTrace) => showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return CustomAlert(
-                                  title: '$error',
-                                  deviceSize: deviceSize);
-                            }),
-                        loading: () => CircularProgressIndicator(),
-                    );
+                              SizedBox(
+                                height: deviceSize.height * 0.02,
+                              ),
+                              Text(
+                                '운동 메이트와 함께하세요!',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    } catch (error) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return CustomAlert(
+                                title: '$error',
+                                deviceSize: deviceSize,
+                            );
+                          });
+                    }
                   },
                   title: '메이트 모집하기',
                   isEnabled: hasNotEmpty()),
@@ -522,12 +536,14 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
   bool hasNotEmpty() {
     final viewModel = ref.watch(mateRegisterViewModelProvider);
     // 비어있는지 체크
-    if (viewModel.fitCategory == null || viewModel.fitCategory == FitCategory.undefined ||
+    if (viewModel.fitCategory == null ||
+        viewModel.fitCategory == FitCategory.undefined ||
         viewModel.title == '' ||
         viewModel.mateAt == null ||
         viewModel.fitPlaceName == '' ||
         viewModel.fitPlaceAddress == '' ||
-        viewModel.gatherType == null || viewModel.gatherType == GatherType.undefined ||
+        viewModel.gatherType == null ||
+        viewModel.gatherType == GatherType.undefined ||
         viewModel.permitGender == null ||
         viewModel.permitMaxAge == null ||
         viewModel.permitMinAge == null ||
