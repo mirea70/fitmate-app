@@ -1,7 +1,10 @@
+import 'package:fitmate_app/view/mate/MateFilterView.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
+class MainViewAppbar extends ConsumerStatefulWidget implements PreferredSizeWidget {
   const MainViewAppbar({
     required this.deviceSize,
     required this.devicePadding,
@@ -11,13 +14,22 @@ class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
   final EdgeInsets devicePadding;
 
   @override
+  ConsumerState<MainViewAppbar> createState() => _MainViewAppbarState();
+
+  @override
+  Size get preferredSize => Size.fromHeight(deviceSize.height * 0.120);
+}
+
+class _MainViewAppbarState extends ConsumerState<MainViewAppbar> {
+@override
   Widget build(BuildContext context) {
+
     return Padding(
-      padding: EdgeInsets.fromLTRB(deviceSize.width * 0.05, 0, deviceSize.width * 0.05, 0),
+      padding: EdgeInsets.fromLTRB(widget.deviceSize.width * 0.05, 0, widget.deviceSize.width * 0.05, 0),
       child: Column(
         children: [
           SizedBox(
-            height: devicePadding.top,
+            height: widget.devicePadding.top,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,10 +49,18 @@ class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                         Icons.filter_alt_outlined,
                         size: 27,
                       ),
-                      onPressed: (){},
+                      onPressed: (){
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return MateFilterView();
+                            },
+                        isScrollControlled: true,
+                        );
+                      },
                     ),
                     SizedBox(
-                      width: deviceSize.width * 0.03,
+                      width: widget.deviceSize.width * 0.03,
                     ),
                     CustomIconButton(
                       icon: Icon(
@@ -50,7 +70,7 @@ class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                       onPressed: (){},
                     ),
                     SizedBox(
-                      width: deviceSize.width * 0.03,
+                      width: widget.deviceSize.width * 0.03,
                     ),
                     CustomIconButton(
                       icon: Icon(
@@ -60,7 +80,7 @@ class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                       onPressed: (){},
                     ),
                     SizedBox(
-                      width: deviceSize.width * 0.03,
+                      width: widget.deviceSize.width * 0.03,
                     ),
                     CustomIconButton(
                       icon: Icon(
@@ -75,7 +95,7 @@ class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           SizedBox(
-            height: deviceSize.height * 0.03,
+            height: widget.deviceSize.height * 0.03,
           ),
           Row(
             children: [
@@ -90,7 +110,7 @@ class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                   SizedBox(
-                      height: deviceSize.height * 0.008
+                      height: widget.deviceSize.height * 0.008
                   ),
                   Container(
                     height: 2.5,
@@ -108,5 +128,5 @@ class MainViewAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   // TODO: implement preferredSize
-  Size get preferredSize => Size.fromHeight(deviceSize.height * 0.120);
+  Size get preferredSize => Size.fromHeight(widget.deviceSize.height * 0.120);
 }

@@ -1,12 +1,8 @@
 import 'package:fitmate_app/error/CustomException.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
-import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
-import 'package:fitmate_app/view_model/file/FileViewModel.dart';
-import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 final mateRegisterViewModelProvider =
     NotifierProvider<MateRegisterViewModel, Mate>(
