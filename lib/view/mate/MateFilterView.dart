@@ -1,6 +1,8 @@
+import 'package:fitmate_app/error/CustomException.dart';
 import 'package:fitmate_app/model/common/Region.dart';
 import 'package:fitmate_app/model/mate/MateListRequestModel.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
+import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomInputCalendar.dart';
 import 'package:fitmate_app/widget/CustomMultiInputCalendar.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +20,9 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
   int dayOfWeekIdx = -1;
   List<Region> _defaultRegions = [];
   int selectRegionIdx = -1;
-  List<String> expandRegions = [];
+  List<String> _expandRegions = [];
+  int _expandStartIdx = -1;
+  int _expandEndIdx = -1;
 
   @override
   void initState() {
@@ -539,27 +543,108 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
               height: deviceSize.height * 0.03,
             ),
             Padding(
-                padding: EdgeInsets.fromLTRB(deviceSize.width * 0.03, 0, deviceSize.width * 0.03, 0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-
-                        ],
+                  padding: EdgeInsets.fromLTRB(deviceSize.width * 0.03, 0, deviceSize.width * 0.03, 0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 2,
                       ),
-                    ],
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    // padding: const EdgeInsets.all(8),
+                    child: GridView.builder(
+                          padding: const EdgeInsets.all(8),
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4, // 4개의 열로 나누기
+                          crossAxisSpacing: 8.0,
+                          mainAxisSpacing: 8.0,
+                          childAspectRatio: 2.0, // 각 항목의 가로세로 비율을 1:1로 설정
+                        ),
+                        itemCount: _defaultRegions.length + _getExpandGridItemCnt(),
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                // 인덱스 재정의
+                                if(index > _expandEndIdx) index = index - (_expandEndIdx - _expandStartIdx + 1);
+                                // 이미 클릭했던 도시를 눌렀을 때
+                                if(selectRegionIdx == index) {
+                                  selectRegionIdx = -1;
+                                  _expandStartIdx = -1;
+                                  _expandEndIdx = -1;
+                                  _expandRegions.clear();
+                                }
+                                // 클릭했던 도시는 아니지만, 다른 도시가 이미 클릭 상태일 때
+                                else if(selectRegionIdx != -1) {
+                                  // 확장인 놈을 클릭했을 경우
+                                  if(index >= _expandStartIdx && index <= _expandEndIdx) {
+                                    int i = index - _expandStartIdx;
+                                    String value = _expandRegions[i];
+                                    // 이미 클릭했던 놈일 경우
+                                    if(viewModel.fitPlaceRegions.contains(value)) {
+                                      viewModelNotifier.removeFitPlaceRegion(value);
+                                    }
+                                    // 아니지만, 확장의 첫번째 놈을 누른 경우
+                                    else if(index == _expandStartIdx) {
+                                      // 지역 초기화
+                                      viewModelNotifier.initFitPlaceRegion(value);
+                                    }
+                                    // 아니지만, 경남/울산인 경우
+                                    else if(_defaultRegions[selectRegionIdx].name == "경남/울산") {
+                                      // start 인덱스 + 1일 경우에만 지역 초기화
+                                      if(index == _expandStartIdx+1)
+                                        viewModelNotifier.initFitPlaceRegion(value);
+                                    }
+                                    // 아닐 경우
+                                    else {
+                                    // 지역 추가
+                                    try {
+                                      viewModelNotifier.addFitPlaceRegion(_expandRegions[i]);
+                                    } on CustomException catch (e) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return CustomAlert(
+                                                title: 'e',
+                                                deviceSize: deviceSize
+                                            );
+                                          }
+                                      );
+                                    }
+                                    }
+                                  }
+                                  // 디폴트 도시 놈을 클릭했을 경우
+                                  else {
+                                    // 선택 도시 바꾸기
+                                    // subRegions 바꾸기
+                                    // 확장 시작, 끝 인덱스 바꾸기
+                                    selectRegionIdx = index;
+                                    _expandRegions = _defaultRegions[index].subRegions;
+                                    _expandStartIdx = index + (4 - index % 4);
+                                    _expandEndIdx = _expandStartIdx + _getExpandGridItemCnt() - 1;
+                                  }
+                                }
+                                // 처음 눌렀을 때
+                                else {
+                                  // 선택 도시 바꾸기
+                                  // subRegions 바꾸기
+                                  // 확장 시작, 끝 인덱스 바꾸기
+                                  selectRegionIdx = index;
+                                  _expandRegions = _defaultRegions[index].subRegions;
+                                  _expandStartIdx = index + (4 - index % 4);
+                                  _expandEndIdx = _expandStartIdx + _getExpandGridItemCnt() - 1;
+                                }
+                              });
+                            },
+                            child: _getGridContainer(index),
+                          );
+                        }
+                    )
                   ),
-                )
-            ),
+              ),
             SizedBox(
               height: deviceSize.height * 0.05,
             ),
@@ -808,6 +893,127 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
         ),
       ),
     );
+  }
+
+  // Widget _buildGridItem(BuildContext context, int index) {
+  //   return InkWell(
+  //     onTap: () {
+  //       setState(() {
+  //         if(selectRegionIdx == index) {
+  //           selectRegionIdx = -1;
+  //           _expandStartIdx = -1;
+  //           _expandEndIdx = -1;
+  //           _expandRegions.clear();
+  //         }
+  //         else if(selectRegionIdx != -1) {
+  //           // 확장인 놈을 클릭했을 경우
+  //           if(index >= _expandStartIdx && index <= _expandEndIdx) {
+  //             int i = index - _expandStartIdx;
+  //             // 이미 클릭했던 놈일 경우
+  //             // 아닐 경우
+  //             ref.read(mateListRequestViewModelProvider.notifier).addFitPlaceRegions(_expandRegions[i]);
+  //           }
+  //           else {
+  //             // 디폴트 도시 놈을 클릭했을 경우
+  //           }
+  //         }
+  //         else {
+  //           selectRegionIdx = index;
+  //           _expandRegions = _defaultRegions[index].subRegions;
+  //           _expandStartIdx = index + (4 - index % 4);
+  //           _expandEndIdx = _expandStartIdx + _getExpandGridItemCnt() - 1;
+  //         }
+  //       });
+  //     },
+  //     child: Container(
+  //       child: Center(
+  //         child: Text(
+  //           _defaultRegions[index].name,
+  //           style: TextStyle(
+  //             fontSize: 15,
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _getGridContainer(int index) {
+
+    // 확장 되었을 때
+    if(_expandStartIdx != -1) {
+      // 확장 범위 안의 경우
+      if(index >= _expandStartIdx && index <= _expandEndIdx) {
+        // 하위 지역 개수 넘은 경우
+        if(index - _expandStartIdx >= _expandRegions.length) {
+          return Container(
+            child: Center(
+              child: Text(
+                '',
+                style: TextStyle(
+                  fontSize: 15,
+                ),
+              ),
+            ),
+          );
+        }
+        return Container(
+          color: Color(0xffE8E8E8),
+          child: Center(
+            child: Text(
+              _defaultRegions[index].name,
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+          ),
+        );
+      }
+      // 확장 외부의 경우
+      else {
+        int idx = index;
+        if(idx > _expandEndIdx) idx = index - (_expandEndIdx - _expandStartIdx + 1);
+        // 상위 선택 도시였을 경우
+        return Container(
+          color: idx == selectRegionIdx ? Color(0xffE8E8E8) : Colors.white,
+          child: Center(
+            child: Text(
+              _defaultRegions[idx].name,
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+    // 평소에
+    else {
+      return Container(
+        child: Center(
+          child: Text(
+            _defaultRegions[index].name,
+            style: TextStyle(
+              fontSize: 15,
+            ),
+          ),
+        ),
+      );
+    }
+
+
+  }
+
+  int _getExpandGridItemCnt() {
+    int remain = _expandRegions.length % 4;
+    return _expandRegions.length + remain;
+  }
+
+  bool _isPaintGrid(int index) {
+    if(index == selectRegionIdx ||
+        (index >= _expandStartIdx && index <= _expandEndIdx))
+      return true;
+    else return false;
   }
 }
 
