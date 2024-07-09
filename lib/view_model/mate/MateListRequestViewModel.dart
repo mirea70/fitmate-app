@@ -54,10 +54,6 @@ class MateListRequestViewModel extends Notifier<MateListRequestModel> implements
     state = state.copyWith(fitPlaceRegions: [...state.fitPlaceRegions, value]);
   }
 
-  void initFitPlaceRegion(String value) {
-    state = state.copyWith(fitPlaceRegions: [value]);
-  }
-
   void removeFitPlaceRegion(String value) {
     if(state.fitPlaceRegions.length == 0)
       return;
@@ -67,5 +63,21 @@ class MateListRequestViewModel extends Notifier<MateListRequestModel> implements
           if(region != value) region,
       ]
     );
+  }
+
+  void removeAllAndAddFitPlaceRegion(List<String> removeItems, String addItem) {
+    if(state.fitPlaceRegions.length == 0)
+      return;
+    state = state.copyWith(
+        fitPlaceRegions: [
+          for (String region in state.fitPlaceRegions)
+            if(!removeItems.contains(region)) region,
+          addItem
+        ]
+    );
+  }
+
+  void clearFitPlaceRegion() {
+    state = state.copyWith(fitPlaceRegions: []);
   }
 }
