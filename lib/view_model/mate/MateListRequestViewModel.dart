@@ -65,14 +65,26 @@ class MateListRequestViewModel extends Notifier<MateListRequestModel> implements
     );
   }
 
-  void removeAllAndAddFitPlaceRegion(List<String> removeItems, String addItem) {
+  void removeAndAddFitPlaceRegion(String parentName, String removeItem, String addItem) {
     if(state.fitPlaceRegions.length == 0)
       return;
     state = state.copyWith(
         fitPlaceRegions: [
           for (String region in state.fitPlaceRegions)
-            if(!removeItems.contains(region)) region,
-          addItem
+            if(region.split(" ")[0] != parentName) region,
+          parentName + " " + addItem
+        ]
+    );
+  }
+
+  void removeAllAndAddFitPlaceRegion(String parentName, List<String> removeItems, String addItem) {
+    if(state.fitPlaceRegions.length == 0)
+      return;
+    state = state.copyWith(
+        fitPlaceRegions: [
+          for (String region in state.fitPlaceRegions)
+            if(!removeItems.contains(region.split(" ")[1])) region,
+          parentName + " " + addItem
         ]
     );
   }

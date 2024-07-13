@@ -3,6 +3,7 @@ import 'package:fitmate_app/model/common/Region.dart';
 import 'package:fitmate_app/model/mate/MateListRequestModel.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
+import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:fitmate_app/widget/CustomMultiInputCalendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +23,8 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
   List<String> _expandRegions = [];
   int _expandStartIdx = -1;
   int _expandEndIdx = -1;
-  List<String> _selectChildRegions = [];
+  // List<Map<int,int>> _selectChildRegions = [];
+  Map<String,List<String>> _selectRegionMap = {};
 
   @override
   void initState() {
@@ -30,315 +32,144 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
 
     // 지역 초기화
     Region seoul = Region('서울', [
-      '서울 전체',
-      '강남',
-      '강동',
-      '강북',
-      '강서',
-      '관악',
-      '광진',
-      '구로',
-      '금천',
-      '노원',
-      '도봉',
-      '동대문',
-      '동작',
-      '마포',
-      '서대문',
-      '서초',
-      '성동',
-      '성북',
-      '성북',
-      '송파',
-      '양천',
-      '영등포',
-      '용산',
-      '은평',
-      '종로',
-      '중구',
-      '중랑'
+      '전체', '강남', '강동', '강북',
+      '강서', '관악', '광진', '구로',
+      '금천', '노원', '도봉', '동대문',
+      '동작', '마포', '서대문', '서초',
+      '성동', '성북', '성북', '송파',
+      '양천', '영등포', '용산', '은평',
+      '종로', '중구', '중랑'
     ]);
     _defaultRegions.add(seoul);
 
     Region geongi = Region('경기', [
-      '경기 전체',
-      '수원',
-      '성남',
-      '고양',
-      '용인',
-      '부천',
-      '안산',
-      '안양',
-      '남양주',
-      '화성',
-      '의정부',
-      '시흥',
-      '평택',
-      '광명',
-      '파주',
-      '군포',
-      '광주',
-      '김포',
-      '이천',
-      '양주',
-      '구리',
-      '오산',
-      '안성',
-      '의왕',
-      '하남',
-      '포천',
-      '동두천',
-      '과천',
-      '여주',
-      '양평',
-      '가평',
-      '연천'
+      '전체', '수원', '성남', '고양',
+      '용인', '부천', '안산', '안양',
+      '남양주', '화성', '의정부', '시흥',
+      '평택', '광명', '파주', '군포',
+      '광주', '김포', '이천', '양주',
+      '구리', '오산', '안성', '의왕',
+      '하남', '포천', '동두천', '과천',
+      '여주', '양평', '가평', '연천'
     ]);
     _defaultRegions.add(geongi);
 
     Region inchon = Region('인천',
-        ['인천 전체', '중구', '동구', '미추홀', '연수', '남동', '부평', '계양', '서구', '강화', '웅진']);
+        ['전체', '중구', '동구', '미추홀',
+          '연수', '남동', '부평', '계양',
+          '서구', '강화', '웅진']);
     _defaultRegions.add(inchon);
 
     Region gangwon = Region('강원', [
-      '강원 전체',
-      '춘천',
-      '인제',
-      '양구',
-      '고성',
-      '양양',
-      '강릉',
-      '속초',
-      '삼척',
-      '정선',
-      '평창',
-      '영월',
-      '원주',
-      '횡성',
-      '홍천',
-      '화천',
-      '철원',
-      '동해',
-      '태백'
+      '전체', '춘천', '인제', '양구',
+      '고성', '양양', '강릉', '속초',
+      '삼척', '정선', '평창', '영월',
+      '원주', '횡성', '홍천', '화천',
+      '철원', '동해', '태백'
     ]);
     _defaultRegions.add(gangwon);
 
     Region choongbook = Region('충북', [
-      '충북 전체',
-      '청주',
-      '충주',
-      '제천',
-      '보은',
-      '옥천',
-      '영동',
-      '증평',
-      '진천',
-      '괴산',
-      '음성',
-      '단양'
+      '전체', '청주', '충주', '제천',
+      '보은', '옥천', '영동', '증평',
+      '진천', '괴산', '음성', '단양'
     ]);
     _defaultRegions.add(choongbook);
 
     Region choongnam = Region('충남', [
-      '충남 전체',
-      '천안',
-      '공주',
-      '보령',
-      '아산',
-      '서산',
-      '논산',
-      '계룡',
-      '당진',
-      '금산',
-      '부여',
-      '서천',
-      '청양',
-      '홍성',
-      '예산',
-      '태안'
+      '전체', '천안', '공주', '보령',
+      '아산', '서산', '논산', '계룡',
+      '당진', '금산', '부여', '서천',
+      '청양', '홍성', '예산', '태안'
     ]);
     _defaultRegions.add(choongnam);
 
     Region sezong = Region('세종', [
-      '세종 전체',
-      '조치원',
-      '연기',
-      '연동',
-      '부강',
-      '금남',
-      '장군',
-      '연서',
-      '전의',
-      '전동',
-      '소정',
-      '한솔',
-      '새롬',
-      '도담',
-      '아름',
-      '종촌',
-      '고운',
-      '소담',
-      '보람',
-      '대평',
-      '다정',
-      '해밀',
-      '반곡'
+      '전체', '조치원', '연기', '연동',
+      '부강', '금남', '장군', '연서',
+      '전의', '전동', '소정', '한솔',
+      '새롬', '도담', '아름', '종촌',
+      '고운', '소담', '보람', '대평',
+      '다정', '해밀', '반곡'
     ]);
     _defaultRegions.add(sezong);
 
-    Region daejeon = Region('대전', ['대전 전체', '동구', '중구', '서구', '유성', '대덕']);
+    Region daejeon = Region('대전', [
+      '전체', '동구', '중구', '서구',
+      '유성', '대덕'
+    ]);
     _defaultRegions.add(daejeon);
 
-    Region gwangjoo = Region('광주', ['광주 전체', '동구', '서구', '남구', '북구', '광산']);
+    Region gwangjoo = Region('광주', [
+      '전체', '동구', '서구', '남구',
+      '북구', '광산'
+    ]);
     _defaultRegions.add(gwangjoo);
 
     Region jeonbook = Region('전북', [
-      '전북 전체',
-      '전주',
-      '익산',
-      '군산',
-      '정읍',
-      '남원',
-      '김제',
-      '완주',
-      '고창',
-      '부안',
-      '임실',
-      '순창',
-      '진안',
-      '무주',
-      '장수'
+      '전체', '전주', '익산', '군산',
+      '정읍', '남원', '김제', '완주',
+      '고창', '부안', '임실', '순창',
+      '진안', '무주', '장수'
     ]);
     _defaultRegions.add(jeonbook);
 
     Region geongbook = Region('경북', [
-      '경북 전체',
-      '포항',
-      '경주',
-      '김천',
-      '안동',
-      '구미',
-      '영주',
-      '영천',
-      '상주',
-      '문경',
-      '경산',
-      '군위',
-      '의성',
-      '청송',
-      '영양',
-      '영덕',
-      '청도',
-      '고령',
-      '성주',
-      '칠곡',
-      '예천',
-      '봉화',
-      '울진',
-      '울릉'
+      '전체', '포항', '경주', '김천',
+      '안동', '구미', '영주', '영천',
+      '상주', '문경', '경산', '군위',
+      '의성', '청송', '영양', '영덕',
+      '청도', '고령', '성주', '칠곡',
+      '예천', '봉화', '울진', '울릉'
     ]);
     _defaultRegions.add(geongbook);
 
     Region daeggoo =
-        Region('대구', ['대구 전체', '중구', '동구', '서구', '남구', '북구', '수성', '달서', '달성']);
+        Region('대구', [
+          '전체', '중구', '동구', '서구',
+          '남구', '북구', '수성', '달서',
+          '달성'
+        ]);
     _defaultRegions.add(daeggoo);
 
     Region zezoo = Region('제주', [
-      '제주 전체',
-      '제주',
-      '한림',
-      '애월',
-      '구좌',
-      '조천',
-      '한경',
-      '추자',
-      '우도',
-      '서귀포',
-      '대정',
-      '남원',
-      '성산',
-      '안덕',
-      '표선'
+      '전체', '제주', '한림', '애월',
+      '구좌', '조천', '한경', '추자',
+      '우도', '서귀포', '대정', '남원',
+      '성산', '안덕', '표선'
     ]);
     _defaultRegions.add(zezoo);
 
     Region jeonnam = Region('전남', [
-      '전남 전체',
-      '목포',
-      '여수',
-      '순천',
-      '나주',
-      '광양',
-      '담양',
-      '곡성',
-      '구례',
-      '고흥',
-      '보성',
-      '화순',
-      '장흥',
-      '강진',
-      '해남',
-      '영암',
-      '무안',
-      '함평',
-      '영광',
-      '장성',
-      '완도',
-      '진도',
-      '신안'
+      '전체', '목포', '여수', '순천',
+      '나주', '광양', '담양', '곡성',
+      '구례', '고흥', '보성', '화순',
+      '장흥', '강진', '해남', '영암',
+      '무안', '함평', '영광', '장성',
+      '완도', '진도', '신안'
     ]);
     _defaultRegions.add(jeonnam);
 
     Region geongnam = Region('경남', [
-      '경남 전체',
-      '창원',
-      '김해',
-      '양산',
-      '진주',
-      '거제',
-      '통영',
-      '사천',
-      '밀양',
-      '함안',
-      '거창',
-      '창녕',
-      '고성',
-      '하동',
-      '합천',
-      '남해',
-      '함양',
-      '산청',
-      '의령'
+      '전체', '창원', '김해', '양산',
+      '진주', '거제', '통영', '사천',
+      '밀양', '함안', '거창', '창녕',
+      '고성', '하동', '합천', '남해',
+      '함양', '산청', '의령'
     ]);
     _defaultRegions.add(geongnam);
 
     Region ulsan = Region('울산', [
-      '울산 전체',
-      '울산 중구',
-      '울산 남구',
-      '울산 동구',
-      '울산 북구',
-      '울산 울주군',
+      '전체', '중구', '남구', '동구',
+      '북구', '울주군',
     ]);
     _defaultRegions.add(ulsan);
 
     Region boosan = Region('부산', [
-      '부산 전체',
-      '중구',
-      '서구',
-      '동구',
-      '영도',
-      '부산진구',
-      '동래',
-      '남구',
-      '북구',
-      '강서',
-      '해운대',
-      '사하',
-      '금정',
-      '연제',
-      '수영',
-      '사상',
+      '전체', '중구', '서구', '동구',
+      '영도', '부산진구', '동래', '남구',
+      '북구', '강서', '해운대', '사하',
+      '금정', '연제', '수영', '사상',
       '기장'
     ]);
     _defaultRegions.add(boosan);
@@ -783,6 +614,66 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
               height: deviceSize.height * 0.03,
             ),
             Padding(
+              padding: EdgeInsets.only(left: deviceSize.width * 0.03),
+              child: SizedBox(
+                height: deviceSize.height * 0.05,
+                  child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemCount: viewModel.fitPlaceRegions.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xffE8E8E8),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.all(9),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  viewModel.fitPlaceRegions[index],
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              SizedBox(
+                                width: deviceSize.width * 0.01,
+                              ),
+                              CustomIconButton(
+                                  onPressed: () {
+                                    String target = viewModel.fitPlaceRegions[index];
+                                    List<String> arr = target.split(" ");
+                                    viewModelNotifier.removeFitPlaceRegion(target);
+                                    List<String> regions = _selectRegionMap[arr[0]]!;
+                                    regions.remove(arr[1]);
+                                    setState(() {
+                                      _selectRegionMap[arr[0]] = regions;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.cancel,
+                                    size: 15,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }, separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            width: deviceSize.width * 0.03,
+                          );
+                    },
+                  ),
+              ),
+            ),
+            SizedBox(
+              height: deviceSize.height * 0.02,
+            ),
+            Padding(
               padding: EdgeInsets.fromLTRB(
                   deviceSize.width * 0.03, 0, deviceSize.width * 0.03, 0),
               child: Container(
@@ -804,8 +695,7 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
                         mainAxisSpacing: 8.0,
                         childAspectRatio: 2.0, // 각 항목의 가로세로 비율을 1:1로 설정
                       ),
-                      itemCount:
-                          _defaultRegions.length + _getExpandSize(),
+                      itemCount: _defaultRegions.length + _getExpandSize(),
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
@@ -828,43 +718,70 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
                                   parentIdx = index - (_expandEndIdx - _expandStartIdx + 1);
                                 // 하위 지역 인덱스
                                 int childIdx = index - _expandStartIdx;
+                                // 선택 상위 지역 이름
+                                String parentName = _defaultRegions[selectRegionIdx].name;
 
                                 // 확장인 놈을 클릭했을 경우
                                 if (index >= _expandStartIdx && index <= _expandEndIdx) {
                                   String value = _expandRegions[childIdx];
-                                  // 이미 클릭했던 놈일 경우
-                                  if (viewModel.fitPlaceRegions.contains(value)) {
-                                    viewModelNotifier.removeFitPlaceRegion(value);
+
+                                  // 현재 부모를 갖고 있을 때
+                                  if (_selectRegionMap.containsKey(parentName)) {
+                                    List<String> regions = _selectRegionMap[parentName]!;
+                                    // 이미 클릭했던 놈일 경우
+                                    if(regions.contains(value)) {
+                                      viewModelNotifier.removeFitPlaceRegion(parentName + " " + value);
+                                      regions.remove(value);
+                                      _selectRegionMap[parentName] = regions;
+                                    }
+                                    // 아니지만, 확장의 첫번째 놈을 누른 경우
+                                    else if (childIdx == 0) {
+                                        // 현재 부모인 자식들을 viewModel, 선택 맵 모두 지우고 첫번째 놈만 추가한다.
+                                      viewModelNotifier.removeAllAndAddFitPlaceRegion(parentName, regions, value);
+                                      regions = [value];
+                                      _selectRegionMap[parentName] = regions;
+                                    }
+                                    // 확장의 첫번째 놈 아닌 다른 놈 눌렀지만, 첫번째 놈을 가지고 있던 경우
+                                    else if(regions.contains(_defaultRegions[selectRegionIdx].subRegions[0])){
+                                      // 그 0번을 viewModel, 선택 맵에서 제외하고 현재 값을 추가한다
+                                      viewModelNotifier.removeAndAddFitPlaceRegion(parentName, _defaultRegions[selectRegionIdx].subRegions[0], value);
+                                      regions.remove(regions[0]);
+                                      regions.add(value);
+                                      _selectRegionMap[parentName] = regions;
+                                    }
+                                    // 확장인 놈 중 첫번째도 아니고, 첫번째를 가지고 있지도 않은 경우
+                                    else {
+                                      try {
+                                        viewModelNotifier.addFitPlaceRegion(parentName + " " + value);
+                                        regions.add(value);
+                                        _selectRegionMap[parentName] = regions;
+                                      } on CustomException catch (e) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CustomAlert(
+                                                  title: e.msg,
+                                                  deviceSize: deviceSize
+                                              );
+                                            });
+                                      }
+                                    }
                                   }
-                                  // 아니지만, 확장의 첫번째 놈을 누른 경우
-                                  else if (childIdx == 0) {
-                                    // 지역 초기화
-                                    viewModelNotifier.removeAllAndAddFitPlaceRegion(_selectChildRegions, value);
-                                    _selectChildRegions.clear();
-                                    _selectChildRegions.add(value);
-                                  }
-                                  // 아닐 경우
+                                  // 현재 부모가 없을 경우
                                   else {
                                     // 지역 추가
                                     try {
-                                      if(_selectChildRegions.contains(_expandRegions[0])) {
-                                        _selectChildRegions.clear();
-                                        _selectChildRegions.add(value);
-                                        viewModelNotifier.removeAllAndAddFitPlaceRegion(_selectChildRegions, value);
-                                      }
-                                      else {
-                                        viewModelNotifier.addFitPlaceRegion(_expandRegions[childIdx]);
-                                      }
-
+                                      viewModelNotifier.addFitPlaceRegion(parentName + " " + value);
+                                      _selectRegionMap[parentName] = [value];
                                     } on CustomException catch (e) {
-                                          showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return CustomAlert(
-                                                title: e.msg,
-                                                deviceSize: deviceSize
-                                            );
-                                          });
+                                        showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return CustomAlert(
+                                              title: e.msg,
+                                              deviceSize: deviceSize
+                                          );
+                                        });
                                     }
                                   }
                                 }
@@ -884,7 +801,7 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
                                     _expandRegions = [..._defaultRegions[parentIdx].subRegions];
                                     _expandStartIdx = parentIdx + (4 - parentIdx % 4);
                                     _expandEndIdx = _expandStartIdx + _getExpandSize() - 1;
-                                    _selectChildRegions.clear();
+                                    // _selectChildRegions.clear();
                                   }
                                 }
                               }
@@ -1158,9 +1075,10 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
     if (_expandStartIdx != -1) {
       // 확장 범위 안의 경우
       if (index >= _expandStartIdx && index <= _expandEndIdx) {
-        index = index - _expandStartIdx;
+        int childIdx = index - _expandStartIdx;
+        String parentName = _defaultRegions[selectRegionIdx].name;
         // 하위 지역 개수 넘은 경우
-        if (index >= _expandRegions.length) {
+        if (childIdx >= _expandRegions.length) {
           return Container(
             child: Center(
               child: Text(
@@ -1172,31 +1090,37 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
             ),
           );
         }
+
+        String value = _expandRegions[childIdx];
+
         // 현재 선택된 하위지역일 경우
-        if(_selectChildRegions.contains(_expandRegions[index])) {
-          return Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.black,
-                width: 1.5
-              ),
-            ),
-            child: Center(
-              child: Text(
-                _expandRegions[index],
-                style: TextStyle(
-                  fontSize: 15,
+        if(_selectRegionMap.containsKey(parentName)) {
+          List<String> regions = _selectRegionMap[parentName]!;
+
+          if(regions.contains(value))
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black,
+                  width: 1.5
                 ),
               ),
-            ),
-          );
+              child: Center(
+                child: Text(
+                  childIdx == 0 ? parentName + " " + value : value,
+                  style: TextStyle(
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            );
         }
         // 그냥 확장 그리드
         return Container(
           color: Color(0xffE8E8E8),
           child: Center(
             child: Text(
-              _expandRegions[index],
+              childIdx == 0 ? parentName + " " + value : value,
               style: TextStyle(
                 fontSize: 15,
               ),
