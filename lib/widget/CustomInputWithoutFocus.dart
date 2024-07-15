@@ -30,7 +30,6 @@ class _CustomInputWithoutFocusState extends State<CustomInputWithoutFocus> {
   void initState() {
     super.initState();
     _initText = widget.initText;
-    print(_initText);
     _controller = TextEditingController(text: _initText);
   }
 
