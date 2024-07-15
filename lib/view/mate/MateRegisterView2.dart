@@ -79,6 +79,10 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                               final searchItems = ref2.watch(searchViewModelProvider);
                                               final viewModelNotifier2 = ref2.read(mateRegisterViewModelProvider.notifier);
                                               return Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(15),
+                                                ),
                                                 child: Column(
                                                   children: [
                                                     SizedBox(
