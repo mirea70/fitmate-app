@@ -1,4 +1,5 @@
 import 'package:fitmate_app/view/mate/MateFilterView.dart';
+import 'package:fitmate_app/view/mate/MateSearchView.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -67,7 +68,13 @@ class _MainViewAppbarState extends ConsumerState<MainViewAppbar> {
                         Icons.search,
                         size: 27,
                       ),
-                      onPressed: (){},
+                      onPressed: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MateSearchView()));
+                      },
                     ),
                     SizedBox(
                       width: widget.deviceSize.width * 0.03,

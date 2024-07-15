@@ -94,11 +94,12 @@ class MateRepository {
     return mates;
   }
 
-  Future<List<MateListItem>> findAllWithCondition(MateListRequestModel requestModel, int page) async {
+  Future<List<MateListItem>> findAllWithCondition(MateListRequestModel requestModel, int page, String? keyword) async {
     String endPoint = "/api/mate/list";
     Map<String, dynamic> body = requestModel.toJson();
     body['page'] = page;
     body['size'] = 15;
+    body['keyword'] = keyword;
 
     final headers = {
       'accessToken': true

@@ -31,7 +31,6 @@ class _MateListFilterViewAppbarState extends ConsumerState<MateListFilterViewApp
             height: widget.devicePadding.top,
           ),
           Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               CustomIconButton(
                 icon: Icon(

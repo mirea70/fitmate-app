@@ -20,8 +20,8 @@ class MateListRequestViewModel extends Notifier<MateListRequestModel> implements
     state = MateListRequestModel.initial();
   }
 
-  Future<List<mates.MateListItem>> requestFilter(int page) {
-    return ref.read(mateRepositoryProvider).findAllWithCondition(state, page);
+  Future<List<mates.MateListItem>> requestFilter({required int page, String? keyword}) {
+    return ref.read(mateRepositoryProvider).findAllWithCondition(state, page, keyword);
   }
 
   void setPermitMinAge(int value) {

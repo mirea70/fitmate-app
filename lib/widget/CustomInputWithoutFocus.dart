@@ -1,35 +1,64 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class CustomInputWithoutFocus extends StatelessWidget {
-  const CustomInputWithoutFocus({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength});
+class CustomInputWithoutFocus extends StatefulWidget {
+  const CustomInputWithoutFocus({
+        required this.deviceSize,
+        this.onChangeMethod,
+        required this.hintText,
+        this.errorText,
+        this.maxLength,
+        this.onSubmitted,
+        this.initText,
+      });
   final Size deviceSize;
-  final ValueChanged<String> onChangeMethod;
+  final ValueChanged<String>? onChangeMethod;
   final String hintText;
   final String? errorText;
   final int? maxLength;
+  final ValueChanged<String>? onSubmitted;
+  final String? initText;
+
+  @override
+  State<CustomInputWithoutFocus> createState() => _CustomInputWithoutFocusState();
+}
+
+class _CustomInputWithoutFocusState extends State<CustomInputWithoutFocus> {
+  late TextEditingController _controller;
+  String? _initText;
+
+  void initState() {
+    super.initState();
+    _initText = widget.initText;
+    print(_initText);
+    _controller = TextEditingController(text: _initText);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: deviceSize.height * 0.08,
-      width: deviceSize.width * 0.9,
+      height: widget.deviceSize.height * 0.08,
+      width: widget.deviceSize.width * 0.9,
+      alignment: Alignment.center,
       child: TextField(
-        maxLength: maxLength,
-        onChanged: onChangeMethod,
+        controller: _controller,
+        maxLength: widget.maxLength,
+        onChanged: widget.onChangeMethod,
+        onSubmitted: widget.onSubmitted,
         decoration: InputDecoration(
-          hintText: hintText,
+          hintText: widget.hintText,
           hintStyle: TextStyle(
             color: Colors.grey,
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
-          errorText: errorText,
+          errorText: widget.errorText,
           errorStyle: TextStyle(
             color: Colors.redAccent,
-            fontSize: 15
+            fontSize: 16
           ),
           border: InputBorder.none,
+          isDense: true,
         ),
         buildCounter: (
             BuildContext context,

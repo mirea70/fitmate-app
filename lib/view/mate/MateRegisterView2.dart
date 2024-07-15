@@ -110,28 +110,22 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                                           color: Color(0xffE8E8E8),
                                                       ),
                                                       child: Row(
+                                                        crossAxisAlignment: CrossAxisAlignment.center,
                                                         children: [
                                                           SizedBox(
-                                                            width: deviceSize
-                                                                    .width *
-                                                                0.03,
+                                                            width: deviceSize.width * 0.03,
                                                           ),
                                                           Icon(Icons.search),
                                                           SizedBox(
-                                                            width: deviceSize
-                                                                    .width *
-                                                                0.02,
+                                                            width: deviceSize.width * 0.02,
                                                           ),
                                                           CustomInputWithoutFocus(
-                                                            deviceSize:
-                                                                deviceSize *
-                                                                    0.85,
+                                                            deviceSize: deviceSize * 0.85,
                                                             onChangeMethod:
                                                                 (value) {
                                                               ref.read(searchViewModelProvider.notifier).searchPlace(value);
                                                             },
-                                                            hintText:
-                                                                '어디에서 만나나요?',
+                                                            hintText: '어디에서 만나나요?',
                                                           ),
                                                         ],
                                                       ),

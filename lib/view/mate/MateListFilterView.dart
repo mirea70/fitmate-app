@@ -41,7 +41,7 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
               height: deviceSize.height * 0.02,
             ),
             FutureBuilder(
-                future: ref.read(mateListRequestViewModelProvider.notifier).requestFilter(0),
+                future: ref.read(mateListRequestViewModelProvider.notifier).requestFilter(page: 0),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if(snapshot.hasData == false) {
                     return Center(
