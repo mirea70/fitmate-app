@@ -16,8 +16,8 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
     return _fetchMates(0);
   }
 
-  Future<List<MateListItem>> _fetchMates(int lastMateId) async {
-    return ref.read(mateRepositoryProvider).findAll(lastMateId);
+  Future<List<MateListItem>> _fetchMates(int page) async {
+    return ref.read(mateRepositoryProvider).findAll(page);
   }
 
   Future<void> addMate(Mate mate, List<String> introImagePaths) async {

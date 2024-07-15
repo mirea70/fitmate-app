@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:fitmate_app/config/Dio.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/model/mate/MateListItem.dart';
+import 'package:fitmate_app/model/mate/MateListRequestModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final mateRepositoryProvider = Provider<MateRepository>((ref) {
@@ -66,26 +67,53 @@ class MateRepository {
     return buffer.toString();
   }
 
-  Future<List<MateListItem>> findAll(int lastMateId) async {
-    String endPoint = "/api/mate";
-    Map<String, int> queryString = {
-      "lastMateId": lastMateId,
-      "limit": 15,
-    };
+  Future<List<MateListItem>> findAll(int page) async {
+    String endPoint = "/api/mate/list";
+
+    Map<String, dynamic> body = MateListRequestModel.initial().toJson();
+    body['page'] = page;
+    body['size'] = 15;
     final headers = {
       'accessToken': true
     };
 
-    final response = await dio.get(
+    final response = await dio.post(
         endPoint,
-        queryParameters: queryString,
       options: Options(
         headers: headers,
       ),
+      data: body
+    );
+    print(response.data.toString());
+
+    List<MateListItem> mates = List<Map<String, dynamic>>.from(response.data['content'])
+    .map((item) {
+      return MateListItem.fromJson(item);
+    }).toList();
+
+    return mates;
+  }
+
+  Future<List<MateListItem>> findAllWithCondition(MateListRequestModel requestModel, int page) async {
+    String endPoint = "/api/mate/list";
+    Map<String, dynamic> body = requestModel.toJson();
+    body['page'] = page;
+    body['size'] = 15;
+
+    final headers = {
+      'accessToken': true
+    };
+
+    final response = await dio.post(
+      endPoint,
+      options: Options(
+        headers: headers,
+      ),
+      data: body,
     );
 
-    List<MateListItem> mates = List<Map<String, dynamic>>.from(response.data)
-    .map((item) {
+    List<MateListItem> mates = List<Map<String, dynamic>>.from(response.data['content'])
+        .map((item) {
       return MateListItem.fromJson(item);
     }).toList();
 

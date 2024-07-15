@@ -1,5 +1,7 @@
 import 'package:fitmate_app/error/CustomException.dart';
+import 'package:fitmate_app/model/mate/MateListItem.dart' as mates;
 import 'package:fitmate_app/model/mate/MateListRequestModel.dart';
+import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +18,10 @@ class MateListRequestViewModel extends Notifier<MateListRequestModel> implements
   @override
   void reset() {
     state = MateListRequestModel.initial();
+  }
+
+  Future<List<mates.MateListItem>> requestFilter(int page) {
+    return ref.read(mateRepositoryProvider).findAllWithCondition(state, page);
   }
 
   void setPermitMinAge(int value) {
