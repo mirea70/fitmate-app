@@ -113,8 +113,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                       setState(
                         () {
                           if (fileViewModel.files.isNotEmpty) {
-                            if (_currentImage <
-                                fileViewModel.files.length - 1) {
+                            if (_currentImage < fileViewModel.files.length - 1) {
                               _currentImage++;
                             } else {
                               // 이미지가 마지막일 때 다음 버튼을 누르면 첫 번째 이미지로 이동

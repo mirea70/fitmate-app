@@ -120,4 +120,19 @@ class MateRepository {
 
     return mates;
   }
+
+  Future<Mate> getMateOne(int mateId) async {
+    String endPoint = "/api/mate/" + mateId.toString();
+
+    final headers = {
+      'accessToken': true
+    };
+    final response = await dio.get(
+      endPoint,
+      options: Options(
+        headers: headers,
+      ),
+    );
+    return Mate.fromJson(response.data);
+  }
 }

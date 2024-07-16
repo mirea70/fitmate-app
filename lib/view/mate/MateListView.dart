@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/widget/MainViewAppbar.dart';
 import 'package:flutter/material.dart';
@@ -45,114 +46,123 @@ class _MateListViewState extends ConsumerState<MateListView> {
                       child: ListView.separated(
                         itemCount: items.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            height: deviceSize.height * 0.15,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: deviceSize.width * 0.03,
-                                ),
-                                _getThumbnailImage(items[index].thumbnailImageId, deviceSize),
-                                SizedBox(
-                                  width: deviceSize.width * 0.03,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: deviceSize.height * 0.015,
-                                    ),
-                                    Container(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(6.0),
-                                        child: Text(
-                                          items[index].fitCategory.label,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          MateDetailView(mateId: items[index].id)));
+                            },
+                            child: Container(
+                              height: deviceSize.height * 0.15,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
+                              ),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: deviceSize.width * 0.03,
+                                  ),
+                                  _getThumbnailImage(items[index].thumbnailImageId, deviceSize),
+                                  SizedBox(
+                                    width: deviceSize.width * 0.03,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: deviceSize.height * 0.015,
+                                      ),
+                                      Container(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(6.0),
+                                          child: Text(
+                                            items[index].fitCategory.label,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xffF1F1F1),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                       ),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffF1F1F1),
-                                        borderRadius: BorderRadius.circular(10),
+                                      SizedBox(
+                                        height: deviceSize.height * 0.003,
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.003,
-                                    ),
-                                    Text(
-                                      items[index].title,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
+                                      Text(
+                                        items[index].title,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.003,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_pin,
-                                          size: 15,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.01,
-                                        ),
-                                        Text(
-                                          '${_extractAddress(items[index].fitPlaceAddress)} ∙ ${_formatDate(items[index].mateAt)}',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
+                                      SizedBox(
+                                        height: deviceSize.height * 0.003,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.location_pin,
+                                            size: 15,
                                             color: Colors.grey,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        _getProfileImage(items[index].writerImageId, deviceSize),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.01,
-                                        ),
-                                        Text(
-                                          '${items[index].writerNickName} ∙ ${items[index].gatherType!.label}',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w400,
+                                          SizedBox(
+                                            width: deviceSize.width * 0.01,
+                                          ),
+                                          Text(
+                                            '${_extractAddress(items[index].fitPlaceAddress)} ∙ ${_formatDate(items[index].mateAt)}',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          _getProfileImage(items[index].writerImageId, deviceSize),
+                                          SizedBox(
+                                            width: deviceSize.width * 0.01,
+                                          ),
+                                          Text(
+                                            '${items[index].writerNickName} ∙ ${items[index].gatherType!.label}',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w400,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: deviceSize.width * 0.03,
+                                          ),
+                                          Icon(
+                                            Icons.group,
+                                            size: 15,
                                             color: Colors.grey,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.03,
-                                        ),
-                                        Icon(
-                                          Icons.group,
-                                          size: 15,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.01,
-                                        ),
-                                        Text(
-                                          '${items[index].approvedAccountCnt}/${items[index].permitPeopleCnt}',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.grey,
+                                          SizedBox(
+                                            width: deviceSize.width * 0.01,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                          Text(
+                                            '${items[index].approvedAccountCnt}/${items[index].permitPeopleCnt}',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w400,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },

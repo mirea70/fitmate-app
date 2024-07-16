@@ -126,7 +126,7 @@ class Mate {
     mateFees: json["mateFees"] != null ? List<MateFee>.from(json["mateFees"].map((x) => MateFee.fromJson(x))) : [],
     totalFee: json["totalFee"] != null ? json["totalFee"] as int : 0,
     applyQuestion: json["applyQuestion"] != null ? json["applyQuestion"] : '',
-    waitingAccountIds: List<int>.from(json['waitingAccountIds'].map((x) => x)),
+    waitingAccountIds: json['waitingAccountIds'] != null ? List<int>.from(json['waitingAccountIds'].map((x) => x)) : [],
     approvedAccountIds: List<int>.from(json['approvedAccountIds'].map((x) => x)),
   );
 

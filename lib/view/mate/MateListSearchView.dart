@@ -253,7 +253,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                               height: deviceSize.height * 0.03,
                             ),
                             Text(
-                              '필터 검색 결과가 없어요!',
+                              '검색 결과가 없어요!',
                               style: TextStyle(
                                 fontSize: 25,
                                 color: Colors.grey,
@@ -264,7 +264,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                               height: deviceSize.height * 0.01,
                             ),
                             Text(
-                              '필터 조건을 변경해서 다시 검색해보세요',
+                              '검색어를 변경해서 다시 검색해보세요',
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.grey,
