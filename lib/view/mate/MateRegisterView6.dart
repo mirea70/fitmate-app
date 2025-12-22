@@ -4,15 +4,11 @@ import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
-import 'MateRegisterPreview.dart';
-import 'MateRegisterView3.dart';
 import 'MateRegisterView7.dart';
 
 class MateRegisterView6 extends ConsumerStatefulWidget {

@@ -7,9 +7,7 @@ import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:fitmate_app/widget/CustomInputLarge.dart';
 import 'package:fitmate_app/widget/CustomInputMultiImage.dart';
 import 'package:fitmate_app/widget/CustomViewImage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';

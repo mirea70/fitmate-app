@@ -196,7 +196,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                                 width: deviceSize.width * 0.01,
                                               ),
                                               Text(
-                                                '${items[index].writerNickName} ∙ ${items[index].gatherType!.label}',
+                                                '${items[index].writerNickName} ∙ ${items[index].gatherType.label}',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.w400,
@@ -287,7 +287,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
   String _extractAddress(String address) {
     List<String> tokens = address.split(' ')
         .where((word) => word.endsWith('구')).toList();
-    String response = (tokens != null && tokens.isNotEmpty) ? tokens[0] : '알수없음';
+    String response = (tokens.isNotEmpty) ? tokens[0] : '알수없음';
     return response;
   }
 

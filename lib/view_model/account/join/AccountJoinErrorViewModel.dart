@@ -1,6 +1,7 @@
 import 'package:fitmate_app/model/account/AccountJoinError.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 final accountJoinErrorViewModelProvider = ChangeNotifierProvider<AccountJoinErrorViewModel>((ref) => AccountJoinErrorViewModel());
 

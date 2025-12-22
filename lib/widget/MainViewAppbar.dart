@@ -2,113 +2,93 @@ import 'package:fitmate_app/view/mate/MateFilterView.dart';
 import 'package:fitmate_app/view/mate/MateSearchView.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MainViewAppbar extends ConsumerStatefulWidget implements PreferredSizeWidget {
-  const MainViewAppbar({
-    required this.deviceSize,
-    required this.devicePadding,
-  });
+class MainViewAppbar extends ConsumerWidget implements PreferredSizeWidget {
+  const MainViewAppbar({super.key});
 
-  final Size deviceSize;
-  final EdgeInsets devicePadding;
+  // AppBar 기본 높이 + 하단 타이틀 영역
+  static const double _bottomAreaHeight = 56;
 
   @override
-  ConsumerState<MainViewAppbar> createState() => _MainViewAppbarState();
+  Size get preferredSize =>
+      const Size.fromHeight(kToolbarHeight + _bottomAreaHeight);
 
   @override
-  Size get preferredSize => Size.fromHeight(deviceSize.height * 0.120);
-}
-
-class _MainViewAppbarState extends ConsumerState<MainViewAppbar> {
-@override
-  Widget build(BuildContext context) {
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(widget.deviceSize.width * 0.05, 0, widget.deviceSize.width * 0.05, 0),
-      child: Column(
-        children: [
-          SizedBox(
-            height: widget.devicePadding.top,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'FITMATE',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 25,
-                ),
-              ),
-              Container(
-                child: Row(
-                  children: [
-                    CustomIconButton(
-                      icon: Icon(
-                        Icons.filter_alt_outlined,
-                        size: 27,
-                      ),
-                      onPressed: (){
-                        showModalBottomSheet(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SafeArea(
+      bottom: false, // AppBar는 하단 safe area 불필요
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // ⭐ 핵심
+          children: [
+            // ===== 상단 AppBar 영역 =====
+            SizedBox(
+              height: kToolbarHeight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'FITMATE',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 25,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      CustomIconButton(
+                        icon: const Icon(Icons.filter_alt_outlined, size: 27),
+                        onPressed: () {
+                          showModalBottomSheet(
                             context: context,
-                            builder: (context) {
-                              return MateFilterView();
-                            },
-                        isScrollControlled: true,
-                        );
-                      },
-                    ),
-                    SizedBox(
-                      width: widget.deviceSize.width * 0.03,
-                    ),
-                    CustomIconButton(
-                      icon: Icon(
-                        Icons.search,
-                        size: 27,
+                            isScrollControlled: true,
+                            builder: (_) => const MateFilterView(),
+                          );
+                        },
                       ),
-                      onPressed: (){
-                        Navigator.push(
+                      const SizedBox(width: 12),
+                      CustomIconButton(
+                        icon: const Icon(Icons.search, size: 27),
+                        onPressed: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    MateSearchView()));
-                      },
-                    ),
-                    SizedBox(
-                      width: widget.deviceSize.width * 0.03,
-                    ),
-                    CustomIconButton(
-                      icon: Icon(
-                        Icons.heart_broken_outlined,
-                        size: 27,
+                              builder: (_) => const MateSearchView(),
+                            ),
+                          );
+                        },
                       ),
-                      onPressed: (){},
-                    ),
-                    SizedBox(
-                      width: widget.deviceSize.width * 0.03,
-                    ),
-                    CustomIconButton(
-                      icon: Icon(
-                        Icons.notifications_outlined,
-                        size: 27,
+                      const SizedBox(width: 12),
+                      CustomIconButton(
+                        icon: const Icon(
+                          Icons.heart_broken_outlined,
+                          size: 27,
+                        ),
+                        onPressed: () {},
                       ),
-                      onPressed: (){},
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 12),
+                      CustomIconButton(
+                        icon: const Icon(
+                          Icons.notifications_outlined,
+                          size: 27,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
-          SizedBox(
-            height: widget.deviceSize.height * 0.03,
-          ),
-          Row(
-            children: [
-              Column(
+            ),
+
+            // ===== 하단 타이틀 영역 =====
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: const [
                   Text(
                     '메이트 모집',
                     style: TextStyle(
@@ -116,24 +96,18 @@ class _MainViewAppbarState extends ConsumerState<MainViewAppbar> {
                       fontSize: 22,
                     ),
                   ),
+                  SizedBox(height: 6),
                   SizedBox(
-                      height: widget.deviceSize.height * 0.008
-                  ),
-                  Container(
-                    height: 2.5,
                     width: 102,
-                    color: Colors.black,
+                    height: 2.5,
+                    child: ColoredBox(color: Colors.black),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
-
-  @override
-  // TODO: implement preferredSize
-  Size get preferredSize => Size.fromHeight(widget.deviceSize.height * 0.120);
 }

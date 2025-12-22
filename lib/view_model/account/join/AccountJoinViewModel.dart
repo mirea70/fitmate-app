@@ -2,6 +2,7 @@ import 'package:fitmate_app/model/account/Account.dart';
 
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../../repository/account/AccountRepository.dart';
 import 'AccountJoinErrorViewModel.dart';

@@ -28,6 +28,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);

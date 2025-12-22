@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class CustomInput extends StatefulWidget {
@@ -39,6 +38,7 @@ class _CustomInputState extends State<CustomInput> {
       height: widget.deviceSize.height * 0.08,
       width: widget.deviceSize.width * 0.9,
       child: TextField(
+        contextMenuBuilder: (context, editableTextState) => const SizedBox.shrink(),
         controller: _textController,
         maxLength: widget.maxLength,
         onChanged: widget.onChangeMethod,

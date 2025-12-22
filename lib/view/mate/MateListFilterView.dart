@@ -2,10 +2,8 @@ import 'dart:typed_data';
 
 import 'package:fitmate_app/model/mate/MateListItem.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
-import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
-import 'package:fitmate_app/widget/MainViewAppbar.dart';
 import 'package:fitmate_app/widget/MateListFilterViewAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,7 +138,7 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                               width: deviceSize.width * 0.01,
                                             ),
                                             Text(
-                                              '${items[index].writerNickName} ∙ ${items[index].gatherType!.label}',
+                                              '${items[index].writerNickName} ∙ ${items[index].gatherType.label}',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w400,
@@ -231,7 +229,7 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
   String _extractAddress(String address) {
     List<String> tokens = address.split(' ')
         .where((word) => word.endsWith('구')).toList();
-    String response = (tokens != null && tokens.isNotEmpty) ? tokens[0] : '알수없음';
+    String response = (tokens.isNotEmpty) ? tokens[0] : '알수없음';
     return response;
   }
 

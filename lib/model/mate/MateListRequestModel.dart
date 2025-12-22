@@ -77,7 +77,7 @@ class MateListRequestModel {
     "dayOfWeek": dayOfWeek == -1 ? null : dayOfWeek,
     "startMateAt": startMateAt?.toIso8601String(),
     "endMateAt": endMateAt?.toIso8601String(),
-    "fitPlaceRegions": List<dynamic>.from(fitPlaceRegions!.map((x) => x)),
+    "fitPlaceRegions": List<dynamic>.from(fitPlaceRegions.map((x) => x)),
     "permitMaxAge": permitMaxAge,
     "permitMinAge": permitMinAge,
     "startLimitPeopleCnt": startLimitPeopleCnt,

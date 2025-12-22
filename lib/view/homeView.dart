@@ -1,8 +1,6 @@
-import 'dart:ui';
 
 import 'package:fitmate_app/view/account/LoginView.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {

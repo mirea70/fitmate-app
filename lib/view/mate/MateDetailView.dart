@@ -1,23 +1,14 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
-import 'package:fitmate_app/view/mate/MainView.dart';
-import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
-import 'package:fitmate_app/view_model/file/FileViewModel.dart';
-import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
-import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class MateDetailView extends ConsumerStatefulWidget {

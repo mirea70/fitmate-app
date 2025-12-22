@@ -55,7 +55,7 @@ class AccountRepository {
           ),
           data: body);
       return true;
-    } on DioException catch (e) {
+    } on DioException {
       return false;
     }
   }
@@ -67,7 +67,7 @@ class AccountRepository {
     try {
       await dio.get(endPoint, queryParameters: queryString);
       return true;
-    } on DioException catch (e) {
+    } on DioException {
       return false;
     }
   }

@@ -1,7 +1,5 @@
-import 'package:fitmate_app/view/mate/MateFilterView.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MateListFilterViewAppbar extends ConsumerStatefulWidget implements PreferredSizeWidget {

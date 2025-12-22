@@ -2,6 +2,7 @@ import 'package:fitmate_app/model/code/ValidateCode.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 final validateCodeViewModelProvider = ChangeNotifierProvider<ValidateCodeViewModel>(
         (ref) => ValidateCodeViewModel(ref.read(accountRepositoryProvider)));

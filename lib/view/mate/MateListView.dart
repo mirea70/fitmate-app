@@ -26,8 +26,8 @@ class _MateListViewState extends ConsumerState<MateListView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: MainViewAppbar(
-        deviceSize: deviceSize,
-        devicePadding: devicePadding,
+        // deviceSize: deviceSize,
+        // devicePadding: devicePadding,
       ),
       body: Container(
         width: deviceSize.width,

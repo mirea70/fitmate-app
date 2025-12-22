@@ -139,6 +139,7 @@ class _CustomMultiInputCalendarState extends State<CustomMultiInputCalendar> {
           else if(isSameDay(day, _rangeEnd)) {
             return EndCircle(day: day.day);
           }
+          return null;
         },
         todayBuilder: (context, day, focusedDay) {
 

@@ -5,7 +5,6 @@ import 'package:fitmate_app/view/mate/MateListFilterView.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
-import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:fitmate_app/widget/CustomMultiInputCalendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

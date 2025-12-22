@@ -3,9 +3,7 @@ import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
 import 'package:fitmate_app/view_model/code/ValidateCodeViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInputWithButton.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAlert.dart';

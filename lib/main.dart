@@ -20,6 +20,7 @@ class FitMateApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         fontFamily: 'Pretendard',
+        scaffoldBackgroundColor: Colors.white
       ),
       home: HomeView(),
     );
