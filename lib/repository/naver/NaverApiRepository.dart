@@ -30,9 +30,12 @@ class NaverApiRepository {
         )
     );
 
+    final htmlTagRegex = RegExp(r'<[^>]*>');
     List<String> keysToKeep = ['title', 'roadAddress', 'address'];
     List<Map<String, dynamic>> filteredItems = List<Map<String, dynamic>>.from(response.data['items']).map((item) {
-      return Map.fromEntries(item.entries.where((entry) => keysToKeep.contains(entry.key)));
+      return Map.fromEntries(item.entries.where((entry) => keysToKeep.contains(entry.key)).map((entry) {
+        return MapEntry(entry.key, (entry.value as String).replaceAll(htmlTagRegex, ''));
+      }));
     }).toList();
 
     return filteredItems;
