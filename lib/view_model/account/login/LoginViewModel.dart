@@ -52,7 +52,7 @@ class LoginViewModel extends Notifier<LoginState> {
 
   @override
   LoginState build() {
-    _errorViewModel = ref.watch(accountJoinErrorViewModelProvider.notifier);
+    _errorViewModel = ref.read(accountJoinErrorViewModelProvider.notifier);
     return LoginState.initial();
   }
 

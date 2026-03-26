@@ -78,7 +78,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setLoginName(value),
                               hintText: 'amsidl777',
-                              errorText: errorViewModel.getLoginNameError(),
+                              errorText: errorViewModel.loginNameError,
                               maxLength: 20,
                               text: viewModel.loginName,
                             ),
@@ -113,7 +113,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                           },
                           title: '다음',
                           isEnabled: viewModel.loginName != '' &&
-                              errorViewModel.getLoginNameError() == null,
+                              errorViewModel.loginNameError == null,
                         ),
                       ),
                       SizedBox(

@@ -53,7 +53,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ? onPressed
                   : () {
                 Navigator.pop(context);
-                if (resetViewModel != null) resetViewModel!.reset();
+                if (resetViewModel != null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    resetViewModel!.reset();
+                  });
+                }
               },
               icon: Icon(Icons.arrow_back),
             ),

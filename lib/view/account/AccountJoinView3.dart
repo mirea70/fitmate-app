@@ -25,6 +25,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
     final viewModel = ref.read(accountJoinViewModelProvider);
     final codeViewModel = ref.watch(validateCodeViewModelProvider);
+    final codeViewModelNotifier = ref.read(validateCodeViewModelProvider.notifier);
     final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
 
     return GestureDetector(
@@ -80,7 +81,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                     .validateDuplicatedPhone();
                                 validateResult.when(
                                   data: (_) {
-                                    codeViewModel
+                                    codeViewModelNotifier
                                         .requestValidateCode(viewModel.phone);
                                   },
                                   error: (error, stackTrace) => showDialog(
@@ -97,31 +98,31 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                 );
                               },
                               buttonTitle:
-                                  !codeViewModel.getIsVisibleCheckView()
+                                  !codeViewModel.isVisibleCheckView
                                       ? '인증요청'
                                       : '재요청',
                               isEnableButton: viewModel.phone != '' &&
-                                  errorViewModel.getPhoneError() == null,
+                                  errorViewModel.phoneError == null,
                               maxLength: 11,
                               isEnableInput:
-                                  !codeViewModel.getIsVisibleCheckView(),
+                                  !codeViewModel.isVisibleCheckView,
                               text: viewModel.phone,
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.1,
                             ),
-                            if (codeViewModel.getIsVisibleCheckView())
+                            if (codeViewModel.isVisibleCheckView)
                               CustomInputWithButton(
                                 deviceSize: deviceSize,
                                 onChangeMethod: (value) =>
-                                    codeViewModel.setCode(value),
+                                    codeViewModelNotifier.setCode(value),
                                 hintText: '인증번호 8자리를 입력해주세요.',
                                 onPressMethod: () async {
                                   final checkResult =
-                                      await codeViewModel.checkValidateCode(
-                                          codeViewModel.getCode()!);
+                                      await codeViewModelNotifier.checkValidateCode(
+                                          codeViewModel.code!);
                                   checkResult.when(
-                                    data: (_) => codeViewModel.setIsChecked(true),
+                                    data: (_) => codeViewModelNotifier.setIsChecked(true),
                                     error: (error, stackTrace) =>
                                         showDialog(
                                             context: context,
@@ -138,10 +139,10 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                 },
                                 buttonTitle: '인증확인',
                                 isEnableButton:
-                                    codeViewModel.getCode() != null &&
-                                        codeViewModel.getCode() != '',
+                                    codeViewModel.code != null &&
+                                        codeViewModel.code != '',
                                 maxLength: 8,
-                                text: codeViewModel.validateCode.code ?? '',
+                                text: codeViewModel.code ?? '',
                               ),
                           ],
                         ),
@@ -156,7 +157,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                   builder: (context) => AccountJoinView4())),
                           title: '다음',
                           // TODO: 인증 확인시에만 활성화 로직 추가 필요
-                          isEnabled: codeViewModel.getIsChecked(),
+                          isEnabled: codeViewModel.isChecked,
                         ),
                       ),
                       SizedBox(

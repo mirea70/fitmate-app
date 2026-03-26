@@ -25,8 +25,8 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
     final viewModel = ref.watch(accountJoinViewModelProvider);
     final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
 
-    String? currentPwdError = errorViewModel.getPasswordError();
-    String? checkPwdError = errorViewModel.getCheckPasswordError();
+    String? currentPwdError = errorViewModel.passwordError;
+    String? checkPwdError = errorViewModel.checkPasswordError;
 
     final checkPasswordState = ref.watch(checkPasswordStateProvider);
     final checkPasswordStateNotifier = ref.read(checkPasswordStateProvider.notifier);
@@ -78,7 +78,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             onChangeMethod: (value) => ref.read(accountJoinViewModelProvider.notifier).setPassword(value),
                             hintText: '비밀번호를 입력해 주세요',
                             errorText:
-                                errorViewModel.getPasswordError(),
+                                errorViewModel.passwordError,
                             maxLength: 20,
                             text: viewModel.password,
                           ),
@@ -94,7 +94,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             },
                             hintText: '비밀번호를 한 번 더 입력해 주세요',
                             errorText:
-                                errorViewModel.getCheckPasswordError(),
+                                errorViewModel.checkPasswordError,
                             maxLength: 20,
                             text: checkPasswordState,
                           ),

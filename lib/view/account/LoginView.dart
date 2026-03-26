@@ -138,8 +138,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   title: '로그인',
                   isEnabled: viewModel.loginName != '' &&
                       viewModel.password != '' &&
-                      errorViewModel.getLoginNameError() == null &&
-                      errorViewModel.getPasswordError() == null,
+                      errorViewModel.loginNameError == null &&
+                      errorViewModel.passwordError == null,
                 ),
               ),
               SizedBox(
@@ -151,7 +151,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   CustomTextButton(
                     title: '계정정보를 잊으셨나요?',
                     onPressed: () {
-                      errorViewModel.reset();
+                      ref.read(accountJoinErrorViewModelProvider.notifier).reset();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -162,7 +162,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   CustomTextButton(
                       title: '회원가입하기',
                       onPressed: () {
-                        errorViewModel.reset();
+                        ref.read(accountJoinErrorViewModelProvider.notifier).reset();
                         Navigator.push(
                           context,
                           MaterialPageRoute(

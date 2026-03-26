@@ -17,7 +17,7 @@ class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
 
   @override
   Account build() {
-    _errorViewModel = ref.watch(accountJoinErrorViewModelProvider.notifier);
+    _errorViewModel = ref.read(accountJoinErrorViewModelProvider.notifier);
     return Account.initial();
   }
 

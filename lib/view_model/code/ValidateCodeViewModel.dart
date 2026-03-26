@@ -1,54 +1,45 @@
 import 'package:fitmate_app/model/code/ValidateCode.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
-final validateCodeViewModelProvider = ChangeNotifierProvider<ValidateCodeViewModel>(
-        (ref) => ValidateCodeViewModel(ref.read(accountRepositoryProvider)));
+final validateCodeViewModelProvider = NotifierProvider<ValidateCodeViewModel, ValidateCode>(
+        () => ValidateCodeViewModel());
 
-class ValidateCodeViewModel extends ChangeNotifier {
-  ValidateCodeViewModel(this.accountRepository);
+class ValidateCodeViewModel extends Notifier<ValidateCode> {
 
-  ValidateCode validateCode = new ValidateCode();
-  final AccountRepository accountRepository;
+  @override
+  ValidateCode build() {
+    return const ValidateCode();
+  }
 
   bool getIsVisibleCheckView() {
-    return validateCode.isVisibleCheckView;
+    return state.isVisibleCheckView;
   }
 
   bool getIsChecked() {
-    return validateCode.isChecked;
+    return state.isChecked;
   }
 
   void setIsChecked(bool value) {
-    validateCode.isChecked = true;
-    notifyListeners();
+    state = state.copyWith(isChecked: true);
   }
 
   String? getCode() {
-    return validateCode.code;
+    return state.code;
   }
 
   void setCode(String value) {
-    validateCode.code = value;
-    notifyListeners();
+    state = state.copyWith(code: () => value);
   }
 
   void requestValidateCode(String phone) async {
-    final result = await accountRepository.requestSmsCode(phone);
-    if(result == true) _setVisibleCheckView(true);
+    final result = await ref.read(accountRepositoryProvider).requestSmsCode(phone);
+    if(result == true) state = state.copyWith(isVisibleCheckView: true);
     else throw 'UnKnown Exception';
-    notifyListeners();
-  }
-
-  void _setVisibleCheckView(bool value) {
-    validateCode.isVisibleCheckView = value;
-    notifyListeners();
   }
 
   Future<AsyncValue<void>> checkValidateCode(String inputCode) async {
-    final result = await accountRepository.checkValidateCode(inputCode);
+    final result = await ref.read(accountRepositoryProvider).checkValidateCode(inputCode);
     if(result == false) {
       String errorTitle = '유효하지 않은 인증번호입니다.';
       String errorContent = '인증번호를 확인하고 다시 입력해주세요.';

@@ -91,7 +91,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setName(value),
                               hintText: '홍길동',
-                              errorText: errorViewModel.getNameError(),
+                              errorText: errorViewModel.nameError,
                               maxLength: 5,
                               text: viewModel.name,
                             ),
@@ -164,7 +164,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setEmail(value),
                               hintText: 'abc@naver.com',
-                              errorText: errorViewModel.getEmailError(),
+                              errorText: errorViewModel.emailError,
                               maxLength: 30,
                               text: viewModel.email,
                             ),
@@ -184,7 +184,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setNickName(value),
                               hintText: '가지',
-                              errorText: errorViewModel.getNickNameError(),
+                              errorText: errorViewModel.nickNameError,
                               maxLength: 10,
                               text: viewModel.nickName,
                             ),
@@ -298,12 +298,12 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
       return false;
     }
     // 에러 체크
-    if (errorViewModel.getLoginNameError() != null ||
-        errorViewModel.getPasswordError() != null ||
-        errorViewModel.getNickNameError() != null ||
-        errorViewModel.getNameError() != null ||
-        errorViewModel.getPhoneError() != null ||
-        errorViewModel.getEmailError() != null) {
+    if (errorViewModel.loginNameError != null ||
+        errorViewModel.passwordError != null ||
+        errorViewModel.nickNameError != null ||
+        errorViewModel.nameError != null ||
+        errorViewModel.phoneError != null ||
+        errorViewModel.emailError != null) {
       return false;
     }
     return true;

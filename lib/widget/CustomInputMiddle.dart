@@ -27,9 +27,6 @@ class _CustomInputMiddleState extends State<CustomInputMiddle> {
     super.didUpdateWidget(oldWidget);
     if (widget.text != _textController.text) {
       _textController.text = widget.text;
-      _textController.selection = TextSelection.fromPosition(
-        TextPosition(offset: _textController.text.length),
-      );
     }
   }
 
