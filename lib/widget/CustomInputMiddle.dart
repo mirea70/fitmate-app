@@ -25,7 +25,7 @@ class _CustomInputMiddleState extends State<CustomInputMiddle> {
   @override
   void didUpdateWidget(covariant CustomInputMiddle oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.text != oldWidget.text) {
+    if (widget.text != _textController.text) {
       _textController.text = widget.text;
       _textController.selection = TextSelection.fromPosition(
         TextPosition(offset: _textController.text.length),

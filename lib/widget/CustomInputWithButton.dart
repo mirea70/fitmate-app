@@ -31,7 +31,7 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
   @override
   void didUpdateWidget(covariant CustomInputWithButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.text != oldWidget.text) {
+    if (widget.text != _textController.text) {
       _textController.text = widget.text;
       _textController.selection = TextSelection.fromPosition(
         TextPosition(offset: _textController.text.length),

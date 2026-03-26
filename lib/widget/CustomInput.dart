@@ -25,7 +25,7 @@ class _CustomInputState extends State<CustomInput> {
   @override
   void didUpdateWidget(covariant CustomInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.text != oldWidget.text) {
+    if (widget.text != _textController.text) {
       final cursorPosition = _textController.selection;
       _textController.text = widget.text;
       _textController.selection = cursorPosition;
