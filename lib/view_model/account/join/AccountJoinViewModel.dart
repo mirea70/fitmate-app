@@ -24,6 +24,7 @@ class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
   @override
   void reset() {
     state = Account.initial();
+    ref.read(checkPasswordStateProvider.notifier).state = '';
   }
 
   String getLoginName() {
