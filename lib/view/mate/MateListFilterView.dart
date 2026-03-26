@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:fitmate_app/model/mate/MateListItem.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/MateListFilterViewAppbar.dart';
@@ -61,7 +62,17 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                           child: ListView.separated(
                             itemCount: items.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return Container(
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MateDetailView(mateId: items[index].id),
+                                    ),
+                                  );
+                                },
+                                child: Container(
                                 height: deviceSize.height * 0.15,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
@@ -170,6 +181,7 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                     ),
                                   ],
                                 ),
+                              ),
                               );
                             },
                             separatorBuilder: (context, index) {
