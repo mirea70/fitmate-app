@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,8 +120,9 @@ class UserProfileView extends ConsumerWidget {
   }
 
   Widget _buildProfileImage(WidgetRef ref, int? profileImageId, Size deviceSize) {
+    final double size = deviceSize.width * 0.25;
     if (profileImageId == null) {
-      return _buildProfileCircle(AssetImage('assets/images/default_profile.jpeg'), deviceSize);
+      return DefaultProfileImage(size: size);
     }
     return FutureBuilder<Uint8List>(
       future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
@@ -128,7 +130,7 @@ class UserProfileView extends ConsumerWidget {
         if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
           return _buildProfileCircle(MemoryImage(snapshot.data!), deviceSize);
         }
-        return _buildProfileCircle(AssetImage('assets/images/default_profile.jpeg'), deviceSize);
+        return DefaultProfileImage(size: size);
       },
     );
   }

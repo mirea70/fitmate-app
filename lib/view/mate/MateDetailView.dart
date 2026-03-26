@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
+import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
@@ -392,32 +393,22 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
 
   Widget _getWriterProfileImage(int? writerImageId, double size) {
     if (writerImageId == null) {
-      return Container(
-        height: size,
-        width: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            image: AssetImage('assets/images/default_profile.jpeg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-      );
+      return DefaultProfileImage(size: size);
     }
     return FutureBuilder<Uint8List>(
       future: ref.read(fileRepositoryProvider).downloadFile(writerImageId),
       builder: (context, snapshot) {
-        final image = (snapshot.connectionState == ConnectionState.done && snapshot.hasData)
-            ? MemoryImage(snapshot.data!) as ImageProvider
-            : AssetImage('assets/images/default_profile.jpeg');
-        return Container(
-          height: size,
-          width: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(image: image, fit: BoxFit.cover),
-          ),
-        );
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+          return Container(
+            height: size,
+            width: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(image: MemoryImage(snapshot.data!), fit: BoxFit.cover),
+            ),
+          );
+        }
+        return DefaultProfileImage(size: size);
       },
     );
   }

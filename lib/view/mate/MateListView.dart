@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
+import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/widget/MainViewAppbar.dart';
 import 'package:flutter/material.dart';
@@ -251,36 +252,25 @@ class _MateListViewState extends ConsumerState<MateListView> {
   }
 
   Widget _getProfileImage(int? profileImageId, Size deviceSize) {
+    final double size = deviceSize.width * 0.06;
     if (profileImageId == null) {
-      return _buildProfileImageContainer(AssetImage('assets/images/default_profile.jpeg'), deviceSize);
-    } else {
-      return FutureBuilder<Uint8List>(
-        future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              return _buildProfileImageContainer(MemoryImage(snapshot.data!), deviceSize);
-            } else if (snapshot.hasError) {
-              return _buildProfileImageContainer(AssetImage('assets/images/default_profile.jpeg'), deviceSize);
-            }
-          }
-          return _buildProfileImageContainer(AssetImage('assets/images/default_profile.jpeg'), deviceSize);
-        },
-      );
+      return DefaultProfileImage(size: size);
     }
-  }
-
-  Widget _buildProfileImageContainer(ImageProvider imageProvider, Size deviceSize) {
-    return Container(
-      height: deviceSize.height * 0.04,
-      width: deviceSize.width * 0.06,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        image: DecorationImage(
-          image: imageProvider,
-          fit: BoxFit.contain,
-        ),
-      ),
+    return FutureBuilder<Uint8List>(
+      future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
+      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+          return Container(
+            height: size,
+            width: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(image: MemoryImage(snapshot.data!), fit: BoxFit.cover),
+            ),
+          );
+        }
+        return DefaultProfileImage(size: size);
+      },
     );
   }
 }

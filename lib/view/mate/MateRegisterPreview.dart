@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
+import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
@@ -156,19 +157,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                 left: deviceSize.width * 0.44,
                 child: Column(
                   children: [
-                    Container(
-                      height: 45,
-                      width: 45,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage(
-                            'assets/images/default_profile.jpeg',
-                          ),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
+                    DefaultProfileImage(size: 45),
                     Center(
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(

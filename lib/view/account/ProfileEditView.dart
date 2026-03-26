@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:flutter/material.dart';
@@ -229,11 +230,11 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
           if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
             return _buildCircle(MemoryImage(snapshot.data!), deviceSize);
           }
-          return _buildCircle(AssetImage('assets/images/default_profile.jpeg'), deviceSize);
+          return DefaultProfileImage(size: deviceSize.width * 0.25);
         },
       );
     }
-    return _buildCircle(AssetImage('assets/images/default_profile.jpeg'), deviceSize);
+    return DefaultProfileImage(size: deviceSize.width * 0.25);
   }
 
   Widget _buildCircle(ImageProvider imageProvider, Size deviceSize) {

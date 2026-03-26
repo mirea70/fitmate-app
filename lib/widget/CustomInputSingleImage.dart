@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
+import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -86,16 +87,7 @@ class _CustomInputSingleImageState
     } else {
       return Stack(
         children: [
-          Container(
-            height: widget.deviceSize.height * 0.1,
-            width: widget.deviceSize.width * 0.25,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/default_profile.jpeg'),
-              ),
-              shape: BoxShape.circle,
-            ),
-          ),
+          DefaultProfileImage(size: widget.deviceSize.width * 0.25),
           Positioned(
             top: 70,
             left: 70,
