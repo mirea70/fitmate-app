@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
+import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
-import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -16,8 +16,7 @@ class MateDetailView extends ConsumerStatefulWidget {
   final int mateId;
 
   @override
-  ConsumerState<MateDetailView> createState() =>
-      _MateDetailViewState();
+  ConsumerState<MateDetailView> createState() => _MateDetailViewState();
 }
 
 class _MateDetailViewState extends ConsumerState<MateDetailView> {
@@ -26,439 +25,356 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
+    final double imageHeight = deviceSize.height * 0.38;
+
     return FutureBuilder(
       future: ref.read(mateRepositoryProvider).getMateOne(widget.mateId),
       builder: (BuildContext context, AsyncSnapshot<Mate> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
+            final mate = snapshot.data!;
+            final int imageCount = mate.introImageIds.isEmpty ? 1 : mate.introImageIds.length;
+
             return Scaffold(
+              backgroundColor: Color(0xffF5F5F5),
               appBar: AppBar(
-                backgroundColor: Color(0xffF1F1F1),
+                backgroundColor: Color(0xffF5F5F5),
+                elevation: 0,
                 scrolledUnderElevation: 0,
-              ),
-              backgroundColor: Color(0xffF1F1F1),
-              body: SingleChildScrollView(
-                child: Container(
-                  height: deviceSize.height * 1.2,
-                  width: double.maxFinite,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        child: Container(
-                            height: deviceSize.height * 0.35,
-                            width: deviceSize.width,
-                            child: snapshot.data!.introImageIds.isEmpty
-                                ? Image.asset(
-                              'assets/images/default_intro_image.jpg',
-                              fit: BoxFit.cover,
-                            )
-                                : _getIntroImage(snapshot.data!.introImageIds[_currentImage], deviceSize)
-                        ),
-                      ),
-                      Positioned(
-                        left: 10,
-                        top: deviceSize.height * 0.16,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black38,
-                            shape: BoxShape.circle,
-                          ),
-                          child: CustomIconButton(
-                            icon: Icon(
-                              Icons.keyboard_arrow_left_rounded,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              if (snapshot.data!.introImageIds.length > 1) {
-                                setState(() {
-                                      if (_currentImage > 0) {
-                                        _currentImage--;
-                                      } else {
-                                        // 이미지가 첫 번째일 때 이전 버튼을 누르면 마지막 이미지로 이동
-                                        _currentImage = snapshot.data!.introImageIds.length - 1;
-                                      }
-                                  },
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 10,
-                        top: deviceSize.height * 0.16,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black38,
-                            shape: BoxShape.circle,
-                          ),
-                          child: CustomIconButton(
-                            icon: Icon(
-                              Icons.keyboard_arrow_right_rounded,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                                if (snapshot.data!.introImageIds.length > 1) {
-                                setState(() {
-                                      if (_currentImage <
-                                          snapshot.data!.introImageIds.length - 1) {
-                                        _currentImage++;
-                                      } else {
-                                        // 이미지가 마지막일 때 다음 버튼을 누르면 첫 번째 이미지로 이동
-                                        _currentImage = 0;
-                                      }
-                                  },
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: deviceSize.height * 0.3,
-                        left: deviceSize.width * 0.04,
-                        child: Card(
-                          elevation: 4,
-                          child: Container(
-                            height: deviceSize.height * 0.17,
-                            width: deviceSize.width * 0.9,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.only(top: deviceSize.height * 0.04),
-                                child: Text(
-                                  snapshot.data!.title,
-                                  style: TextStyle(
-                                    fontSize: 23,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: deviceSize.height * 0.26,
-                        left: deviceSize.width * 0.44,
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 45,
-                              width: 45,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/default_profile.jpeg',
-                                  ),
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(
-                                    0,
-                                    deviceSize.height * 0.01,
-                                    0,
-                                    deviceSize.height * 0.01),
-                                child: Text('하루'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        top: deviceSize.height * 0.52,
-                        left: deviceSize.width * 0.17,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.calendar_month_rounded,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Text(
-                              formatDate(snapshot.data!.mateAt!),
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Icon(
-                              Icons.group,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: deviceSize.width * 0.02,
-                            ),
-                            Text(
-                              '${snapshot.data!.approvedAccountIds.length}/${snapshot.data!.permitPeopleCnt}',
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        top: deviceSize.height * 0.67,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: EdgeInsets.only(left: deviceSize.width * 0.05),
-                          // child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '안내사항',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.01,
-                              ),
-                              Text(
-                                '자세한 정보를 알려드릴게요',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.03,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.category_rounded,
-                                    size: 20,
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.02,
-                                  ),
-                                  Text(
-                                    snapshot.data!.fitCategory != null
-                                        ? snapshot.data!.fitCategory!.label
-                                        : '미지정',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.02,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.group,
-                                    size: 20,
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.02,
-                                  ),
-                                  Text(
-                                    '최대 ${snapshot.data!.permitPeopleCnt}명 => ${snapshot.data!.gatherType!.label}',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.02,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.attach_money_rounded,
-                                    size: 20,
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.02,
-                                  ),
-                                  Text(
-                                    snapshot.data!.mateFees.isEmpty
-                                        ? '무료'
-                                        : '${snapshot.data!.totalFee}원',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.02,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.compare_arrows_rounded,
-                                    size: 20,
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.02,
-                                  ),
-                                  Text(
-                                    getTextPermitAges(snapshot.data!.permitMinAge!,
-                                        snapshot.data!.permitMaxAge!),
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.02,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_month_rounded,
-                                    size: 20,
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.02,
-                                  ),
-                                  Text(
-                                    formatDate(snapshot.data!.mateAt!),
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.02,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding:
-                                    EdgeInsets.only(top: deviceSize.height * 0.003),
-                                    child: Icon(
-                                      Icons.place_rounded,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.02,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${snapshot.data!.fitPlaceName}',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              right: deviceSize.width * 0.05),
-                                          child: Text(
-                                            '${snapshot.data!.fitPlaceAddress}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            // overflow: TextOverflow.ellipsis,
-                                            // maxLines: 2,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      // ),
-                    ],
-                  ),
+                leading: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
                 ),
               ),
-              bottomNavigationBar: BottomAppBar(
-                color: Color(0xffF1F1F1),
-                elevation: 0,
+              body: SingleChildScrollView(
+                clipBehavior: Clip.none,
                 child: Column(
                   children: [
-                    Center(
-                      child: CustomButton(
-                          deviceSize: deviceSize,
-                          onTapMethod: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MateRequestView()));
-                          },
-                          title: '참여 신청하기',
-                          isEnabled: true,
+                    // --- 이미지 + 카드(이미지 위에 겹침) + 프로필 ---
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // 1층: 소개 이미지 (하단에 카드 겹침 공간 확보)
+                        Column(
+                          children: [
+                            SizedBox(
+                              height: imageHeight,
+                              width: double.infinity,
+                              child: mate.introImageIds.isEmpty
+                                  ? Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover)
+                                  : _getIntroImage(mate.introImageIds[_currentImage]),
+                            ),
+                            // 카드 높이만큼 아래 여백 (카드가 Positioned로 올라오므로)
+                            SizedBox(height: 80),
+                          ],
+                        ),
+                        // 2층: 카테고리 뱃지 (좌상단)
+                        Positioned(
+                          top: 12,
+                          left: 12,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              mate.fitCategory?.label ?? '',
+                              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                        // 2층: 이미지 카운터 (우상단)
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.black45,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '${_currentImage + 1}/$imageCount',
+                              style: TextStyle(color: Colors.white, fontSize: 13),
+                            ),
+                          ),
+                        ),
+                        // 2층: 좌우 화살표
+                        if (imageCount > 1) ...[
+                          Positioned(
+                            left: 8,
+                            top: imageHeight / 2 - 18,
+                            child: _buildArrowButton(Icons.chevron_left, () {
+                              setState(() {
+                                _currentImage = _currentImage > 0 ? _currentImage - 1 : imageCount - 1;
+                              });
+                            }),
+                          ),
+                          Positioned(
+                            right: 8,
+                            top: imageHeight / 2 - 18,
+                            child: _buildArrowButton(Icons.chevron_right, () {
+                              setState(() {
+                                _currentImage = _currentImage < imageCount - 1 ? _currentImage + 1 : 0;
+                              });
+                            }),
+                          ),
+                        ],
+                        // 3층: 닉네임 + 제목 카드 (이미지 하단을 덮음)
+                        Positioned(
+                          top: imageHeight - 40,
+                          left: 16,
+                          right: 16,
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    if (mate.writerAccountId != null) {
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => UserProfileView(accountId: mate.writerAccountId!),
+                                      ));
+                                    }
+                                  },
+                                  child: Text(
+                                    mate.writerNickName ?? '',
+                                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  mate.title,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // 4층(최상위): 프로필 이미지 (카드 상단 중앙에 겹침)
+                        Positioned(
+                          top: imageHeight - 68,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (mate.writerAccountId != null) {
+                                  Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) => UserProfileView(accountId: mate.writerAccountId!),
+                                  ));
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 3),
+                                ),
+                                child: _getWriterProfileImage(mate.writerImageId, 52),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // --- 요약 정보 (장소, 날짜, 인원) ---
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.calendar_month_rounded, size: 18, color: Colors.grey[600]),
+                          SizedBox(width: 4),
+                          Text(
+                            _extractAddress(mate.fitPlaceAddress),
+                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                          ),
+                          Text(' \u00b7 ', style: TextStyle(color: Colors.grey[400])),
+                          Text(
+                            formatDate(mate.mateAt!),
+                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(Icons.group, size: 18, color: Colors.grey[600]),
+                          SizedBox(width: 4),
+                          Text(
+                            '${mate.approvedAccountIds.length}/${mate.permitPeopleCnt}',
+                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                          ),
+                        ],
                       ),
                     ),
+                    // --- 안내사항 섹션 ---
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '안내사항',
+                            style: TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w600, fontSize: 14),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '자세한 정보를 알려드릴게요',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          ),
+                          SizedBox(height: 24),
+                          _buildInfoRow(Icons.category_rounded, mate.fitCategory?.label ?? '미지정'),
+                          _buildInfoRow(Icons.group, '최대 ${mate.permitPeopleCnt}명 \u00b7 ${mate.gatherType?.label ?? ''}'),
+                          _buildInfoRow(
+                            Icons.attach_money_rounded,
+                            mate.mateFees.isEmpty ? '무료' : '${mate.totalFee}원',
+                          ),
+                          _buildInfoRow(
+                            Icons.person_outline,
+                            getTextPermitAges(mate.permitMinAge!, mate.permitMaxAge!),
+                          ),
+                          _buildInfoRow(Icons.calendar_month_rounded, formatDate(mate.mateAt!)),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.place_rounded, size: 22, color: Colors.grey[700]),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        mate.fitPlaceName,
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                      ),
+                                      Text(
+                                        '(${mate.fitPlaceAddress})',
+                                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // --- 소개글 ---
+                    if (mate.introduction.isNotEmpty)
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '소개글',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              mate.introduction,
+                              style: TextStyle(fontSize: 15, color: Colors.grey[800], height: 1.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                    SizedBox(height: 20),
                   ],
+                ),
+              ),
+              bottomNavigationBar: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: CustomButton(
+                    deviceSize: deviceSize,
+                    onTapMethod: () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => MateRequestView(),
+                      ));
+                    },
+                    title: '참여 신청하기',
+                    isEnabled: true,
+                  ),
                 ),
               ),
             );
           } else if (snapshot.hasError) {
-            return CustomAlert(
+            return Scaffold(
+              body: CustomAlert(
                 title: snapshot.error.toString(),
-                deviceSize: deviceSize
+                deviceSize: deviceSize,
+              ),
             );
           }
         }
-        return CircularProgressIndicator();
+        return Scaffold(
+          backgroundColor: Color(0xffF5F5F5),
+          body: Center(child: CircularProgressIndicator()),
+        );
       },
     );
   }
 
+  Widget _buildArrowButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.black38,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 24),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, size: 22, color: Colors.grey[700]),
+          SizedBox(width: 12),
+          Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+        ],
+      ),
+    );
+  }
+
+  String _extractAddress(String address) {
+    List<String> tokens = address.split(' ').where((w) => w.endsWith('구')).toList();
+    return tokens.isNotEmpty ? tokens[0] : '';
+  }
+
   String formatDate(DateTime dateTime) {
-    // 년, 월, 일 형식 지정
     String datePart = DateFormat('yy.M.d').format(dateTime);
-
-    // 요일 형식 지정
     String weekdayPart = getKoreanWeekday(dateTime.weekday);
-
-    // 오후/오전 형식 지정
     String amPmPart = dateTime.hour >= 12 ? '오후' : '오전';
-
-    // 시간 형식 지정
     int hour = dateTime.hour % 12;
-    if (hour == 0) hour = 12; // 0시를 12시로 변환
+    if (hour == 0) hour = 12;
     String timePart = '$hour:${dateTime.minute.toString().padLeft(2, '0')}';
-
-    // 최종 형식
     return '$datePart($weekdayPart) $amPmPart $timePart';
   }
 
@@ -468,44 +384,56 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
   }
 
   String getTextPermitAges(int min, int max) {
-    String result = '';
-    if (min == 20) {
-      if (max == 50)
-        result = '모든 연령';
-      else
-        result = max.toString() + '세 이하';
-    } else {
-      if (max == 50)
-        result = min.toString() + '세 이상';
-      else
-        result = min.toString() + ' ~ ' + max.toString() + '세';
-    }
-    return result;
+    if (min == 20 && max == 50) return '모든 연령';
+    if (min == 20) return '${max}세 이하';
+    if (max == 50) return '${min}세 이상';
+    return '$min ~ ${max}세';
   }
 
-  Widget _getIntroImage(int? introImageId, Size deviceSize) {
-    if (introImageId == null) {
-      return Image.asset(
-        'assets/images/default_intro_image.jpg',
-        fit: BoxFit.cover,
-      );
-    } else {
-      return FutureBuilder<Uint8List>(
-        future: ref.read(fileRepositoryProvider).downloadFile(introImageId),
-        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              return Image.memory(snapshot.data!);
-            } else if (snapshot.hasError) {
-              return Image.asset(
-                'assets/images/default_intro_image.jpg',
-                fit: BoxFit.cover,
-              );
-            }
-          }
-          return CircularProgressIndicator();
-        },
+  Widget _getWriterProfileImage(int? writerImageId, double size) {
+    if (writerImageId == null) {
+      return Container(
+        height: size,
+        width: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: AssetImage('assets/images/default_profile.jpeg'),
+            fit: BoxFit.cover,
+          ),
+        ),
       );
     }
+    return FutureBuilder<Uint8List>(
+      future: ref.read(fileRepositoryProvider).downloadFile(writerImageId),
+      builder: (context, snapshot) {
+        final image = (snapshot.connectionState == ConnectionState.done && snapshot.hasData)
+            ? MemoryImage(snapshot.data!) as ImageProvider
+            : AssetImage('assets/images/default_profile.jpeg');
+        return Container(
+          height: size,
+          width: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(image: image, fit: BoxFit.cover),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _getIntroImage(int introImageId) {
+    return FutureBuilder<Uint8List>(
+      future: ref.read(fileRepositoryProvider).downloadFile(introImageId),
+      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+          return Image.memory(snapshot.data!, fit: BoxFit.cover);
+        }
+        if (snapshot.hasError) {
+          return Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover);
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
   }
 }

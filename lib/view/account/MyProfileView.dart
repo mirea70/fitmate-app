@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/account/LoginView.dart';
+import 'package:fitmate_app/view/account/MateRequestListView.dart';
+import 'package:fitmate_app/view/account/NoticeListView.dart';
 import 'package:fitmate_app/view/account/ProfileEditView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
@@ -107,12 +109,22 @@ class MyProfileView extends ConsumerWidget {
               _buildMenuItem(
                 icon: Icons.notifications_outlined,
                 title: '알림',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NoticeListView()),
+                  );
+                },
               ),
               _buildMenuItem(
                 icon: Icons.calendar_today_outlined,
                 title: '나의 메이트 신청 내역',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MateRequestListView()),
+                  );
+                },
               ),
               Divider(color: Color(0xffE8E8E8), thickness: 8),
               // 로그아웃

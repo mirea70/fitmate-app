@@ -7,6 +7,9 @@ Mate mateFromJson(String str) => Mate.fromJson(json.decode(str));
 String mateToJson(Mate data) => json.encode(data.toJson());
 
 class Mate {
+  final int? writerAccountId;
+  final String? writerNickName;
+  final int? writerImageId;
   final FitCategory? fitCategory;
   final String title;
   final String introduction;
@@ -26,6 +29,9 @@ class Mate {
   final List<int> approvedAccountIds;
 
   Mate({
+    this.writerAccountId,
+    this.writerNickName,
+    this.writerImageId,
     required this.fitCategory,
     required this.title,
     required this.introduction,
@@ -51,6 +57,9 @@ class Mate {
     final selectDateTime = DateTime(defaultDate.year, defaultDate.month, defaultDate.day, defaultTime.hour, defaultTime.minute);
 
     return Mate(
+      writerAccountId: null,
+      writerNickName: null,
+      writerImageId: null,
       fitCategory: null,
       title: '',
       introduction: '',
@@ -72,6 +81,9 @@ class Mate {
   }
 
   Mate copyWith({
+    int? writerAccountId,
+    String? writerNickName,
+    int? writerImageId,
     FitCategory? fitCategory,
     String? title,
     String? introduction,
@@ -91,6 +103,9 @@ class Mate {
     List<int> ? approvedAccountIds,
   }) =>
       Mate(
+        writerAccountId: writerAccountId ?? this.writerAccountId,
+        writerNickName: writerNickName ?? this.writerNickName,
+        writerImageId: writerImageId ?? this.writerImageId,
         fitCategory: fitCategory ?? this.fitCategory,
         title: title ?? this.title,
         introduction: introduction ?? this.introduction,
@@ -111,6 +126,9 @@ class Mate {
       );
 
   factory Mate.fromJson(Map<String, dynamic> json) => Mate(
+    writerAccountId: json["writerAccountId"],
+    writerNickName: json["writerNickName"],
+    writerImageId: json["writerImageId"],
     fitCategory: FitCategory.getByCode(json["fitCategory"]),
     title: json["title"],
     introduction: json["introduction"] != null ? json["introduction"] : '',

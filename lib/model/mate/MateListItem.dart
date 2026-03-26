@@ -7,6 +7,7 @@ String mateListItemToJson(List<MateListItem> data) => json.encode(List<dynamic>.
 class MateListItem {
   final int id;
   final int? thumbnailImageId;
+  final int? writerAccountId;
   final int? writerImageId;
   final String writerNickName;
   final FitCategory fitCategory;
@@ -21,6 +22,7 @@ class MateListItem {
   MateListItem({
     required this.id,
     this.thumbnailImageId,
+    this.writerAccountId,
     this.writerImageId,
     required this.writerNickName,
     required this.fitCategory,
@@ -36,6 +38,7 @@ class MateListItem {
   MateListItem copyWith({
     int? id,
     int? thumbnailImageId,
+    int? writerAccountId,
     int? writerImageId,
     String? writerNickName,
     FitCategory? fitCategory,
@@ -50,6 +53,7 @@ class MateListItem {
       MateListItem(
         id: id ?? this.id,
         thumbnailImageId: thumbnailImageId ?? this.thumbnailImageId,
+        writerAccountId: writerAccountId ?? this.writerAccountId,
         writerImageId: writerImageId ?? this.writerImageId,
         writerNickName: writerNickName ?? this.writerNickName,
         fitCategory: fitCategory ?? this.fitCategory,
@@ -65,6 +69,7 @@ class MateListItem {
   factory MateListItem.fromJson(Map<String, dynamic> json) => MateListItem(
     id: json["id"],
     thumbnailImageId: json["thumbnailImageId"],
+    writerAccountId: json["writerAccountId"],
     writerImageId: json["writerImageId"],
     writerNickName: json["writerNickName"],
     fitCategory: FitCategory.getByCode(json["fitCategory"]),

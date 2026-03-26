@@ -1,6 +1,8 @@
 import 'package:fitmate_app/config/Dio.dart';
 import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
+import 'package:fitmate_app/model/account/MateRequestResponse.dart';
+import 'package:fitmate_app/model/account/NoticeResponse.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
@@ -84,6 +86,17 @@ class AccountRepository {
     return AccountProfile.fromJson(response.data);
   }
 
+  Future<AccountProfile> getProfileByAccountId(int accountId) async {
+    String endPoint = "/api/account/$accountId";
+    final response = await dio.get(
+      endPoint,
+      options: Options(
+        headers: {'accessToken': true},
+      ),
+    );
+    return AccountProfile.fromJson(response.data);
+  }
+
   Future<void> updateProfile({
     required String nickName,
     required String introduction,
@@ -109,6 +122,29 @@ class AccountRepository {
       ),
       data: body,
     );
+  }
+
+  Future<List<NoticeResponse>> getMyNotices() async {
+    String endPoint = "/api/account/profile/my/notices";
+    final response = await dio.get(
+      endPoint,
+      options: Options(headers: {'accessToken': true}),
+    );
+    return List<Map<String, dynamic>>.from(response.data)
+        .map((item) => NoticeResponse.fromJson(item))
+        .toList();
+  }
+
+  Future<List<MateRequestResponse>> getMyMateRequests(String approveStatus) async {
+    String endPoint = "/api/account/profile/my/mate/request";
+    final response = await dio.get(
+      endPoint,
+      queryParameters: {'approveStatus': approveStatus},
+      options: Options(headers: {'accessToken': true}),
+    );
+    return List<Map<String, dynamic>>.from(response.data)
+        .map((item) => MateRequestResponse.fromJson(item))
+        .toList();
   }
 
   Future<void> deleteAccount(int accountId) async {
