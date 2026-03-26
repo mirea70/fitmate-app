@@ -1,5 +1,6 @@
 import 'package:fitmate_app/config/Dio.dart';
 import 'package:fitmate_app/model/account/Account.dart';
+import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
@@ -70,6 +71,17 @@ class AccountRepository {
     } on DioException {
       return false;
     }
+  }
+
+  Future<AccountProfile> getMyProfile() async {
+    String endPoint = "/api/account";
+    final response = await dio.get(
+      endPoint,
+      options: Options(
+        headers: {'accessToken': true},
+      ),
+    );
+    return AccountProfile.fromJson(response.data);
   }
 
   Future<dynamic> requestJoin(Account account) async {
