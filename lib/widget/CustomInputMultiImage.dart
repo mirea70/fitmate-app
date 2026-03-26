@@ -16,6 +16,67 @@ class CustomInputMultiImage extends ConsumerStatefulWidget {
 }
 
 class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
+
+  void _showImageSourceSheet() {
+    final fileViewModel = ref.read(fileViewModelProvider);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('카메라로 촬영'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final image = await ImagePicker().pickImage(source: ImageSource.camera);
+                  if (image != null) {
+                    if (fileViewModel.isOver([image])) {
+                      showDialog(
+                        context: this.context,
+                        builder: (BuildContext context) {
+                          return CustomAlert(
+                            title: '최대 3개까지만 등록 가능합니다.',
+                            deviceSize: widget.deviceSize,
+                          );
+                        },
+                      );
+                      return;
+                    }
+                    fileViewModel.addFile(image);
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('갤러리에서 선택'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final images = await ImagePicker().pickMultiImage();
+                  if (fileViewModel.isOver(images)) {
+                    showDialog(
+                      context: this.context,
+                      builder: (BuildContext context) {
+                        return CustomAlert(
+                          title: '최대 3개까지만 등록 가능합니다.',
+                          deviceSize: widget.deviceSize,
+                        );
+                      },
+                    );
+                    return;
+                  }
+                  if (images.isNotEmpty) fileViewModel.addFiles(images);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final fileViewModel = ref.watch(fileViewModelProvider);
@@ -39,21 +100,7 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
           left: 15,
           child: Container(
             child: IconButton(
-              onPressed: () async {
-                final images = await ImagePicker().pickMultiImage();
-                if (fileViewModel.isOver(images)) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                      return CustomAlert(title: '최대 3개까지만 등록 가능합니다.',
-                          deviceSize: widget.deviceSize,
-                      );
-                    }
-                  );
-                  return;
-                }
-                if (images.isNotEmpty) fileViewModel.addFiles(images);
-              },
+              onPressed: _showImageSourceSheet,
               constraints: BoxConstraints(),
               icon: Icon(
                 Icons.add_a_photo,
@@ -63,10 +110,6 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
             ),
           ),
         ),
-        // SizedBox(
-        //   height: widget.deviceSize.height * 0.12,
-        //   width: widget.deviceSize.width * 0.27,
-        // ),
         SizedBox(
           height: widget.deviceSize.height * 0.01,
         ),
