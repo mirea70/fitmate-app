@@ -84,6 +84,43 @@ class AccountRepository {
     return AccountProfile.fromJson(response.data);
   }
 
+  Future<void> updateProfile({
+    required String nickName,
+    required String introduction,
+    required String name,
+    required String phone,
+    required String email,
+    int? profileImageId,
+  }) async {
+    String endPoint = "/api/account/profile";
+    Map<String, dynamic> body = {
+      'nickName': nickName,
+      'introduction': introduction,
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'profileImageId': profileImageId,
+    };
+    await dio.patch(
+      endPoint,
+      options: Options(
+        headers: {'accessToken': true},
+        contentType: Headers.jsonContentType,
+      ),
+      data: body,
+    );
+  }
+
+  Future<void> deleteAccount(int accountId) async {
+    String endPoint = "/api/account/$accountId";
+    await dio.delete(
+      endPoint,
+      options: Options(
+        headers: {'accessToken': true},
+      ),
+    );
+  }
+
   Future<dynamic> requestJoin(Account account) async {
     String endPoint = "/api/account/join";
     Map<String, dynamic> body = account.toJson();

@@ -15,6 +15,22 @@ class FileRepository {
 
   FileRepository(this.dio);
 
+  Future<List<Map<String, dynamic>>> uploadFiles(List<String> filePaths) async {
+    String endpoint = "/api/file";
+    final formData = FormData.fromMap({
+      'multipartFiles': filePaths.map((path) => MultipartFile.fromFileSync(path)).toList(),
+    });
+    final response = await dio.post(
+      endpoint,
+      options: Options(
+        headers: {'accessToken': true},
+        contentType: Headers.multipartFormDataContentType,
+      ),
+      data: formData,
+    );
+    return List<Map<String, dynamic>>.from(response.data);
+  }
+
   Future<Uint8List> downloadFile(int fileId) async {
     String endpoint = "/api/file/$fileId";
     final response = await dio.get(

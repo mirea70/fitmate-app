@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/account/LoginView.dart';
+import 'package:fitmate_app/view/account/ProfileEditView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +29,39 @@ class MyProfileView extends ConsumerWidget {
         return SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: deviceSize.height * 0.03),
+              // 프로필 수정 버튼 (우측 상단)
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: EdgeInsets.only(right: deviceSize.width * 0.04, top: deviceSize.height * 0.01),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfileEditView(profile: profile),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.orangeAccent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '프로필 수정',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: deviceSize.height * 0.01),
               // 프로필 이미지
               _buildProfileImage(ref, profile.profileImageId, deviceSize),
               SizedBox(height: deviceSize.height * 0.02),
@@ -77,7 +111,7 @@ class MyProfileView extends ConsumerWidget {
               ),
               _buildMenuItem(
                 icon: Icons.calendar_today_outlined,
-                title: '내 메이트 신청 내역',
+                title: '나의 메이트 신청 내역',
                 onTap: () {},
               ),
               Divider(color: Color(0xffE8E8E8), thickness: 8),
@@ -94,6 +128,64 @@ class MyProfileView extends ConsumerWidget {
                       (route) => false,
                     );
                   }
+                },
+              ),
+              // 회원탈퇴
+              _buildMenuItem(
+                icon: Icons.person_off_outlined,
+                title: '회원탈퇴',
+                titleColor: Colors.grey,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext dialogContext) {
+                      return AlertDialog(
+                        backgroundColor: Colors.white,
+                        title: Text(
+                          '회원탈퇴',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        content: Text(
+                          '탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.\n\n정말 탈퇴하시겠습니까?',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            child: Text(
+                              '취소',
+                              style: TextStyle(color: Colors.grey, fontSize: 15),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              Navigator.pop(dialogContext);
+                              try {
+                                await ref.read(accountRepositoryProvider).deleteAccount(profile.accountId);
+                                await ref.read(loginViewModelProvider.notifier).logout();
+                                if (context.mounted) {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(builder: (context) => LoginView()),
+                                    (route) => false,
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('회원탈퇴에 실패했습니다.')),
+                                  );
+                                }
+                              }
+                            },
+                            child: Text(
+                              '탈퇴',
+                              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w700, fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
               ),
               SizedBox(height: deviceSize.height * 0.03),
