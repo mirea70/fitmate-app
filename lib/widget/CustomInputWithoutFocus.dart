@@ -51,6 +51,7 @@ class _CustomInputWithoutFocusState extends State<CustomInputWithoutFocus> {
             fontWeight: FontWeight.w400,
           ),
           errorText: widget.errorText,
+          errorMaxLines: 2,
           errorStyle: TextStyle(
             color: Colors.redAccent,
             fontSize: 16

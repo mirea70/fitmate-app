@@ -42,12 +42,14 @@ class _CustomInputState extends State<CustomInput> {
         onChanged: widget.onChangeMethod,
         decoration: InputDecoration(
           hintText: widget.hintText,
+          hintMaxLines: 2,
           hintStyle: TextStyle(
             color: Colors.grey,
             fontSize: 17,
             fontWeight: FontWeight.w400,
           ),
           errorText: widget.errorText,
+          errorMaxLines: 2,
           errorStyle: TextStyle(
             color: Colors.redAccent,
             fontSize: 17

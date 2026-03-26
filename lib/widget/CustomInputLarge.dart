@@ -51,6 +51,7 @@ class _CustomInputLargeState extends State<CustomInputLarge> {
             fontWeight: FontWeight.w300,
           ),
           errorText: widget.errorText,
+          errorMaxLines: 2,
           errorStyle: TextStyle(
             color: Colors.redAccent,
             fontSize: 15

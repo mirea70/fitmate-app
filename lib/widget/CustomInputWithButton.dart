@@ -54,6 +54,7 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
             fontWeight: FontWeight.w200,
           ),
           errorText: widget.errorText,
+          errorMaxLines: 2,
           errorStyle: TextStyle(
             color: Colors.redAccent,
             fontSize: 15
