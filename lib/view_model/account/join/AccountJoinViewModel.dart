@@ -3,8 +3,12 @@ import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../../config/Const.dart';
+import '../../../config/SecureStorage.dart';
 import '../../../repository/account/AccountRepository.dart';
+import '../../../repository/auth/AuthRepository.dart';
 import 'AccountJoinErrorViewModel.dart';
 
 final accountJoinViewModelProvider = NotifierProvider<AccountJoinViewModel, Account>(
@@ -102,6 +106,15 @@ class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
     if(result != null) {
       return AsyncValue.error(result['message'], StackTrace.empty);
     }
-    else return AsyncValue.data(null);
+
+    final loginResponse = await ref.read(authRepositoryProvider).login(
+      loginName: state.loginName,
+      password: state.password,
+    );
+    final FlutterSecureStorage storage = ref.read(secureStorageProvider);
+    await storage.write(key: accessTokenKey, value: loginResponse.accessToken);
+    await storage.write(key: refreshTokenKey, value: loginResponse.refreshToken);
+
+    return AsyncValue.data(null);
   }
 }
