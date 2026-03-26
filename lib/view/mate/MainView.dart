@@ -7,12 +7,22 @@ import 'package:flutter/material.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
+
+  static _MainViewState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MainViewState>();
+
   @override
   State<MainView> createState() => _MainViewState();
 }
 
 class _MainViewState extends State<MainView> {
   int _selectedIndex = 0;
+
+  void selectTab(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +64,7 @@ class _MainViewState extends State<MainView> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
-        onTap: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+        onTap: selectTab,
       ),
     );
   }

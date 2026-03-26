@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../widget/CustomAppBar.dart';
+import 'MainView.dart';
 import 'MateRegisterView2.dart';
 
 class MateRegisterView1 extends ConsumerStatefulWidget {
@@ -34,7 +35,7 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
           onPressed: () {
             viewModelNotifier.reset();
             selectNumNotifier.reset();
-            Navigator.pop(context);
+            MainView.of(context)?.selectTab(0);
           },
           deviceSize: deviceSize,
           devicePadding: devicePadding,
