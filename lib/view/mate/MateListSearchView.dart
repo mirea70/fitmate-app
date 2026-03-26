@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:fitmate_app/model/mate/MateListItem.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
-import 'package:fitmate_app/view/account/UserProfileView.dart';
+import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
@@ -120,7 +120,16 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                               padding: EdgeInsets.only(top: deviceSize.height * 0.02),
                               itemCount: items.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return Container(
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MateDetailView(mateId: items[index].id),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
                                   height: deviceSize.height * 0.15,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
@@ -192,27 +201,12 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                           ),
                                           Row(
                                             children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  if (items[index].writerAccountId != null) {
-                                                    Navigator.push(context, MaterialPageRoute(
-                                                      builder: (context) => UserProfileView(accountId: items[index].writerAccountId!),
-                                                    ));
-                                                  }
-                                                },
-                                                child: Row(
-                                                  children: [
-                                                    _getProfileImage(items[index].writerImageId, deviceSize),
-                                                    SizedBox(width: deviceSize.width * 0.01),
-                                                    Text(
-                                                      '${items[index].writerNickName}',
-                                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: Colors.grey),
-                                                    ),
-                                                  ],
-                                                ),
+                                              _getProfileImage(items[index].writerImageId, deviceSize),
+                                              SizedBox(
+                                                width: deviceSize.width * 0.01,
                                               ),
                                               Text(
-                                                ' ∙ ${items[index].gatherType.label}',
+                                                '${items[index].writerNickName} ∙ ${items[index].gatherType.label}',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.w400,
@@ -244,6 +238,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                       ),
                                     ],
                                   ),
+                                ),
                                 );
                               },
                               separatorBuilder: (context, index) {

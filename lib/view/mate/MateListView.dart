@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:fitmate_app/repository/file/FileRepository.dart';
-import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/widget/MainViewAppbar.dart';
@@ -127,27 +126,12 @@ class _MateListViewState extends ConsumerState<MateListView> {
                                       ),
                                       Row(
                                         children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              if (items[index].writerAccountId != null) {
-                                                Navigator.push(context, MaterialPageRoute(
-                                                  builder: (context) => UserProfileView(accountId: items[index].writerAccountId!),
-                                                ));
-                                              }
-                                            },
-                                            child: Row(
-                                              children: [
-                                                _getProfileImage(items[index].writerImageId, deviceSize),
-                                                SizedBox(width: deviceSize.width * 0.01),
-                                                Text(
-                                                  '${items[index].writerNickName}',
-                                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: Colors.grey),
-                                                ),
-                                              ],
-                                            ),
+                                          _getProfileImage(items[index].writerImageId, deviceSize),
+                                          SizedBox(
+                                            width: deviceSize.width * 0.01,
                                           ),
                                           Text(
-                                            ' ∙ ${items[index].gatherType!.label}',
+                                            '${items[index].writerNickName} ∙ ${items[index].gatherType!.label}',
                                             style: TextStyle(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w400,
