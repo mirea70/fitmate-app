@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,6 +24,24 @@ class UserProfileView extends ConsumerWidget {
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back, color: Colors.black),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        currentIndex: 0,
+        selectedItemColor: Colors.black,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle_outline_rounded), label: '추가'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: '채팅'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
+        ],
+        onTap: (int index) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => MainView()),
+            (route) => false,
+          );
+        },
       ),
       body: FutureBuilder<AccountProfile>(
         future: ref.read(accountRepositoryProvider).getProfileByAccountId(accountId),
@@ -83,6 +102,10 @@ class UserProfileView extends ConsumerWidget {
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                       ),
                       SizedBox(height: deviceSize.height * 0.015),
+                      _buildInfoRow('이름', profile.name),
+                      _buildInfoRow('닉네임', profile.nickName),
+                      if (profile.introduction.isNotEmpty)
+                        _buildInfoRow('소개', profile.introduction),
                       _buildInfoRow('성별', profile.gender == 'MALE' ? '남성' : '여성'),
                     ],
                   ),
