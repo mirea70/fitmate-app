@@ -4,21 +4,30 @@ import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final chatRoomListProvider =
-    AsyncNotifierProvider<ChatRoomListViewModel, List<ChatRoom>>(
+    AsyncNotifierProvider<ChatRoomListViewModel, ChatRoomListState>(
         () => ChatRoomListViewModel());
 
-class ChatRoomListViewModel extends AsyncNotifier<List<ChatRoom>> {
+class ChatRoomListState {
+  final List<ChatRoom> rooms;
+  final int myAccountId;
+
+  ChatRoomListState({required this.rooms, required this.myAccountId});
+}
+
+class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
   @override
-  Future<List<ChatRoom>> build() async {
+  Future<ChatRoomListState> build() async {
     final profile = await ref.read(accountRepositoryProvider).getMyProfile();
-    return ref.read(chatRepositoryProvider).getMyChatRooms(profile.accountId);
+    final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms(profile.accountId);
+    return ChatRoomListState(rooms: rooms, myAccountId: profile.accountId);
   }
 
   Future<void> refresh() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final profile = await ref.read(accountRepositoryProvider).getMyProfile();
-      return ref.read(chatRepositoryProvider).getMyChatRooms(profile.accountId);
+      final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms(profile.accountId);
+      return ChatRoomListState(rooms: rooms, myAccountId: profile.accountId);
     });
   }
 }

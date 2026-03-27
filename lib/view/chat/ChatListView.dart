@@ -1,4 +1,5 @@
 import 'package:fitmate_app/model/chat/ChatRoom.dart';
+import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
@@ -14,6 +15,8 @@ class ChatListView extends ConsumerStatefulWidget {
 }
 
 class _ChatListViewState extends ConsumerState<ChatListView> {
+  final Map<int, String> _nickNameCache = {};
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +28,7 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
-    final chatRooms = ref.watch(chatRoomListProvider);
+    final chatRoomsAsync = ref.watch(chatRoomListProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -41,9 +44,9 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
           ),
         ),
       ),
-      body: chatRooms.when(
-        data: (rooms) {
-          if (rooms.isEmpty) {
+      body: chatRoomsAsync.when(
+        data: (data) {
+          if (data.rooms.isEmpty) {
             return const Center(
               child: Text(
                 '참여 중인 채팅방이 없습니다.',
@@ -57,14 +60,15 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
           return RefreshIndicator(
             onRefresh: () => ref.read(chatRoomListProvider.notifier).refresh(),
             child: ListView.separated(
-              itemCount: rooms.length,
+              itemCount: data.rooms.length,
               separatorBuilder: (context, index) => Divider(
                 height: 1,
                 color: Colors.grey.shade200,
                 indent: deviceSize.width * 0.2,
               ),
               itemBuilder: (context, index) {
-                return _buildChatRoomItem(rooms[index], deviceSize);
+                return _buildChatRoomItem(
+                    data.rooms[index], data.myAccountId, deviceSize);
               },
             ),
           );
@@ -88,15 +92,39 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
     );
   }
 
-  Widget _buildChatRoomItem(ChatRoom room, Size deviceSize) {
+  Future<String> _getOtherNickName(ChatRoom room, int myAccountId) async {
+    final otherIds = room.memberAccountIds.where((id) => id != myAccountId);
+    if (otherIds.isEmpty) return room.roomName;
+
+    final otherId = otherIds.first;
+    if (_nickNameCache.containsKey(otherId)) return _nickNameCache[otherId]!;
+
+    try {
+      final profile = await ref
+          .read(accountRepositoryProvider)
+          .getProfileByAccountId(otherId);
+      _nickNameCache[otherId] = profile.nickName;
+      return profile.nickName;
+    } catch (_) {
+      return room.roomName;
+    }
+  }
+
+  Widget _buildChatRoomItem(ChatRoom room, int myAccountId, Size deviceSize) {
+    final bool isDm = room.roomType == 'DM';
+
     return InkWell(
       onTap: () async {
+        String displayName = room.roomName;
+        if (isDm) {
+          displayName = await _getOtherNickName(room, myAccountId);
+        }
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ChatRoomView(
               roomId: room.roomId,
-              roomName: room.roomName,
+              roomName: displayName,
             ),
           ),
         );
@@ -118,17 +146,32 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          room.roomName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        child: isDm
+                            ? FutureBuilder<String>(
+                                future: _getOtherNickName(room, myAccountId),
+                                builder: (context, snapshot) {
+                                  return Text(
+                                    snapshot.data ?? room.roomName,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                },
+                              )
+                            : Text(
+                                room.roomName,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                       ),
-                      if (room.memberAccountIds.length > 2)
+                      if (!isDm && room.memberAccountIds.length > 2)
                         Text(
                           ' ${room.memberAccountIds.length}',
                           style: TextStyle(
