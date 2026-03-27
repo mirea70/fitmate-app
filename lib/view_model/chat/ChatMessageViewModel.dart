@@ -33,8 +33,10 @@ class ChatMessagesNotifier extends AsyncNotifier<List<ChatMessage>> {
       _unsubscribe?.call();
     });
 
+    final stompService = ref.read(stompServiceProvider);
     final messages = await ref.read(chatRepositoryProvider).getMessages(roomId);
     _subscribeToRoom(roomId);
+    stompService.enterRoom(roomId: roomId);
     return messages;
   }
 

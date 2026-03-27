@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
+import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +90,31 @@ class UserProfileView extends ConsumerWidget {
                     _buildStatColumn('팔로잉', profile.followings.length),
                   ],
                 ),
-                SizedBox(height: deviceSize.height * 0.03),
+                SizedBox(height: deviceSize.height * 0.02),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.1),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _startDm(context, ref, profile),
+                      icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                      label: const Text('DM 보내기'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: deviceSize.height * 0.02),
                 Divider(color: Color(0xffE8E8E8), thickness: 8),
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -117,6 +143,38 @@ class UserProfileView extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  Future<void> _startDm(BuildContext context, WidgetRef ref, AccountProfile profile) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final myProfile = await ref.read(accountRepositoryProvider).getMyProfile();
+      final room = await ref.read(chatRepositoryProvider).createDmRoom({
+        'fromAccountId': myProfile.accountId,
+        'toAccountId': profile.accountId,
+      });
+
+      Navigator.pop(context); // close loading
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatRoomView(
+            roomId: room.roomId,
+            roomName: profile.nickName,
+          ),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context); // close loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('채팅방을 생성할 수 없습니다.')),
+      );
+    }
   }
 
   Widget _buildProfileImage(WidgetRef ref, int? profileImageId, Size deviceSize) {

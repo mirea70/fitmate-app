@@ -86,6 +86,15 @@ class StompService {
     );
   }
 
+  void enterRoom({required String roomId, String message = ''}) {
+    if (_client == null || !_isConnected) return;
+
+    _client!.send(
+      destination: '/pub/$roomId/enter',
+      body: jsonEncode({'message': message}),
+    );
+  }
+
   void sendMessage({
     required String roomId,
     required String message,
@@ -93,7 +102,7 @@ class StompService {
     if (_client == null || !_isConnected) return;
 
     _client!.send(
-      destination: '/pub/$roomId',
+      destination: '/pub/$roomId/chat',
       body: jsonEncode({'message': message}),
     );
   }

@@ -15,7 +15,6 @@ import 'package:intl/intl.dart';
 class ChatRoomView extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
-
   const ChatRoomView({
     super.key,
     required this.roomId,
@@ -64,7 +63,6 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
-    ref.read(currentRoomIdProvider.notifier).set('');
     super.dispose();
   }
 
@@ -171,15 +169,45 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final msg = messages[index];
+
+        if (msg.isSystem) {
+          return _buildSystemMessage(msg);
+        }
+
         final isMe = msg.senderId == myAccountId;
+        final prevMsg = index > 0 ? messages[index - 1] : null;
+        final nextMsg = index < messages.length - 1 ? messages[index + 1] : null;
         final showProfile = !isMe &&
-            (index == 0 || messages[index - 1].senderId != msg.senderId);
-        final showTime = index == messages.length - 1 ||
-            messages[index + 1].senderId != msg.senderId ||
-            _isDifferentMinute(msg.createdAt, messages[index + 1].createdAt);
+            (prevMsg == null || prevMsg.isSystem || prevMsg.senderId != msg.senderId);
+        final showTime = nextMsg == null ||
+            nextMsg.isSystem ||
+            nextMsg.senderId != msg.senderId ||
+            _isDifferentMinute(msg.createdAt, nextMsg.createdAt);
 
         return _buildMessageBubble(msg, isMe, showProfile, showTime, deviceSize);
       },
+    );
+  }
+
+  Widget _buildSystemMessage(ChatMessage msg) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            msg.message,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -206,8 +234,8 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
               constraints: BoxConstraints(maxWidth: deviceSize.width * 0.65),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(18),
+                color: const Color(0xffFFAA5C),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 msg.message,
@@ -249,7 +277,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
                           horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         msg.message,
