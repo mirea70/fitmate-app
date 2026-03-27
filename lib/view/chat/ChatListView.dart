@@ -15,6 +15,14 @@ class ChatListView extends ConsumerStatefulWidget {
 
 class _ChatListViewState extends ConsumerState<ChatListView> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(chatRoomListProvider.notifier).refresh();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
     final chatRooms = ref.watch(chatRoomListProvider);
