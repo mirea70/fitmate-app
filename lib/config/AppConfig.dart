@@ -16,6 +16,6 @@ class AppConfig {
     if (Platform.isAndroid) {
       return 'http://10.0.2.2:8090';
     }
-    return 'http://192.168.45.16:8090';
+    return 'http://192.168.45.98:8090';
   }
 }
