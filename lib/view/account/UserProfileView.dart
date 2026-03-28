@@ -4,7 +4,13 @@ import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/view/account/LoginView.dart';
+import 'package:fitmate_app/view/account/MateRequestListView.dart';
+import 'package:fitmate_app/view/account/NoticeListView.dart';
+import 'package:fitmate_app/view/account/ProfileEditView.dart';
 import 'package:fitmate_app/view/chat/ChatRoomView.dart';
+import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
+import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +24,7 @@ class UserProfileView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Size deviceSize = MediaQuery.of(context).size;
+    final myProfileAsync = ref.watch(myProfileProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -61,10 +68,47 @@ class UserProfileView extends ConsumerWidget {
             );
           }
           final profile = snapshot.data!;
+          final bool isMe = myProfileAsync.whenOrNull(
+                data: (myProfile) => myProfile.accountId == accountId,
+              ) ??
+              false;
+
           return SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: deviceSize.height * 0.02),
+                if (isMe)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: deviceSize.width * 0.04, top: deviceSize.height * 0.01),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfileEditView(profile: profile),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.orangeAccent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '프로필 수정',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                SizedBox(height: deviceSize.height * (isMe ? 0.01 : 0.02)),
                 _buildProfileImage(ref, profile.profileImageId, deviceSize),
                 SizedBox(height: deviceSize.height * 0.02),
                 Text(
@@ -90,31 +134,33 @@ class UserProfileView extends ConsumerWidget {
                     _buildStatColumn('팔로잉', profile.followings.length),
                   ],
                 ),
-                SizedBox(height: deviceSize.height * 0.02),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.1),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton.icon(
-                      onPressed: () => _startDm(context, ref, profile),
-                      icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                      label: const Text('DM 보내기'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                if (!isMe) ...[
+                  SizedBox(height: deviceSize.height * 0.02),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.1),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 44,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _startDm(context, ref, profile),
+                        icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                        label: const Text('DM 보내기'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: deviceSize.height * 0.02),
+                ],
+                SizedBox(height: deviceSize.height * (isMe ? 0.03 : 0.02)),
                 Divider(color: Color(0xffE8E8E8), thickness: 8),
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -125,18 +171,117 @@ class UserProfileView extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '기본 정보',
+                        isMe ? '내 정보' : '기본 정보',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                       ),
                       SizedBox(height: deviceSize.height * 0.015),
                       _buildInfoRow('이름', profile.name),
+                      if (isMe) _buildInfoRow('아이디', profile.loginName),
                       _buildInfoRow('닉네임', profile.nickName),
+                      if (isMe) _buildInfoRow('이메일', profile.email),
+                      if (isMe) _buildInfoRow('전화번호', profile.phone),
                       if (profile.introduction.isNotEmpty)
                         _buildInfoRow('소개', profile.introduction),
                       _buildInfoRow('성별', profile.gender == 'MALE' ? '남성' : '여성'),
                     ],
                   ),
                 ),
+                if (isMe) ...[
+                  Divider(color: Color(0xffE8E8E8), thickness: 8),
+                  _buildMenuItem(
+                    icon: Icons.notifications_outlined,
+                    title: '알림',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NoticeListView()),
+                      );
+                    },
+                  ),
+                  _buildMenuItem(
+                    icon: Icons.calendar_today_outlined,
+                    title: '나의 메이트 신청 내역',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MateRequestListView()),
+                      );
+                    },
+                  ),
+                  Divider(color: Color(0xffE8E8E8), thickness: 8),
+                  _buildMenuItem(
+                    icon: Icons.logout,
+                    title: '로그아웃',
+                    titleColor: Colors.redAccent,
+                    onTap: () async {
+                      await ref.read(loginViewModelProvider.notifier).logout();
+                      if (context.mounted) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => LoginView()),
+                          (route) => false,
+                        );
+                      }
+                    },
+                  ),
+                  _buildMenuItem(
+                    icon: Icons.person_off_outlined,
+                    title: '회원탈퇴',
+                    titleColor: Colors.grey,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext dialogContext) {
+                          return AlertDialog(
+                            backgroundColor: Colors.white,
+                            title: Text(
+                              '회원탈퇴',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                            ),
+                            content: Text(
+                              '탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.\n\n정말 탈퇴하시겠습니까?',
+                              style: TextStyle(fontSize: 15),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(dialogContext),
+                                child: Text(
+                                  '취소',
+                                  style: TextStyle(color: Colors.grey, fontSize: 15),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(dialogContext);
+                                  try {
+                                    await ref.read(accountRepositoryProvider).deleteAccount(profile.accountId);
+                                    await ref.read(loginViewModelProvider.notifier).logout();
+                                    if (context.mounted) {
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(builder: (context) => LoginView()),
+                                        (route) => false,
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('회원탈퇴에 실패했습니다.')),
+                                      );
+                                    }
+                                  }
+                                },
+                                child: Text(
+                                  '탈퇴',
+                                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w700, fontSize: 15),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  SizedBox(height: deviceSize.height * 0.03),
+                ],
               ],
             ),
           );
@@ -224,9 +369,32 @@ class UserProfileView extends ConsumerWidget {
             width: 80,
             child: Text(label, style: TextStyle(fontSize: 15, color: Colors.grey, fontWeight: FontWeight.w500)),
           ),
-          Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+          Expanded(
+            child: Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String title,
+    Color? titleColor,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: titleColor ?? Colors.black),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: titleColor,
+        ),
+      ),
+      trailing: Icon(Icons.chevron_right, color: Colors.grey),
+      onTap: onTap,
     );
   }
 }
