@@ -12,6 +12,10 @@ class ValidateCodeViewModel extends Notifier<ValidateCode> {
     return const ValidateCode();
   }
 
+  void reset() {
+    state = const ValidateCode();
+  }
+
   bool getIsVisibleCheckView() {
     return state.isVisibleCheckView;
   }

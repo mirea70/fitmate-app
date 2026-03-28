@@ -73,10 +73,15 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                             ),
                             CustomInputWithButton(
                               deviceSize: deviceSize,
-                              onChangeMethod: (value) =>
-                                  viewModelNotifier.setPhone(value),
+                              onChangeMethod: (value) {
+                                viewModelNotifier.setPhone(value);
+                                if (codeViewModel.isChecked) {
+                                  codeViewModelNotifier.reset();
+                                }
+                              },
                               hintText: '010-0000-0000',
                               onPressMethod: () async {
+                                codeViewModelNotifier.reset();
                                 final validateResult = await viewModelNotifier
                                     .validateDuplicatedPhone();
                                 validateResult.when(
@@ -102,10 +107,10 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                       ? '인증요청'
                                       : '재요청',
                               isEnableButton: viewModel.phone != '' &&
-                                  errorViewModel.phoneError == null,
+                                  errorViewModel.phoneError == null &&
+                                  !codeViewModel.isChecked,
                               maxLength: 11,
-                              isEnableInput:
-                                  !codeViewModel.isVisibleCheckView,
+                              isEnableInput: true,
                               text: viewModel.phone,
                             ),
                             SizedBox(
