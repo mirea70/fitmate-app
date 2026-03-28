@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/chat/ChatRoom.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
+import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
@@ -15,7 +19,7 @@ class ChatListView extends ConsumerStatefulWidget {
 }
 
 class _ChatListViewState extends ConsumerState<ChatListView> {
-  final Map<int, String> _nickNameCache = {};
+  final Map<int, AccountProfile> _profileCache = {};
 
   @override
   void initState() {
@@ -92,22 +96,24 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
     );
   }
 
-  Future<String> _getOtherNickName(ChatRoom room, int myAccountId) async {
-    final otherIds = room.memberAccountIds.where((id) => id != myAccountId);
-    if (otherIds.isEmpty) return room.roomName;
-
-    final otherId = otherIds.first;
-    if (_nickNameCache.containsKey(otherId)) return _nickNameCache[otherId]!;
-
+  Future<AccountProfile?> _getProfile(int accountId) async {
+    if (_profileCache.containsKey(accountId)) return _profileCache[accountId]!;
     try {
       final profile = await ref
           .read(accountRepositoryProvider)
-          .getProfileByAccountId(otherId);
-      _nickNameCache[otherId] = profile.nickName;
-      return profile.nickName;
+          .getProfileByAccountId(accountId);
+      _profileCache[accountId] = profile;
+      return profile;
     } catch (_) {
-      return room.roomName;
+      return null;
     }
+  }
+
+  Future<String> _getOtherNickName(ChatRoom room, int myAccountId) async {
+    final otherIds = room.memberAccountIds.where((id) => id != myAccountId);
+    if (otherIds.isEmpty) return room.roomName;
+    final profile = await _getProfile(otherIds.first);
+    return profile?.nickName ?? room.roomName;
   }
 
   Widget _buildChatRoomItem(ChatRoom room, int myAccountId, Size deviceSize) {
@@ -137,7 +143,7 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
         ),
         child: Row(
           children: [
-            DefaultProfileImage(size: deviceSize.width * 0.13),
+            _buildRoomThumbnail(room, myAccountId, deviceSize.width * 0.13),
             SizedBox(width: deviceSize.width * 0.03),
             Expanded(
               child: Column(
@@ -207,6 +213,219 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildRoomThumbnail(ChatRoom room, int myAccountId, double size) {
+    final otherIds = room.memberAccountIds
+        .where((id) => id != myAccountId)
+        .take(4)
+        .toList();
+
+    if (otherIds.isEmpty) {
+      return DefaultProfileImage(size: size);
+    }
+
+    if (otherIds.length == 1) {
+      return _buildSingleProfile(otherIds[0], size);
+    }
+
+    if (otherIds.length == 2) {
+      return _buildDiagonalProfile(otherIds, size);
+    }
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size / 2),
+        child: _buildProfileGrid(otherIds, size),
+      ),
+    );
+  }
+
+  Widget _buildDiagonalProfile(List<int> accountIds, double size) {
+    final smallSize = size * 0.65;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            child: _buildSmallCircleProfile(accountIds[0], smallSize),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: _buildSmallCircleProfile(accountIds[1], smallSize),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallCircleProfile(int accountId, double size) {
+    return FutureBuilder<AccountProfile?>(
+      future: _getProfile(accountId),
+      builder: (context, snapshot) {
+        final profileImageId = snapshot.data?.profileImageId;
+        if (profileImageId == null) {
+          return DefaultProfileImage(size: size);
+        }
+        return FutureBuilder<Uint8List>(
+          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
+          builder: (context, imgSnapshot) {
+            if (imgSnapshot.connectionState == ConnectionState.done &&
+                imgSnapshot.hasData) {
+              return Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: MemoryImage(imgSnapshot.data!),
+                    fit: BoxFit.cover,
+                  ),
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+              );
+            }
+            return DefaultProfileImage(size: size);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSingleProfile(int accountId, double size) {
+    return FutureBuilder<AccountProfile?>(
+      future: _getProfile(accountId),
+      builder: (context, snapshot) {
+        final profileImageId = snapshot.data?.profileImageId;
+        if (profileImageId == null) {
+          return DefaultProfileImage(size: size);
+        }
+        return FutureBuilder<Uint8List>(
+          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
+          builder: (context, imgSnapshot) {
+            if (imgSnapshot.connectionState == ConnectionState.done &&
+                imgSnapshot.hasData) {
+              return Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: MemoryImage(imgSnapshot.data!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            }
+            return DefaultProfileImage(size: size);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildProfileGrid(List<int> accountIds, double size) {
+    final count = accountIds.length;
+    final half = size / 2;
+    final gap = 1.5;
+
+    if (count == 2) {
+      return Row(
+        children: [
+          _buildGridCell(accountIds[0], half - gap / 2, size),
+          SizedBox(width: gap),
+          _buildGridCell(accountIds[1], half - gap / 2, size),
+        ],
+      );
+    }
+
+    if (count == 3) {
+      return Row(
+        children: [
+          _buildGridCell(accountIds[0], half - gap / 2, size),
+          SizedBox(width: gap),
+          SizedBox(
+            width: half - gap / 2,
+            height: size,
+            child: Column(
+              children: [
+                _buildGridCell(accountIds[1], half - gap / 2, half - gap / 2),
+                SizedBox(height: gap),
+                _buildGridCell(accountIds[2], half - gap / 2, half - gap / 2),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    // 4명
+    return Column(
+      children: [
+        Row(
+          children: [
+            _buildGridCell(accountIds[0], half - gap / 2, half - gap / 2),
+            SizedBox(width: gap),
+            _buildGridCell(accountIds[1], half - gap / 2, half - gap / 2),
+          ],
+        ),
+        SizedBox(height: gap),
+        Row(
+          children: [
+            _buildGridCell(accountIds[2], half - gap / 2, half - gap / 2),
+            SizedBox(width: gap),
+            _buildGridCell(accountIds[3], half - gap / 2, half - gap / 2),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGridCell(int accountId, double width, double height) {
+    return FutureBuilder<AccountProfile?>(
+      future: _getProfile(accountId),
+      builder: (context, snapshot) {
+        final profileImageId = snapshot.data?.profileImageId;
+        if (profileImageId == null) {
+          return Container(
+            width: width,
+            height: height,
+            color: Color(0xffE0E0E0),
+            child: Icon(Icons.person, size: width * 0.6, color: Colors.grey),
+          );
+        }
+        return FutureBuilder<Uint8List>(
+          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
+          builder: (context, imgSnapshot) {
+            if (imgSnapshot.connectionState == ConnectionState.done &&
+                imgSnapshot.hasData) {
+              return Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: MemoryImage(imgSnapshot.data!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            }
+            return Container(
+              width: width,
+              height: height,
+              color: Color(0xffE0E0E0),
+              child: Icon(Icons.person, size: width * 0.6, color: Colors.grey),
+            );
+          },
+        );
+      },
     );
   }
 
