@@ -5,6 +5,7 @@ import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/chat/ChatMessage.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/chat/ChatMessageViewModel.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
@@ -84,6 +85,15 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
 
     ref.read(chatMessagesProvider.notifier).sendMessage(text);
     _messageController.clear();
+  }
+
+  void _navigateToProfile(int accountId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserProfileView(accountId: accountId),
+      ),
+    );
   }
 
   Future<AccountProfile> _getProfile(int accountId) async {
@@ -253,8 +263,11 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (showProfile)
-            _buildSenderProfile(msg.senderId, msg.senderProfileImageId,
-                deviceSize.width * 0.09)
+            GestureDetector(
+              onTap: () => _navigateToProfile(msg.senderId),
+              child: _buildSenderProfile(msg.senderId, msg.senderProfileImageId,
+                  deviceSize.width * 0.09),
+            )
           else
             SizedBox(width: deviceSize.width * 0.09),
           const SizedBox(width: 8),
@@ -263,9 +276,12 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (showProfile)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: _buildSenderName(msg),
+                  GestureDetector(
+                    onTap: () => _navigateToProfile(msg.senderId),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: _buildSenderName(msg),
+                    ),
                   ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
