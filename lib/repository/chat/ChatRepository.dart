@@ -14,10 +14,9 @@ class ChatRepository {
 
   ChatRepository(this.dio);
 
-  Future<List<ChatRoom>> getMyChatRooms(int accountId) async {
+  Future<List<ChatRoom>> getMyChatRooms() async {
     final response = await dio.get(
       '/api/chat/my/rooms',
-      queryParameters: {'accountId': accountId},
       options: Options(headers: {'accessToken': true}),
     );
     return List<Map<String, dynamic>>.from(response.data)

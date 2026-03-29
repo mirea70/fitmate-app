@@ -201,16 +201,38 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                 ],
               ),
             ),
-            if (room.lastMessageAt != null) ...[
-              SizedBox(width: deviceSize.width * 0.02),
-              Text(
-                _formatTime(room.lastMessageAt!),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade400,
-                ),
-              ),
-            ],
+            SizedBox(width: deviceSize.width * 0.02),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (room.lastMessageAt != null)
+                  Text(
+                    _formatTime(room.lastMessageAt!),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                if (room.unreadCount > 0) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.orangeAccent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      room.unreadCount > 99 ? '99+' : '${room.unreadCount}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),

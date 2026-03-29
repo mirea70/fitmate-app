@@ -5,6 +5,7 @@ class ChatRoom {
   final String? lastMessage;
   final DateTime? lastMessageAt;
   final List<int> memberAccountIds;
+  final int unreadCount;
 
   ChatRoom({
     required this.roomId,
@@ -13,6 +14,7 @@ class ChatRoom {
     this.lastMessage,
     this.lastMessageAt,
     required this.memberAccountIds,
+    this.unreadCount = 0,
   });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) => ChatRoom(
@@ -26,5 +28,6 @@ class ChatRoom {
     memberAccountIds: json['memberAccountIds'] != null
         ? List<int>.from(json['memberAccountIds'])
         : [],
+    unreadCount: json['unreadCount'] ?? 0,
   );
 }

@@ -18,7 +18,7 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
   @override
   Future<ChatRoomListState> build() async {
     final profile = await ref.read(accountRepositoryProvider).getMyProfile();
-    final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms(profile.accountId);
+    final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms();
     return ChatRoomListState(rooms: rooms, myAccountId: profile.accountId);
   }
 
@@ -26,7 +26,7 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final profile = await ref.read(accountRepositoryProvider).getMyProfile();
-      final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms(profile.accountId);
+      final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms();
       return ChatRoomListState(rooms: rooms, myAccountId: profile.accountId);
     });
   }
