@@ -185,8 +185,8 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
                               ),
                               label: Text(_isFollowing ? '팔로잉' : '팔로우'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: _isFollowing ? Colors.white : Colors.black,
-                                foregroundColor: _isFollowing ? Colors.black : Colors.white,
+                                backgroundColor: _isFollowing ? Colors.white : Colors.orangeAccent,
+                                foregroundColor: _isFollowing ? Colors.orangeAccent : Colors.white,
                                 side: _isFollowing
                                     ? BorderSide(color: Colors.grey.shade300)
                                     : null,
