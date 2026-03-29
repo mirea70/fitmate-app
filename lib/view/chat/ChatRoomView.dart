@@ -16,10 +16,12 @@ import 'package:intl/intl.dart';
 class ChatRoomView extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
+  final List<int> memberAccountIds;
   const ChatRoomView({
     super.key,
     required this.roomId,
     required this.roomName,
+    this.memberAccountIds = const [],
   });
 
   @override
@@ -87,6 +89,96 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
     _messageController.clear();
   }
 
+  void _showMemberList(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  '참여자 ${widget.memberAccountIds.length}명',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.4,
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: widget.memberAccountIds.length,
+                  itemBuilder: (context, index) {
+                    final accountId = widget.memberAccountIds[index];
+                    return FutureBuilder<AccountProfile>(
+                      future: _getProfile(accountId),
+                      builder: (context, snapshot) {
+                        final profile = snapshot.data;
+                        return ListTile(
+                          leading: _buildMemberProfileImage(
+                              profile?.profileImageId, 40),
+                          title: Text(
+                            profile?.nickName ?? '...',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            _navigateToProfile(accountId);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMemberProfileImage(int? profileImageId, double size) {
+    if (profileImageId == null) {
+      return DefaultProfileImage(size: size);
+    }
+    return FutureBuilder<Uint8List>(
+      future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          return Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: MemoryImage(snapshot.data!),
+                fit: BoxFit.cover,
+              ),
+            ),
+          );
+        }
+        return DefaultProfileImage(size: size);
+      },
+    );
+  }
+
   void _navigateToProfile(int accountId) {
     Navigator.push(
       context,
@@ -130,6 +222,13 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          if (widget.memberAccountIds.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.people_outline, color: Colors.black),
+              onPressed: () => _showMemberList(context),
+            ),
+        ],
       ),
       body: Column(
         children: [

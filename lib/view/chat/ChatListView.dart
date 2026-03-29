@@ -131,6 +131,7 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
             builder: (context) => ChatRoomView(
               roomId: room.roomId,
               roomName: displayName,
+              memberAccountIds: room.memberAccountIds,
             ),
           ),
         );
