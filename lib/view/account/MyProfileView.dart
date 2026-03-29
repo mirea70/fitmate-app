@@ -12,11 +12,24 @@ import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyProfileView extends ConsumerWidget {
+class MyProfileView extends ConsumerStatefulWidget {
   const MyProfileView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyProfileView> createState() => _MyProfileViewState();
+}
+
+class _MyProfileViewState extends ConsumerState<MyProfileView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(myProfileProvider);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
     final profileAsync = ref.watch(myProfileProvider);
 
@@ -66,7 +79,7 @@ class MyProfileView extends ConsumerWidget {
               ),
               SizedBox(height: deviceSize.height * 0.01),
               // 프로필 이미지
-              _buildProfileImage(ref, profile.profileImageId, deviceSize),
+              _buildProfileImage(profile.profileImageId, deviceSize),
               SizedBox(height: deviceSize.height * 0.02),
               // 닉네임
               Text(
@@ -209,7 +222,7 @@ class MyProfileView extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileImage(WidgetRef ref, int? profileImageId, Size deviceSize) {
+  Widget _buildProfileImage(int? profileImageId, Size deviceSize) {
     final double size = deviceSize.width * 0.25;
     if (profileImageId == null) {
       return DefaultProfileImage(size: size);

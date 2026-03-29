@@ -157,6 +157,14 @@ class AccountRepository {
     );
   }
 
+  Future<void> followUser(int targetAccountId) async {
+    await dio.put(
+      '/api/account/profile/follow',
+      queryParameters: {'targetAccountId': targetAccountId},
+      options: Options(headers: {'accessToken': true}),
+    );
+  }
+
   Future<dynamic> requestJoin(Account account) async {
     String endPoint = "/api/account/join";
     Map<String, dynamic> body = account.toJson();

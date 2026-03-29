@@ -16,13 +16,45 @@ import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserProfileView extends ConsumerWidget {
+class UserProfileView extends ConsumerStatefulWidget {
   final int accountId;
 
   const UserProfileView({super.key, required this.accountId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<UserProfileView> createState() => _UserProfileViewState();
+}
+
+class _UserProfileViewState extends ConsumerState<UserProfileView> {
+  bool _isFollowing = false;
+  int _followerCount = 0;
+
+  void _initFollowState(AccountProfile profile, AccountProfile? myProfile) {
+    if (myProfile != null) {
+      _isFollowing = myProfile.followings.contains(widget.accountId);
+    }
+    _followerCount = profile.followers.length;
+  }
+
+  Future<void> _toggleFollow() async {
+    try {
+      await ref.read(accountRepositoryProvider).followUser(widget.accountId);
+      setState(() {
+        _isFollowing = !_isFollowing;
+        _followerCount += _isFollowing ? 1 : -1;
+      });
+      ref.invalidate(myProfileProvider);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('팔로우 요청에 실패했습니다.')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
     final myProfileAsync = ref.watch(myProfileProvider);
 
@@ -54,7 +86,7 @@ class UserProfileView extends ConsumerWidget {
         },
       ),
       body: FutureBuilder<AccountProfile>(
-        future: ref.read(accountRepositoryProvider).getProfileByAccountId(accountId),
+        future: ref.read(accountRepositoryProvider).getProfileByAccountId(widget.accountId),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return Center(child: CircularProgressIndicator());
@@ -68,10 +100,12 @@ class UserProfileView extends ConsumerWidget {
             );
           }
           final profile = snapshot.data!;
-          final bool isMe = myProfileAsync.whenOrNull(
-                data: (myProfile) => myProfile.accountId == accountId,
-              ) ??
-              false;
+          final myProfile = myProfileAsync.whenOrNull(data: (p) => p);
+          final bool isMe = myProfile?.accountId == widget.accountId;
+
+          if (_followerCount == 0 && !_isFollowing) {
+            _initFollowState(profile, myProfile);
+          }
 
           return SingleChildScrollView(
             child: Column(
@@ -109,7 +143,7 @@ class UserProfileView extends ConsumerWidget {
                     ),
                   ),
                 SizedBox(height: deviceSize.height * (isMe ? 0.01 : 0.02)),
-                _buildProfileImage(ref, profile.profileImageId, deviceSize),
+                _buildProfileImage(profile.profileImageId, deviceSize),
                 SizedBox(height: deviceSize.height * 0.02),
                 Text(
                   profile.nickName,
@@ -129,7 +163,7 @@ class UserProfileView extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildStatColumn('팔로워', profile.followers.length),
+                    _buildStatColumn('팔로워', _followerCount),
                     SizedBox(width: deviceSize.width * 0.15),
                     _buildStatColumn('팔로잉', profile.followings.length),
                   ],
@@ -138,25 +172,59 @@ class UserProfileView extends ConsumerWidget {
                   SizedBox(height: deviceSize.height * 0.02),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.1),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 44,
-                      child: ElevatedButton.icon(
-                        onPressed: () => _startDm(context, ref, profile),
-                        icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                        label: const Text('DM 보내기'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 44,
+                            child: ElevatedButton.icon(
+                              onPressed: _toggleFollow,
+                              icon: Icon(
+                                _isFollowing ? Icons.person_remove_outlined : Icons.person_add_outlined,
+                                size: 18,
+                              ),
+                              label: Text(_isFollowing ? '팔로잉' : '팔로우'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _isFollowing ? Colors.white : Colors.black,
+                                foregroundColor: _isFollowing ? Colors.black : Colors.white,
+                                side: _isFollowing
+                                    ? BorderSide(color: Colors.grey.shade300)
+                                    : null,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: SizedBox(
+                            height: 44,
+                            child: ElevatedButton.icon(
+                              onPressed: () => _startDm(profile),
+                              icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                              label: const Text('DM'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                                side: BorderSide(color: Colors.grey.shade300),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                textStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -290,7 +358,7 @@ class UserProfileView extends ConsumerWidget {
     );
   }
 
-  Future<void> _startDm(BuildContext context, WidgetRef ref, AccountProfile profile) async {
+  Future<void> _startDm(AccountProfile profile) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -304,7 +372,7 @@ class UserProfileView extends ConsumerWidget {
         'toAccountId': profile.accountId,
       });
 
-      Navigator.pop(context); // close loading
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -315,14 +383,14 @@ class UserProfileView extends ConsumerWidget {
         ),
       );
     } catch (e) {
-      Navigator.pop(context); // close loading
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('채팅방을 생성할 수 없습니다.')),
       );
     }
   }
 
-  Widget _buildProfileImage(WidgetRef ref, int? profileImageId, Size deviceSize) {
+  Widget _buildProfileImage(int? profileImageId, Size deviceSize) {
     final double size = deviceSize.width * 0.25;
     if (profileImageId == null) {
       return DefaultProfileImage(size: size);
