@@ -42,8 +42,8 @@ class ValidateCodeViewModel extends Notifier<ValidateCode> {
     else throw 'UnKnown Exception';
   }
 
-  Future<AsyncValue<void>> checkValidateCode(String inputCode) async {
-    final result = await ref.read(accountRepositoryProvider).checkValidateCode(inputCode);
+  Future<AsyncValue<void>> checkValidateCode(String phone, String inputCode) async {
+    final result = await ref.read(accountRepositoryProvider).checkValidateCode(phone, inputCode);
     if(result == false) {
       String errorTitle = '유효하지 않은 인증번호입니다.';
       String errorContent = '인증번호를 확인하고 다시 입력해주세요.';

@@ -125,7 +125,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                                 onPressMethod: () async {
                                   final checkResult =
                                       await codeViewModelNotifier.checkValidateCode(
-                                          codeViewModel.code!);
+                                          viewModel.phone, codeViewModel.code!);
                                   checkResult.when(
                                     data: (_) => codeViewModelNotifier.setIsChecked(true),
                                     error: (error, stackTrace) =>

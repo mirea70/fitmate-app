@@ -63,9 +63,9 @@ class AccountRepository {
     }
   }
 
-  Future<bool> checkValidateCode(String code) async {
+  Future<bool> checkValidateCode(String phone, String code) async {
     String endPoint = "/api/sms/check/code";
-    Map<String, String> queryString = {"inputCode": code};
+    Map<String, String> queryString = {"phone": phone, "inputCode": code};
 
     try {
       await dio.get(endPoint, queryParameters: queryString);
