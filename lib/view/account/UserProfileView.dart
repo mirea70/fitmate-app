@@ -4,6 +4,7 @@ import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/view/account/FollowListView.dart';
 import 'package:fitmate_app/view/account/LoginView.dart';
 import 'package:fitmate_app/view/account/MateRequestListView.dart';
 import 'package:fitmate_app/view/account/NoticeListView.dart';
@@ -163,9 +164,9 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildStatColumn('팔로워', _followerCount),
+                    _buildStatColumn('팔로워', _followerCount, onTap: () => _navigateToFollowList(true, profile)),
                     SizedBox(width: deviceSize.width * 0.15),
-                    _buildStatColumn('팔로잉', profile.followings.length),
+                    _buildStatColumn('팔로잉', profile.followings.length, onTap: () => _navigateToFollowList(false, profile)),
                   ],
                 ),
                 if (!isMe) ...[
@@ -418,14 +419,31 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
     );
   }
 
-  Widget _buildStatColumn(String label, int count) {
-    return Column(
+  void _navigateToFollowList(bool isFollowers, AccountProfile profile) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FollowListView(
+          isFollowers: isFollowers,
+          followerIds: profile.followers,
+          followingIds: profile.followings,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatColumn(String label, int count, {VoidCallback? onTap}) {
+    final column = Column(
       children: [
         Text('$count', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
         SizedBox(height: 4),
         Text(label, style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w400)),
       ],
     );
+    if (onTap != null) {
+      return GestureDetector(onTap: onTap, child: column);
+    }
+    return column;
   }
 
   Widget _buildInfoRow(String label, String value) {

@@ -54,10 +54,17 @@ class _MateRequestListViewState extends ConsumerState<MateRequestListView> with 
         ),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.orangeAccent,
+          labelColor: Colors.white,
           unselectedLabelColor: Colors.grey,
-          indicatorColor: Colors.orangeAccent,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicator: BoxDecoration(
+            color: Colors.orangeAccent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          dividerColor: Colors.transparent,
           labelStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          unselectedLabelStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           tabs: [
             Tab(text: '대기중'),
             Tab(text: '승인됨'),

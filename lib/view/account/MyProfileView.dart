@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/view/account/FollowListView.dart';
 import 'package:fitmate_app/view/account/LoginView.dart';
 import 'package:fitmate_app/view/account/MateRequestListView.dart';
 import 'package:fitmate_app/view/account/NoticeListView.dart';
@@ -109,9 +111,9 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildStatColumn('팔로워', profile.followers.length),
+                  _buildStatColumn('팔로워', profile.followers.length, onTap: () => _navigateToFollowList(true, profile)),
                   SizedBox(width: deviceSize.width * 0.15),
-                  _buildStatColumn('팔로잉', profile.followings.length),
+                  _buildStatColumn('팔로잉', profile.followings.length, onTap: () => _navigateToFollowList(false, profile)),
                 ],
               ),
               SizedBox(height: deviceSize.height * 0.03),
@@ -253,8 +255,21 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
     );
   }
 
-  Widget _buildStatColumn(String label, int count) {
-    return Column(
+  void _navigateToFollowList(bool isFollowers, AccountProfile profile) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FollowListView(
+          isFollowers: isFollowers,
+          followerIds: profile.followers,
+          followingIds: profile.followings,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatColumn(String label, int count, {VoidCallback? onTap}) {
+    final column = Column(
       children: [
         Text(
           '$count',
@@ -274,6 +289,10 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
         ),
       ],
     );
+    if (onTap != null) {
+      return GestureDetector(onTap: onTap, child: column);
+    }
+    return column;
   }
 
   Widget _buildInfoSection(profile, Size deviceSize) {

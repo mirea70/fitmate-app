@@ -1,6 +1,7 @@
 import 'package:fitmate_app/config/Dio.dart';
 import 'package:fitmate_app/model/account/Account.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
+import 'package:fitmate_app/model/account/FollowDetail.dart';
 import 'package:fitmate_app/model/account/MateRequestResponse.dart';
 import 'package:fitmate_app/model/account/NoticeResponse.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -155,6 +156,26 @@ class AccountRepository {
         headers: {'accessToken': true},
       ),
     );
+  }
+
+  Future<List<FollowDetail>> getMyFollowers() async {
+    final response = await dio.get(
+      '/api/account/profile/my/followers',
+      options: Options(headers: {'accessToken': true}),
+    );
+    return List<Map<String, dynamic>>.from(response.data)
+        .map((item) => FollowDetail.fromJson(item))
+        .toList();
+  }
+
+  Future<List<FollowDetail>> getMyFollowings() async {
+    final response = await dio.get(
+      '/api/account/profile/my/followings',
+      options: Options(headers: {'accessToken': true}),
+    );
+    return List<Map<String, dynamic>>.from(response.data)
+        .map((item) => FollowDetail.fromJson(item))
+        .toList();
   }
 
   Future<void> followUser(int targetAccountId) async {
