@@ -234,14 +234,11 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
       return _buildDiagonalProfile(otherIds, size);
     }
 
-    return SizedBox(
-      width: size,
-      height: size,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(size / 2),
-        child: _buildProfileGrid(otherIds, size),
-      ),
-    );
+    if (otherIds.length == 3) {
+      return _buildTriangleProfile(otherIds, size);
+    }
+
+    return _buildQuadProfile(otherIds, size);
   }
 
   Widget _buildDiagonalProfile(List<int> accountIds, double size) {
@@ -266,13 +263,118 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
     );
   }
 
+  Widget _buildTriangleProfile(List<int> accountIds, double size) {
+    final smallSize = size * 0.55;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: (size - smallSize) / 2,
+            child: _buildSmallCircleProfile(accountIds[0], smallSize),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            child: _buildSmallCircleProfile(accountIds[1], smallSize),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: _buildSmallCircleProfile(accountIds[2], smallSize),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuadProfile(List<int> accountIds, double size) {
+    final gap = 2.0;
+    final cellSize = (size - gap) / 2;
+    final radius = cellSize * 0.25;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              _buildRoundedCell(accountIds[0], cellSize, radius),
+              SizedBox(width: gap),
+              _buildRoundedCell(accountIds[1], cellSize, radius),
+            ],
+          ),
+          SizedBox(height: gap),
+          Row(
+            children: [
+              _buildRoundedCell(accountIds[2], cellSize, radius),
+              SizedBox(width: gap),
+              _buildRoundedCell(accountIds[3], cellSize, radius),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoundedCell(int accountId, double size, double radius) {
+    return FutureBuilder<AccountProfile?>(
+      future: _getProfile(accountId),
+      builder: (context, snapshot) {
+        final profileImageId = snapshot.data?.profileImageId;
+        if (profileImageId == null) {
+          return Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: Color(0xffE0E0E0),
+              borderRadius: BorderRadius.circular(radius),
+            ),
+            child: Icon(Icons.person, size: size * 0.55, color: Colors.grey.shade400),
+          );
+        }
+        return FutureBuilder<Uint8List>(
+          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
+          builder: (context, imgSnapshot) {
+            if (imgSnapshot.connectionState == ConnectionState.done &&
+                imgSnapshot.hasData) {
+              return Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  image: DecorationImage(
+                    image: MemoryImage(imgSnapshot.data!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            }
+            return Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: Color(0xffE0E0E0),
+                borderRadius: BorderRadius.circular(radius),
+              ),
+              child: Icon(Icons.person, size: size * 0.55, color: Colors.grey.shade400),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildSmallCircleProfile(int accountId, double size) {
     return FutureBuilder<AccountProfile?>(
       future: _getProfile(accountId),
       builder: (context, snapshot) {
         final profileImageId = snapshot.data?.profileImageId;
         if (profileImageId == null) {
-          return DefaultProfileImage(size: size);
+          return _wrapWithBorder(DefaultProfileImage(size: size - 3), size);
         }
         return FutureBuilder<Uint8List>(
           future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
@@ -292,10 +394,22 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                 ),
               );
             }
-            return DefaultProfileImage(size: size);
+            return _wrapWithBorder(DefaultProfileImage(size: size - 3), size);
           },
         );
       },
+    );
+  }
+
+  Widget _wrapWithBorder(Widget child, double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 1.5),
+      ),
+      child: Center(child: child),
     );
   }
 
@@ -325,104 +439,6 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
               );
             }
             return DefaultProfileImage(size: size);
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildProfileGrid(List<int> accountIds, double size) {
-    final count = accountIds.length;
-    final half = size / 2;
-    final gap = 1.5;
-
-    if (count == 2) {
-      return Row(
-        children: [
-          _buildGridCell(accountIds[0], half - gap / 2, size),
-          SizedBox(width: gap),
-          _buildGridCell(accountIds[1], half - gap / 2, size),
-        ],
-      );
-    }
-
-    if (count == 3) {
-      return Row(
-        children: [
-          _buildGridCell(accountIds[0], half - gap / 2, size),
-          SizedBox(width: gap),
-          SizedBox(
-            width: half - gap / 2,
-            height: size,
-            child: Column(
-              children: [
-                _buildGridCell(accountIds[1], half - gap / 2, half - gap / 2),
-                SizedBox(height: gap),
-                _buildGridCell(accountIds[2], half - gap / 2, half - gap / 2),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
-    // 4명
-    return Column(
-      children: [
-        Row(
-          children: [
-            _buildGridCell(accountIds[0], half - gap / 2, half - gap / 2),
-            SizedBox(width: gap),
-            _buildGridCell(accountIds[1], half - gap / 2, half - gap / 2),
-          ],
-        ),
-        SizedBox(height: gap),
-        Row(
-          children: [
-            _buildGridCell(accountIds[2], half - gap / 2, half - gap / 2),
-            SizedBox(width: gap),
-            _buildGridCell(accountIds[3], half - gap / 2, half - gap / 2),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGridCell(int accountId, double width, double height) {
-    return FutureBuilder<AccountProfile?>(
-      future: _getProfile(accountId),
-      builder: (context, snapshot) {
-        final profileImageId = snapshot.data?.profileImageId;
-        if (profileImageId == null) {
-          return Container(
-            width: width,
-            height: height,
-            color: Color(0xffE0E0E0),
-            child: Icon(Icons.person, size: width * 0.6, color: Colors.grey),
-          );
-        }
-        return FutureBuilder<Uint8List>(
-          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-          builder: (context, imgSnapshot) {
-            if (imgSnapshot.connectionState == ConnectionState.done &&
-                imgSnapshot.hasData) {
-              return Container(
-                width: width,
-                height: height,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: MemoryImage(imgSnapshot.data!),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            }
-            return Container(
-              width: width,
-              height: height,
-              color: Color(0xffE0E0E0),
-              child: Icon(Icons.person, size: width * 0.6, color: Colors.grey),
-            );
           },
         );
       },
