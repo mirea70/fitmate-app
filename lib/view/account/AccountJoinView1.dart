@@ -1,6 +1,7 @@
 import 'package:fitmate_app/view/account/AccountJoinView2.dart';
 import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
+import 'package:fitmate_app/view_model/code/ValidateCodeViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
@@ -17,6 +18,16 @@ class AccountJoinView1 extends ConsumerStatefulWidget {
 }
 
 class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(accountJoinViewModelProvider.notifier).reset();
+      ref.read(accountJoinErrorViewModelProvider.notifier).reset();
+      ref.read(validateCodeViewModelProvider.notifier).reset();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery
