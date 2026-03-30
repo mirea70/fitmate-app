@@ -150,7 +150,7 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                               width: deviceSize.width * 0.01,
                                             ),
                                             Text(
-                                              '${items[index].writerNickName} ∙ ${items[index].gatherType.label}',
+                                              '${items[index].writerNickName} ∙ ${items[index].gatherType?.label ?? ''}',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w400,

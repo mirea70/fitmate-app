@@ -136,12 +136,33 @@ class MateRepository {
     return Mate.fromJson(response.data);
   }
 
+  Future<List<MateListItem>> getMyMates() async {
+    final response = await dio.get(
+      '/api/account/profile/my/mate/list',
+      options: Options(headers: {'accessToken': true}),
+    );
+    return List<Map<String, dynamic>>.from(response.data)
+        .map((item) => MateListItem.fromJson(item))
+        .toList();
+  }
+
   Future<Map<String, dynamic>> getMateQuestion(int mateId) async {
     final response = await dio.get(
       '/api/mate/request/$mateId/question',
       options: Options(headers: {'accessToken': true}),
     );
     return Map<String, dynamic>.from(response.data);
+  }
+
+  Future<void> approveMate(int mateId, int applierId) async {
+    await dio.put(
+      '/api/mate/request/$mateId/approve',
+      options: Options(
+        headers: {'accessToken': true},
+        contentType: Headers.jsonContentType,
+      ),
+      data: {'applierId': applierId},
+    );
   }
 
   Future<void> applyMate(int mateId, String comeAnswer) async {

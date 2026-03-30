@@ -7,6 +7,7 @@ import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view/account/FollowListView.dart';
 import 'package:fitmate_app/view/account/LoginView.dart';
 import 'package:fitmate_app/view/account/MateRequestListView.dart';
+import 'package:fitmate_app/view/mate/MyMateListView.dart';
 import 'package:fitmate_app/view/account/NoticeListView.dart';
 import 'package:fitmate_app/view/account/ProfileEditView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
@@ -139,6 +140,16 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MateRequestListView()),
+                  );
+                },
+              ),
+              _buildMenuItem(
+                icon: Icons.how_to_reg_outlined,
+                title: '나의 메이트 모집 내역',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyMateListView()),
                   );
                 },
               ),

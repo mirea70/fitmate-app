@@ -5,6 +5,7 @@ import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
+import 'package:fitmate_app/view/mate/MateApproveView.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
@@ -29,10 +30,20 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
   @override
   void initState() {
     super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
     _mateFuture = ref.read(mateRepositoryProvider).getMateOne(widget.mateId);
     ref.read(myProfileProvider.future).then((profile) {
       if (mounted) setState(() => _myAccountId = profile.accountId);
     }).catchError((_) {});
+  }
+
+  void _refreshData() {
+    setState(() {
+      _mateFuture = ref.read(mateRepositoryProvider).getMateOne(widget.mateId);
+    });
   }
 
   @override
@@ -353,9 +364,19 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     VoidCallback? onTap;
 
     if (isWriter) {
-      title = '내가 작성한 모집글';
-      isEnabled = false;
-      onTap = null;
+      final waitingCount = mate.waitingAccountIds.length;
+      title = waitingCount > 0 ? '신청 관리 (${waitingCount}건 대기중)' : '신청 관리';
+      isEnabled = true;
+      onTap = () async {
+        await Navigator.push(context, MaterialPageRoute(
+          builder: (context) => MateApproveView(
+            mateId: widget.mateId,
+            waitingAccountIds: mate.waitingAccountIds,
+            approvedAccountIds: mate.approvedAccountIds,
+          ),
+        ));
+        _refreshData();
+      };
     } else if (isApproved) {
       title = '참여 승인 완료';
       isEnabled = false;

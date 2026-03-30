@@ -14,8 +14,8 @@ class MateListItem {
   final String title;
   final String fitPlaceAddress;
   final DateTime mateAt;
-  final GatherType gatherType;
-  final PermitGender permitGender;
+  final GatherType? gatherType;
+  final PermitGender? permitGender;
   final int permitPeopleCnt;
   final int approvedAccountCnt;
 
@@ -29,8 +29,8 @@ class MateListItem {
     required this.title,
     required this.fitPlaceAddress,
     required this.mateAt,
-    required this.gatherType,
-    required this.permitGender,
+    this.gatherType,
+    this.permitGender,
     required this.permitPeopleCnt,
     required this.approvedAccountCnt,
   });
@@ -76,8 +76,8 @@ class MateListItem {
     title: json["title"],
     fitPlaceAddress: json["fitPlaceAddress"],
     mateAt: DateTime.parse(json["mateAt"]),
-    gatherType: GatherType.getByCode(json["gatherType"]),
-    permitGender: PermitGender.valueOf(json["permitGender"]),
+    gatherType: json["gatherType"] != null ? GatherType.getByCode(json["gatherType"]) : null,
+    permitGender: json["permitGender"] != null ? PermitGender.valueOf(json["permitGender"]) : null,
     permitPeopleCnt: json["permitPeopleCnt"],
     approvedAccountCnt: json["approvedAccountCnt"],
   );
@@ -91,8 +91,8 @@ class MateListItem {
     "title": title,
     "fitPlaceAddress": fitPlaceAddress,
     "mateAt": mateAt.toIso8601String(),
-    "gatherType": gatherType.name,
-    "permitGender": permitGender.name,
+    "gatherType": gatherType?.name,
+    "permitGender": permitGender?.name,
     "permitPeopleCnt": permitPeopleCnt,
     "approvedAccountCnt": approvedAccountCnt,
   };
