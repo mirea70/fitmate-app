@@ -20,8 +20,10 @@ class CustomButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isEnabled ? onTapMethod : null,
         style: ElevatedButton.styleFrom(
-          elevation: 5.0,
+          elevation: isEnabled ? 5.0 : 0,
           backgroundColor: color,
+          disabledBackgroundColor: Colors.grey.shade300,
+          disabledForegroundColor: Colors.white,
         ),
         child: Center(
           child: Text(

@@ -135,4 +135,23 @@ class MateRepository {
     );
     return Mate.fromJson(response.data);
   }
+
+  Future<Map<String, dynamic>> getMateQuestion(int mateId) async {
+    final response = await dio.get(
+      '/api/mate/request/$mateId/question',
+      options: Options(headers: {'accessToken': true}),
+    );
+    return Map<String, dynamic>.from(response.data);
+  }
+
+  Future<void> applyMate(int mateId, String comeAnswer) async {
+    await dio.put(
+      '/api/mate/request/$mateId/apply',
+      options: Options(
+        headers: {'accessToken': true},
+        contentType: Headers.jsonContentType,
+      ),
+      data: {'comeAnswer': comeAnswer},
+    );
+  }
 }

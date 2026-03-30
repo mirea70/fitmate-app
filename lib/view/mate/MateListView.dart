@@ -48,12 +48,13 @@ class _MateListViewState extends ConsumerState<MateListView> {
                         itemCount: items.length,
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           MateDetailView(mateId: items[index].id)));
+                              ref.read(mateAsyncViewModelProvider.notifier).refresh();
                             },
                             child: Container(
                               height: deviceSize.height * 0.15,

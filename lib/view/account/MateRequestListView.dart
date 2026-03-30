@@ -82,26 +82,63 @@ class _MateRequestListViewState extends ConsumerState<MateRequestListView> with 
   }
 }
 
-class _MateRequestTab extends ConsumerWidget {
+class _MateRequestTab extends ConsumerStatefulWidget {
   final FutureProvider<List<MateRequestResponse>> provider;
 
   const _MateRequestTab({required this.provider});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final Size deviceSize = MediaQuery.of(context).size;
-    final requestsAsync = ref.watch(provider);
+  ConsumerState<_MateRequestTab> createState() => _MateRequestTabState();
+}
 
-    return requestsAsync.when(
-      loading: () => Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Text(
-          '내역을 불러올 수 없습니다.',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      ),
-      data: (requests) {
-        if (requests.isEmpty) {
+class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
+  final Map<int, Uint8List> _imageCache = {};
+  List<MateRequestResponse> _requests = [];
+  bool _isReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final requests = await ref.read(widget.provider.future);
+      final imageIds = requests
+          .map((r) => r.thumbnailImageId)
+          .where((id) => id != null)
+          .toSet();
+
+      await Future.wait(imageIds.map((id) async {
+        try {
+          final data = await ref.read(fileRepositoryProvider).downloadFile(id!);
+          _imageCache[id] = data;
+        } catch (_) {}
+      }));
+
+      if (mounted) {
+        setState(() {
+          _requests = requests;
+          _isReady = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isReady = true);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Size deviceSize = MediaQuery.of(context).size;
+
+    if (!_isReady) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (_requests.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -121,10 +158,10 @@ class _MateRequestTab extends ConsumerWidget {
             horizontal: deviceSize.width * 0.04,
             vertical: deviceSize.height * 0.02,
           ),
-          itemCount: requests.length,
+          itemCount: _requests.length,
           separatorBuilder: (context, index) => SizedBox(height: deviceSize.height * 0.015),
           itemBuilder: (context, index) {
-            final item = requests[index];
+            final item = _requests[index];
             return GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -143,7 +180,7 @@ class _MateRequestTab extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    _buildThumbnail(ref, item.thumbnailImageId, deviceSize),
+                    _buildThumbnail(item.thumbnailImageId, deviceSize),
                     SizedBox(width: deviceSize.width * 0.03),
                     Expanded(
                       child: Column(
@@ -162,7 +199,7 @@ class _MateRequestTab extends ConsumerWidget {
                               SizedBox(width: 2),
                               Flexible(
                                 child: Text(
-                                  item.fitPlace,
+                                  item.fitPlaceName,
                                   style: TextStyle(fontSize: 13, color: Colors.grey),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -203,23 +240,13 @@ class _MateRequestTab extends ConsumerWidget {
             );
           },
         );
-      },
-    );
   }
 
-  Widget _buildThumbnail(WidgetRef ref, int? thumbnailImageId, Size deviceSize) {
-    if (thumbnailImageId == null) {
+  Widget _buildThumbnail(int? thumbnailImageId, Size deviceSize) {
+    if (thumbnailImageId == null || !_imageCache.containsKey(thumbnailImageId)) {
       return _thumbnailContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
     }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(thumbnailImageId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return _thumbnailContainer(MemoryImage(snapshot.data!), deviceSize);
-        }
-        return _thumbnailContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-      },
-    );
+    return _thumbnailContainer(MemoryImage(_imageCache[thumbnailImageId]!), deviceSize);
   }
 
   Widget _thumbnailContainer(ImageProvider imageProvider, Size deviceSize) {

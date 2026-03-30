@@ -6,6 +6,7 @@ import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
+import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,17 @@ class MateDetailView extends ConsumerStatefulWidget {
 
 class _MateDetailViewState extends ConsumerState<MateDetailView> {
   int _currentImage = 0;
+  int? _myAccountId;
+  late Future<Mate> _mateFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _mateFuture = ref.read(mateRepositoryProvider).getMateOne(widget.mateId);
+    ref.read(myProfileProvider.future).then((profile) {
+      if (mounted) setState(() => _myAccountId = profile.accountId);
+    }).catchError((_) {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +41,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     final double imageHeight = deviceSize.height * 0.38;
 
     return FutureBuilder(
-      future: ref.read(mateRepositoryProvider).getMateOne(widget.mateId),
+      future: _mateFuture,
       builder: (BuildContext context, AsyncSnapshot<Mate> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
@@ -307,16 +319,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
               bottomNavigationBar: SafeArea(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: CustomButton(
-                    deviceSize: deviceSize,
-                    onTapMethod: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => MateRequestView(),
-                      ));
-                    },
-                    title: '참여 신청하기',
-                    isEnabled: true,
-                  ),
+                  child: _buildBottomButton(mate, deviceSize),
                 ),
               ),
             );
@@ -334,6 +337,52 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
           body: Center(child: CircularProgressIndicator()),
         );
       },
+    );
+  }
+
+  Widget _buildBottomButton(Mate mate, Size deviceSize) {
+    final myAccountId = _myAccountId;
+
+    final bool isWriter = myAccountId != null && mate.writerAccountId == myAccountId;
+    final bool isApproved = myAccountId != null && mate.approvedAccountIds.contains(myAccountId);
+    final bool isWaiting = myAccountId != null && mate.waitingAccountIds.contains(myAccountId);
+    final bool isFull = mate.approvedAccountIds.length >= (mate.permitPeopleCnt ?? 0);
+
+    String title;
+    bool isEnabled;
+    VoidCallback? onTap;
+
+    if (isWriter) {
+      title = '내가 작성한 모집글';
+      isEnabled = false;
+      onTap = null;
+    } else if (isApproved) {
+      title = '참여 승인 완료';
+      isEnabled = false;
+      onTap = null;
+    } else if (isWaiting) {
+      title = '승인 대기중';
+      isEnabled = false;
+      onTap = null;
+    } else if (isFull) {
+      title = '모집 마감';
+      isEnabled = false;
+      onTap = null;
+    } else {
+      title = '참여 신청하기';
+      isEnabled = true;
+      onTap = () {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) => MateRequestView(mateId: widget.mateId),
+        ));
+      };
+    }
+
+    return CustomButton(
+      deviceSize: deviceSize,
+      onTapMethod: onTap ?? () {},
+      title: title,
+      isEnabled: isEnabled,
     );
   }
 

@@ -20,6 +20,11 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
     return ref.read(mateRepositoryProvider).findAll(page);
   }
 
+  Future<void> refresh() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _fetchMates(0));
+  }
+
   Future<void> addMate(Mate mate, List<String> introImagePaths) async {
     state = AsyncValue.loading();
     state = await AsyncValue.guard(() async {
