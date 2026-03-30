@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
-import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateApproveView.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
@@ -462,31 +462,17 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
   }
 
   Widget _getWriterProfileImage(int? writerImageId, double size) {
-    if (writerImageId == null) {
-      return DefaultProfileImage(size: size);
-    }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(writerImageId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return Container(
-            height: size,
-            width: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(image: MemoryImage(snapshot.data!), fit: BoxFit.cover),
-            ),
-          );
-        }
-        return DefaultProfileImage(size: size);
-      },
-    );
+    return CachedProfileImage(imageId: writerImageId, size: size);
   }
 
   Widget _getIntroImage(int introImageId) {
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(introImageId),
-      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+    final data = ref.read(imageCacheServiceProvider).get(introImageId);
+    if (data != null) {
+      return Image.memory(data, fit: BoxFit.cover);
+    }
+    return FutureBuilder<Uint8List?>(
+      future: ref.read(imageCacheServiceProvider).load(introImageId),
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
           return Image.memory(snapshot.data!, fit: BoxFit.cover);
         }

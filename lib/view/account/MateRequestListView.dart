@@ -1,8 +1,7 @@
-import 'dart:typed_data';
-
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/account/MateRequestResponse.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,7 +91,6 @@ class _MateRequestTab extends ConsumerStatefulWidget {
 }
 
 class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
-  final Map<int, Uint8List> _imageCache = {};
   List<MateRequestResponse> _requests = [];
   bool _isReady = false;
 
@@ -105,17 +103,9 @@ class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
   Future<void> _loadData() async {
     try {
       final requests = await ref.read(widget.provider.future);
-      final imageIds = requests
-          .map((r) => r.thumbnailImageId)
-          .where((id) => id != null)
-          .toSet();
-
-      await Future.wait(imageIds.map((id) async {
-        try {
-          final data = await ref.read(fileRepositoryProvider).downloadFile(id!);
-          _imageCache[id] = data;
-        } catch (_) {}
-      }));
+      await ref.read(imageCacheServiceProvider).preloadAll(
+        requests.map((r) => r.thumbnailImageId).toList(),
+      );
 
       if (mounted) {
         setState(() {
@@ -243,20 +233,11 @@ class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
   }
 
   Widget _buildThumbnail(int? thumbnailImageId, Size deviceSize) {
-    if (thumbnailImageId == null || !_imageCache.containsKey(thumbnailImageId)) {
-      return _thumbnailContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-    }
-    return _thumbnailContainer(MemoryImage(_imageCache[thumbnailImageId]!), deviceSize);
-  }
-
-  Widget _thumbnailContainer(ImageProvider imageProvider, Size deviceSize) {
-    return Container(
+    return CachedThumbnailImage(
+      imageId: thumbnailImageId,
       width: deviceSize.width * 0.2,
       height: deviceSize.width * 0.2,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-      ),
+      borderRadius: 8,
     );
   }
 

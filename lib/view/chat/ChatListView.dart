@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/chat/ChatRoom.dart';
-import 'package:fitmate_app/repository/account/AccountRepository.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
@@ -19,7 +18,6 @@ class ChatListView extends ConsumerStatefulWidget {
 }
 
 class _ChatListViewState extends ConsumerState<ChatListView> {
-  final Map<int, AccountProfile> _profileCache = {};
 
   @override
   void initState() {
@@ -96,24 +94,15 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
     );
   }
 
-  Future<AccountProfile?> _getProfile(int accountId) async {
-    if (_profileCache.containsKey(accountId)) return _profileCache[accountId]!;
-    try {
-      final profile = await ref
-          .read(accountRepositoryProvider)
-          .getProfileByAccountId(accountId);
-      _profileCache[accountId] = profile;
-      return profile;
-    } catch (_) {
-      return null;
-    }
+  Map<int, AccountProfile> _getProfileCache() {
+    return ref.read(chatRoomListProvider).value?.profileCache ?? {};
   }
 
-  Future<String> _getOtherNickName(ChatRoom room, int myAccountId) async {
+  String _getOtherNickNameSync(ChatRoom room, int myAccountId) {
     final otherIds = room.memberAccountIds.where((id) => id != myAccountId);
     if (otherIds.isEmpty) return room.roomName;
-    final profile = await _getProfile(otherIds.first);
-    return profile?.nickName ?? room.roomName;
+    final cache = _getProfileCache();
+    return cache[otherIds.first]?.nickName ?? room.roomName;
   }
 
   Widget _buildChatRoomItem(ChatRoom room, int myAccountId, Size deviceSize) {
@@ -121,10 +110,9 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
 
     return InkWell(
       onTap: () async {
-        String displayName = room.roomName;
-        if (isDm) {
-          displayName = await _getOtherNickName(room, myAccountId);
-        }
+        String displayName = isDm
+            ? _getOtherNickNameSync(room, myAccountId)
+            : room.roomName;
         await Navigator.push(
           context,
           MaterialPageRoute(
@@ -153,30 +141,17 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                   Row(
                     children: [
                       Expanded(
-                        child: isDm
-                            ? FutureBuilder<String>(
-                                future: _getOtherNickName(room, myAccountId),
-                                builder: (context, snapshot) {
-                                  return Text(
-                                    snapshot.data ?? room.roomName,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  );
-                                },
-                              )
-                            : Text(
-                                room.roomName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                        child: Text(
+                          isDm
+                              ? _getOtherNickNameSync(room, myAccountId)
+                              : room.roomName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       if (!isDm && room.memberAccountIds.length > 2)
                         Text(
@@ -343,85 +318,50 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
     );
   }
 
+  Uint8List? _getCachedImage(int accountId) {
+    final cache = _getProfileCache();
+    final profileImageId = cache[accountId]?.profileImageId;
+    if (profileImageId == null) return null;
+    return ref.read(imageCacheServiceProvider).get(profileImageId);
+  }
+
   Widget _buildRoundedCell(int accountId, double size, double radius) {
-    return FutureBuilder<AccountProfile?>(
-      future: _getProfile(accountId),
-      builder: (context, snapshot) {
-        final profileImageId = snapshot.data?.profileImageId;
-        if (profileImageId == null) {
-          return Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              color: Color(0xffE0E0E0),
-              borderRadius: BorderRadius.circular(radius),
-            ),
-            child: Icon(Icons.person, size: size * 0.55, color: Colors.grey.shade400),
-          );
-        }
-        return FutureBuilder<Uint8List>(
-          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-          builder: (context, imgSnapshot) {
-            if (imgSnapshot.connectionState == ConnectionState.done &&
-                imgSnapshot.hasData) {
-              return Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius),
-                  image: DecorationImage(
-                    image: MemoryImage(imgSnapshot.data!),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            }
-            return Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                color: Color(0xffE0E0E0),
-                borderRadius: BorderRadius.circular(radius),
-              ),
-              child: Icon(Icons.person, size: size * 0.55, color: Colors.grey.shade400),
-            );
-          },
-        );
-      },
+    final imageData = _getCachedImage(accountId);
+    if (imageData != null) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(radius),
+          image: DecorationImage(image: MemoryImage(imageData), fit: BoxFit.cover),
+        ),
+      );
+    }
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Color(0xffE0E0E0),
+        borderRadius: BorderRadius.circular(radius),
+      ),
+      child: Icon(Icons.person, size: size * 0.55, color: Colors.grey.shade400),
     );
   }
 
   Widget _buildSmallCircleProfile(int accountId, double size) {
-    return FutureBuilder<AccountProfile?>(
-      future: _getProfile(accountId),
-      builder: (context, snapshot) {
-        final profileImageId = snapshot.data?.profileImageId;
-        if (profileImageId == null) {
-          return _wrapWithBorder(DefaultProfileImage(size: size - 3), size);
-        }
-        return FutureBuilder<Uint8List>(
-          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-          builder: (context, imgSnapshot) {
-            if (imgSnapshot.connectionState == ConnectionState.done &&
-                imgSnapshot.hasData) {
-              return Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: MemoryImage(imgSnapshot.data!),
-                    fit: BoxFit.cover,
-                  ),
-                  border: Border.all(color: Colors.white, width: 1.5),
-                ),
-              );
-            }
-            return _wrapWithBorder(DefaultProfileImage(size: size - 3), size);
-          },
-        );
-      },
-    );
+    final imageData = _getCachedImage(accountId);
+    if (imageData != null) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(image: MemoryImage(imageData), fit: BoxFit.cover),
+          border: Border.all(color: Colors.white, width: 1.5),
+        ),
+      );
+    }
+    return _wrapWithBorder(DefaultProfileImage(size: size - 3), size);
   }
 
   Widget _wrapWithBorder(Widget child, double size) {
@@ -437,35 +377,18 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
   }
 
   Widget _buildSingleProfile(int accountId, double size) {
-    return FutureBuilder<AccountProfile?>(
-      future: _getProfile(accountId),
-      builder: (context, snapshot) {
-        final profileImageId = snapshot.data?.profileImageId;
-        if (profileImageId == null) {
-          return DefaultProfileImage(size: size);
-        }
-        return FutureBuilder<Uint8List>(
-          future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-          builder: (context, imgSnapshot) {
-            if (imgSnapshot.connectionState == ConnectionState.done &&
-                imgSnapshot.hasData) {
-              return Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: MemoryImage(imgSnapshot.data!),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            }
-            return DefaultProfileImage(size: size);
-          },
-        );
-      },
-    );
+    final imageData = _getCachedImage(accountId);
+    if (imageData != null) {
+      return Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(image: MemoryImage(imageData), fit: BoxFit.cover),
+        ),
+      );
+    }
+    return DefaultProfileImage(size: size);
   }
 
   String _formatTime(DateTime dateTime) {

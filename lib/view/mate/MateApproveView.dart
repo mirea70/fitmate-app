@@ -1,11 +1,9 @@
-import 'dart:typed_data';
-
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
-import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,14 +42,17 @@ class _MateApproveViewState extends ConsumerState<MateApproveView>
 
   Future<void> _loadProfiles() async {
     final allIds = {..._waitingIds, ..._approvedIds};
+    final imageIds = <int?>[];
     await Future.wait(allIds.map((id) async {
       try {
         final profile = await ref
             .read(accountRepositoryProvider)
             .getProfileByAccountId(id);
         _profileCache[id] = profile;
+        imageIds.add(profile.profileImageId);
       } catch (_) {}
     }));
+    await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
     if (mounted) setState(() => _isLoading = false);
   }
 
@@ -216,27 +217,6 @@ class _MateApproveViewState extends ConsumerState<MateApproveView>
   }
 
   Widget _buildProfileImage(int? profileImageId, double size) {
-    if (profileImageId == null) {
-      return DefaultProfileImage(size: size);
-    }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: MemoryImage(snapshot.data!),
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        }
-        return DefaultProfileImage(size: size);
-      },
-    );
+    return CachedProfileImage(imageId: profileImageId, size: size);
   }
 }

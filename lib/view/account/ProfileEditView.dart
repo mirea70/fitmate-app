@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:fitmate_app/model/account/AccountProfile.dart';
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
@@ -223,16 +224,11 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
     if (_newImageBytes != null) {
       return _buildCircle(MemoryImage(_newImageBytes!), deviceSize);
     }
-    if (_profileImageId != null && _profileImageId == widget.profile.profileImageId) {
-      return FutureBuilder<Uint8List>(
-        future: ref.read(fileRepositoryProvider).downloadFile(_profileImageId!),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-            return _buildCircle(MemoryImage(snapshot.data!), deviceSize);
-          }
-          return DefaultProfileImage(size: deviceSize.width * 0.25);
-        },
-      );
+    if (_profileImageId != null) {
+      final data = ref.read(imageCacheServiceProvider).get(_profileImageId!);
+      if (data != null) {
+        return _buildCircle(MemoryImage(data), deviceSize);
+      }
     }
     return DefaultProfileImage(size: deviceSize.width * 0.25);
   }

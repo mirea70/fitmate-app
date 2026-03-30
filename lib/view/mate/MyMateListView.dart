@@ -1,9 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:fitmate_app/model/mate/MateListItem.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -141,30 +139,11 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
   }
 
   Widget _buildThumbnail(int? thumbnailImageId, Size deviceSize) {
-    if (thumbnailImageId == null) {
-      return _thumbnailContainer(
-          const AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-    }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(thumbnailImageId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return _thumbnailContainer(MemoryImage(snapshot.data!), deviceSize);
-        }
-        return _thumbnailContainer(
-            const AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-      },
-    );
-  }
-
-  Widget _thumbnailContainer(ImageProvider imageProvider, Size deviceSize) {
-    return Container(
+    return CachedThumbnailImage(
+      imageId: thumbnailImageId,
       width: deviceSize.width * 0.18,
       height: deviceSize.width * 0.18,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-      ),
+      borderRadius: 8,
     );
   }
 

@@ -1,14 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:fitmate_app/config/StompService.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/chat/ChatMessage.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/chat/ChatMessageViewModel.dart';
-import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -154,29 +151,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
   }
 
   Widget _buildMemberProfileImage(int? profileImageId, double size) {
-    if (profileImageId == null) {
-      return DefaultProfileImage(size: size);
-    }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            snapshot.hasData) {
-          return Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: MemoryImage(snapshot.data!),
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        }
-        return DefaultProfileImage(size: size);
-      },
-    );
+    return CachedProfileImage(imageId: profileImageId, size: size);
   }
 
   void _navigateToProfile(int accountId) {
@@ -421,27 +396,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
 
   Widget _buildSenderProfile(
       int senderId, int? profileImageId, double size) {
-    if (profileImageId == null) {
-      return DefaultProfileImage(size: size);
-    }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            snapshot.hasData) {
-          return Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                  image: MemoryImage(snapshot.data!), fit: BoxFit.cover),
-            ),
-          );
-        }
-        return DefaultProfileImage(size: size);
-      },
-    );
+    return CachedProfileImage(imageId: profileImageId, size: size);
   }
 
   Widget _buildSenderName(ChatMessage msg) {

@@ -1,3 +1,4 @@
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/error/CustomException.dart';
 import 'package:fitmate_app/model/mate/MateListItem.dart' as mates;
 import 'package:fitmate_app/model/mate/MateListRequestModel.dart';
@@ -20,8 +21,15 @@ class MateListRequestViewModel extends Notifier<MateListRequestModel> implements
     state = MateListRequestModel.initial();
   }
 
-  Future<List<mates.MateListItem>> requestFilter({required int page, String? keyword}) {
-    return ref.read(mateRepositoryProvider).findAllWithCondition(state, page, keyword);
+  Future<List<mates.MateListItem>> requestFilter({required int page, String? keyword}) async {
+    final items = await ref.read(mateRepositoryProvider).findAllWithCondition(state, page, keyword);
+    final imageIds = <int?>[];
+    for (final item in items) {
+      imageIds.add(item.thumbnailImageId);
+      imageIds.add(item.writerImageId);
+    }
+    await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+    return items;
   }
 
   void setPermitMinAge(int value) {

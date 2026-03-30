@@ -1,10 +1,8 @@
-import 'dart:typed_data';
-
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
-import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -54,6 +52,10 @@ class _FollowListViewState extends ConsumerState<FollowListView>
           _profileCache[id] = profile;
         } catch (_) {}
       }));
+
+      await ref.read(imageCacheServiceProvider).preloadAll(
+        _profileCache.values.map((p) => p.profileImageId).toList(),
+      );
 
       if (mounted) {
         setState(() {
@@ -166,27 +168,6 @@ class _FollowListViewState extends ConsumerState<FollowListView>
   }
 
   Widget _buildProfileImage(int? profileImageId, double size) {
-    if (profileImageId == null) {
-      return DefaultProfileImage(size: size);
-    }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                image: MemoryImage(snapshot.data!),
-                fit: BoxFit.cover,
-              ),
-            ),
-          );
-        }
-        return DefaultProfileImage(size: size);
-      },
-    );
+    return CachedProfileImage(imageId: profileImageId, size: size);
   }
 }

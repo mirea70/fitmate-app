@@ -1,7 +1,5 @@
-import 'dart:typed_data';
-
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/mate/MateListItem.dart';
-import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
@@ -122,13 +120,14 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                               itemCount: items.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => MateDetailView(mateId: items[index].id),
                                       ),
                                     );
+                                    setState(() {});
                                   },
                                   child: Container(
                                   height: deviceSize.height * 0.15,
@@ -330,21 +329,12 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
   Widget _getThumbnailImage(int? thumbnailImageId, Size deviceSize) {
     if (thumbnailImageId == null) {
       return _buildThumbnailImageContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-    } else {
-      return FutureBuilder<Uint8List>(
-        future: ref.read(fileRepositoryProvider).downloadFile(thumbnailImageId),
-        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              return _buildThumbnailImageContainer(MemoryImage(snapshot.data!), deviceSize);
-            } else if (snapshot.hasError) {
-              return _buildThumbnailImageContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-            }
-          }
-          return _buildThumbnailImageContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-        },
-      );
     }
+    final cached = ref.read(imageCacheServiceProvider).get(thumbnailImageId);
+    if (cached != null) {
+      return _buildThumbnailImageContainer(MemoryImage(cached), deviceSize);
+    }
+    return _buildThumbnailImageContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
   }
 
   Widget _buildThumbnailImageContainer(ImageProvider imageProvider, Size deviceSize) {
@@ -366,21 +356,17 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
     if (profileImageId == null) {
       return DefaultProfileImage(size: size);
     }
-    return FutureBuilder<Uint8List>(
-      future: ref.read(fileRepositoryProvider).downloadFile(profileImageId),
-      builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return Container(
-            height: size,
-            width: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(image: MemoryImage(snapshot.data!), fit: BoxFit.cover),
-            ),
-          );
-        }
-        return DefaultProfileImage(size: size);
-      },
-    );
+    final cached = ref.read(imageCacheServiceProvider).get(profileImageId);
+    if (cached != null) {
+      return Container(
+        height: size,
+        width: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(image: MemoryImage(cached), fit: BoxFit.cover),
+        ),
+      );
+    }
+    return DefaultProfileImage(size: size);
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/model/mate/MateListItem.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
@@ -17,7 +18,14 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
   }
 
   Future<List<MateListItem>> _fetchMates(int page) async {
-    return ref.read(mateRepositoryProvider).findAll(page);
+    final items = await ref.read(mateRepositoryProvider).findAll(page);
+    final imageIds = <int?>[];
+    for (final item in items) {
+      imageIds.add(item.thumbnailImageId);
+      imageIds.add(item.writerImageId);
+    }
+    await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+    return items;
   }
 
   Future<void> refresh() async {
