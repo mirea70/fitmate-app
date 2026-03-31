@@ -17,6 +17,14 @@ class MateListView extends ConsumerStatefulWidget {
 
 class _MateListViewState extends ConsumerState<MateListView> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(mateAsyncViewModelProvider.notifier).refresh();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
