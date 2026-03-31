@@ -20,7 +20,7 @@ class _MateListViewState extends ConsumerState<MateListView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(mateAsyncViewModelProvider.notifier).refresh();
+      if (mounted) ref.read(mateAsyncViewModelProvider.notifier).refresh();
     });
   }
 

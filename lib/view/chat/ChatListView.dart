@@ -23,7 +23,9 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(chatRoomListProvider.notifier).refresh();
+      if (mounted) {
+        ref.read(chatRoomListProvider.notifier).refresh();
+      }
     });
   }
 

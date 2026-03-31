@@ -30,11 +30,14 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
   final ScrollController _scrollController = ScrollController();
   final Map<int, AccountProfile> _profileCache = {};
   bool _stompConnected = false;
+  late final StompService _stompService;
 
   @override
   void initState() {
     super.initState();
+    _stompService = ref.read(stompServiceProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       ref.read(currentRoomIdProvider.notifier).set(widget.roomId);
       _connectStomp();
     });
@@ -61,7 +64,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
 
   @override
   void dispose() {
-    ref.read(stompServiceProvider).disconnect();
+    _stompService.disconnect();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();

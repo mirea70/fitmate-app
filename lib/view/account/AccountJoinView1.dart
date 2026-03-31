@@ -22,6 +22,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       ref.read(accountJoinViewModelProvider.notifier).reset();
       ref.read(accountJoinErrorViewModelProvider.notifier).reset();
       ref.read(validateCodeViewModelProvider.notifier).reset();
