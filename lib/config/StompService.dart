@@ -16,6 +16,8 @@ class StompService {
   final dynamic storage;
   StompClient? _client;
   bool _isConnected = false;
+  Function()? _onConnectedCallback;
+  Function(String)? _onErrorCallback;
 
   StompService(this.ref, this.storage);
 
@@ -30,11 +32,20 @@ class StompService {
       return;
     }
 
+    _onConnectedCallback = onConnected;
+    _onErrorCallback = onError;
+
     final token = await storage.read(key: accessTokenKey);
     if (token == null) {
       onError('인증 토큰이 없습니다.');
       return;
     }
+
+    _activate(token);
+  }
+
+  void _activate(String token) {
+    _client?.deactivate();
 
     final wsUrl = AppConfig().baseUrl + '/stomp';
 
@@ -49,24 +60,34 @@ class StompService {
         },
         onConnect: (StompFrame frame) {
           _isConnected = true;
-          onConnected();
+          _onConnectedCallback?.call();
         },
         onWebSocketError: (error) {
           _isConnected = false;
-          onError('WebSocket 연결 실패: $error');
+          _reconnectWithFreshToken();
         },
         onStompError: (StompFrame frame) {
           _isConnected = false;
-          onError('STOMP 에러: ${frame.body}');
+          _reconnectWithFreshToken();
         },
         onDisconnect: (StompFrame frame) {
           _isConnected = false;
         },
-        reconnectDelay: const Duration(seconds: 5),
+        reconnectDelay: Duration.zero,
       ),
     );
 
     _client!.activate();
+  }
+
+  Future<void> _reconnectWithFreshToken() async {
+    await Future.delayed(const Duration(seconds: 5));
+    final token = await storage.read(key: accessTokenKey);
+    if (token == null) {
+      _onErrorCallback?.call('인증 토큰이 없습니다.');
+      return;
+    }
+    _activate(token);
   }
 
   StompUnsubscribe? subscribe({
@@ -111,5 +132,7 @@ class StompService {
     _client?.deactivate();
     _isConnected = false;
     _client = null;
+    _onConnectedCallback = null;
+    _onErrorCallback = null;
   }
 }

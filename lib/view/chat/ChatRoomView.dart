@@ -61,6 +61,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
 
   @override
   void dispose() {
+    ref.read(stompServiceProvider).disconnect();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
