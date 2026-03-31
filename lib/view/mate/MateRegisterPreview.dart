@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
+import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
@@ -154,22 +156,9 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
               ),
               Positioned(
                 top: deviceSize.height * 0.26,
-                left: deviceSize.width * 0.44,
-                child: Column(
-                  children: [
-                    DefaultProfileImage(size: 45),
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(
-                            0,
-                            deviceSize.height * 0.01,
-                            0,
-                            deviceSize.height * 0.01),
-                        child: Text('하루'),
-                      ),
-                    ),
-                  ],
-                ),
+                left: 0,
+                right: 0,
+                child: _buildWriterProfile(deviceSize),
               ),
               Positioned(
                 top: deviceSize.height * 0.52,
@@ -475,6 +464,41 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildWriterProfile(Size deviceSize) {
+    final myProfile = ref.watch(myProfileProvider);
+    return Center(
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 1),
+            ),
+            child: myProfile.when(
+              data: (profile) => CachedProfileImage(
+                imageId: profile.profileImageId,
+                size: 45,
+              ),
+              loading: () => DefaultProfileImage(size: 45),
+              error: (_, __) => DefaultProfileImage(size: 45),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: deviceSize.height * 0.01),
+            child: Text(
+              myProfile.when(
+                data: (profile) => profile.nickName,
+                loading: () => '',
+                error: (_, __) => '',
+              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+          ),
+        ],
       ),
     );
   }
