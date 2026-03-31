@@ -201,7 +201,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 3),
+                                  border: Border.all(color: Colors.white, width: 1),
                                 ),
                                 child: _getWriterProfileImage(mate.writerImageId, 52),
                               ),
