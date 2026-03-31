@@ -165,6 +165,17 @@ class MateRepository {
     );
   }
 
+  Future<void> cancelMateApply(int mateId, String cancelReason) async {
+    await dio.delete(
+      '/api/mate/request/$mateId/cancel',
+      options: Options(
+        headers: {'accessToken': true},
+        contentType: Headers.jsonContentType,
+      ),
+      data: {'cancelReason': cancelReason},
+    );
+  }
+
   Future<void> applyMate(int mateId, String comeAnswer) async {
     await dio.put(
       '/api/mate/request/$mateId/apply',

@@ -378,13 +378,13 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
         _refreshData();
       };
     } else if (isApproved) {
-      title = '참여 승인 완료';
-      isEnabled = false;
-      onTap = null;
+      title = '참여 취소';
+      isEnabled = true;
+      onTap = () => _showCancelDialog(mate);
     } else if (isWaiting) {
-      title = '승인 대기중';
-      isEnabled = false;
-      onTap = null;
+      title = '신청 취소';
+      isEnabled = true;
+      onTap = () => _showCancelDialog(mate);
     } else if (isFull) {
       title = '모집 마감';
       isEnabled = false;
@@ -404,6 +404,82 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
       onTapMethod: onTap ?? () {},
       title: title,
       isEnabled: isEnabled,
+    );
+  }
+
+  void _showCancelDialog(Mate mate) {
+    final reasonController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text(
+          '신청 취소',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '메이트 신청을 취소하시겠습니까?',
+              style: TextStyle(fontSize: 15),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: reasonController,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: '취소 사유 (선택)',
+                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.orangeAccent, width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.all(12),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('닫기', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                await ref.read(mateRepositoryProvider).cancelMateApply(
+                      widget.mateId,
+                      reasonController.text.trim(),
+                    );
+                _refreshData();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('신청이 취소되었습니다.')),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('신청 취소에 실패했습니다.')),
+                  );
+                }
+              }
+            },
+            child: const Text(
+              '취소하기',
+              style: TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
