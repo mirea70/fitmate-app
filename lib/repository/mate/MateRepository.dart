@@ -165,6 +165,24 @@ class MateRepository {
     );
   }
 
+  Future<bool> toggleWish(int mateId) async {
+    final response = await dio.put(
+      '/api/mate/wish/$mateId',
+      options: Options(headers: {'accessToken': true}),
+    );
+    return response.data['wished'] as bool;
+  }
+
+  Future<List<MateListItem>> getMyWishList() async {
+    final response = await dio.get(
+      '/api/mate/wish/my',
+      options: Options(headers: {'accessToken': true}),
+    );
+    return List<Map<String, dynamic>>.from(response.data)
+        .map((item) => MateListItem.fromJson(item))
+        .toList();
+  }
+
   Future<void> cancelMateApply(int mateId, String cancelReason) async {
     await dio.delete(
       '/api/mate/request/$mateId/cancel',

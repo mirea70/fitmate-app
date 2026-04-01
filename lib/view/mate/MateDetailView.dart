@@ -26,12 +26,14 @@ class MateDetailView extends ConsumerStatefulWidget {
 class _MateDetailViewState extends ConsumerState<MateDetailView> {
   int _currentImage = 0;
   int? _myAccountId;
+  bool _isWished = false;
   late Future<Mate> _mateFuture;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _checkWishState();
   }
 
   void _loadData() {
@@ -39,6 +41,33 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     ref.read(myProfileProvider.future).then((profile) {
       if (mounted) setState(() => _myAccountId = profile.accountId);
     }).catchError((_) {});
+  }
+
+  Future<void> _checkWishState() async {
+    try {
+      final wishList = await ref.read(mateRepositoryProvider).getMyWishList();
+      if (mounted) {
+        setState(() {
+          _isWished = wishList.any((item) => item.id == widget.mateId);
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _toggleWish() async {
+    try {
+      final wished = await ref.read(mateRepositoryProvider).toggleWish(widget.mateId);
+      if (mounted) {
+        setState(() => _isWished = wished);
+        AppSnackBar.show(context,
+            message: wished ? '찜 목록에 추가되었습니다.' : '찜 목록에서 제거되었습니다.',
+            type: SnackBarType.success);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.show(context, message: '찜 요청에 실패했습니다.', type: SnackBarType.error);
+      }
+    }
   }
 
   void _refreshData() {
@@ -328,11 +357,41 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                   ],
                 ),
               ),
-              bottomNavigationBar: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: _buildBottomButton(mate, deviceSize),
+              bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
                 ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
+                    child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: _toggleWish,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isWished ? Icons.favorite : Icons.favorite_border,
+                              color: _isWished ? Colors.orangeAccent : Colors.grey,
+                              size: 28,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(child: _buildBottomButton(mate, deviceSize)),
+                    ],
+                  ),
+                ),
+              ),
               ),
             );
           } else if (snapshot.hasError) {

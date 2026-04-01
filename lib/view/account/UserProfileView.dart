@@ -4,6 +4,7 @@ import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:fitmate_app/view/account/FollowListView.dart';
+import 'package:fitmate_app/view/mate/WishListView.dart';
 import 'package:fitmate_app/view/account/LoginView.dart';
 import 'package:fitmate_app/view/account/MateRequestListView.dart';
 import 'package:fitmate_app/view/mate/MyMateListView.dart';
@@ -262,6 +263,16 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => NoticeListView()),
+                      );
+                    },
+                  ),
+                  _buildMenuItem(
+                    icon: Icons.favorite_border,
+                    title: '나의 찜 목록',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => WishListView()),
                       );
                     },
                   ),

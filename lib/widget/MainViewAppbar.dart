@@ -1,5 +1,6 @@
 import 'package:fitmate_app/view/mate/MateFilterView.dart';
 import 'package:fitmate_app/view/mate/MateSearchView.dart';
+import 'package:fitmate_app/view/mate/WishListView.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,10 +64,17 @@ class MainViewAppbar extends ConsumerWidget implements PreferredSizeWidget {
                       const SizedBox(width: 12),
                       CustomIconButton(
                         icon: const Icon(
-                          Icons.heart_broken_outlined,
+                          Icons.favorite_border,
                           size: 27,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WishListView(),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(width: 12),
                       CustomIconButton(
