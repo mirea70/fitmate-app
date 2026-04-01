@@ -2,20 +2,22 @@ import 'package:fitmate_app/view/account/MyProfileView.dart';
 import 'package:fitmate_app/view/chat/ChatListView.dart';
 import 'package:fitmate_app/view/mate/MateListView.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
+import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
-class MainView extends StatefulWidget {
+class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
 
   static _MainViewState? of(BuildContext context) =>
       context.findAncestorStateOfType<_MainViewState>();
 
   @override
-  State<MainView> createState() => _MainViewState();
+  ConsumerState<MainView> createState() => _MainViewState();
 }
 
-class _MainViewState extends State<MainView> {
+class _MainViewState extends ConsumerState<MainView> {
   int _selectedIndex = 0;
 
   void selectTab(int index) {
@@ -26,8 +28,10 @@ class _MainViewState extends State<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    final Size deviceSize = MediaQuery.of(context).size;
-    final EdgeInsets devicePadding = MediaQuery.of(context).padding;
+    final chatState = ref.watch(chatRoomListProvider);
+    final totalUnread = chatState.whenOrNull(
+      data: (data) => data.rooms.fold<int>(0, (sum, room) => sum + room.unreadCount),
+    ) ?? 0;
 
     final List<Widget> _widgetOptions = [
       MateListView(),
@@ -54,7 +58,16 @@ class _MainViewState extends State<MainView> {
               label: '추가'
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
+              icon: totalUnread > 0
+                  ? Badge(
+                      label: Text(
+                        totalUnread > 99 ? '99+' : '$totalUnread',
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                      ),
+                      backgroundColor: Colors.orangeAccent,
+                      child: Icon(Icons.chat),
+                    )
+                  : Icon(Icons.chat),
               label: '채팅'
           ),
           BottomNavigationBarItem(
