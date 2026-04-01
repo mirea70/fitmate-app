@@ -38,11 +38,13 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
   bool _stompConnected = false;
   bool _isMateOwner = false;
   late final StompService _stompService;
+  late final ChatRepository _chatRepository;
 
   @override
   void initState() {
     super.initState();
     _stompService = ref.read(stompServiceProvider);
+    _chatRepository = ref.read(chatRepositoryProvider);
     _checkMateOwner();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -77,6 +79,14 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
         }
       },
     );
+  }
+
+  Future<void> _onBack() async {
+    await _chatRepository.markAsRead(widget.roomId).timeout(
+      const Duration(seconds: 2),
+      onTimeout: () {},
+    );
+    if (mounted) Navigator.pop(context);
   }
 
   @override
@@ -319,7 +329,13 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
     final messagesAsync = ref.watch(chatMessagesProvider);
     final myProfile = ref.watch(myProfileProvider);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        await _onBack();
+      },
+      child: Scaffold(
       key: _scaffoldKey,
       backgroundColor: Color(0xffF1F1F1),
       endDrawer: _buildDrawer(),
@@ -328,7 +344,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
         elevation: 0.5,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: _onBack,
         ),
         title: Text(
           widget.roomName,
@@ -369,6 +385,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
           _buildMessageInput(deviceSize),
         ],
       ),
+    ),
     );
   }
 

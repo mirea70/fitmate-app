@@ -22,6 +22,8 @@ class ChatRoomListState {
 }
 
 class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
+  final Map<int, AccountProfile> _profileCache = {};
+
   @override
   Future<ChatRoomListState> build() async {
     return _loadAll();
@@ -31,29 +33,31 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
     final profile = await ref.read(accountRepositoryProvider).getMyProfile();
     final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms();
 
-    final otherIds = <int>{};
+    final newIds = <int>{};
     for (final room in rooms) {
       for (final id in room.memberAccountIds) {
-        if (id != profile.accountId) otherIds.add(id);
+        if (id != profile.accountId && !_profileCache.containsKey(id)) {
+          newIds.add(id);
+        }
       }
     }
 
-    final profileCache = <int, AccountProfile>{};
-    final imageIds = <int?>[];
-    await Future.wait(otherIds.map((id) async {
-      try {
-        final p = await ref.read(accountRepositoryProvider).getProfileByAccountId(id);
-        profileCache[id] = p;
-        imageIds.add(p.profileImageId);
-      } catch (_) {}
-    }));
-
-    await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+    if (newIds.isNotEmpty) {
+      final imageIds = <int?>[];
+      await Future.wait(newIds.map((id) async {
+        try {
+          final p = await ref.read(accountRepositoryProvider).getProfileByAccountId(id);
+          _profileCache[id] = p;
+          imageIds.add(p.profileImageId);
+        } catch (_) {}
+      }));
+      await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+    }
 
     return ChatRoomListState(
       rooms: rooms,
       myAccountId: profile.accountId,
-      profileCache: profileCache,
+      profileCache: Map.from(_profileCache),
     );
   }
 

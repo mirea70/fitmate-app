@@ -34,6 +34,13 @@ class ChatRepository {
         .toList();
   }
 
+  Future<void> markAsRead(String roomId) async {
+    await dio.put(
+      '/api/chat/$roomId/read',
+      options: Options(headers: {'accessToken': true}),
+    );
+  }
+
   Future<void> leaveChatRoom(String roomId) async {
     await dio.delete(
       '/api/chat/$roomId/leave',
