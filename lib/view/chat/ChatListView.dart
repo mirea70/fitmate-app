@@ -122,6 +122,7 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
               roomId: room.roomId,
               roomName: displayName,
               memberAccountIds: room.memberAccountIds,
+              matingId: room.matingId,
             ),
           ),
         );

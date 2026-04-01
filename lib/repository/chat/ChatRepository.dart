@@ -34,6 +34,13 @@ class ChatRepository {
         .toList();
   }
 
+  Future<void> leaveChatRoom(String roomId) async {
+    await dio.delete(
+      '/api/chat/$roomId/leave',
+      options: Options(headers: {'accessToken': true}),
+    );
+  }
+
   Future<ChatRoom> createGroupRoom(Map<String, dynamic> body) async {
     final response = await dio.post(
       '/api/chat/room/group',

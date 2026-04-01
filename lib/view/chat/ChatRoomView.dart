@@ -2,6 +2,8 @@ import 'package:fitmate_app/config/StompService.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/chat/ChatMessage.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
+import 'package:fitmate_app/repository/chat/ChatRepository.dart';
+import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/chat/ChatMessageViewModel.dart';
@@ -14,11 +16,13 @@ class ChatRoomView extends ConsumerStatefulWidget {
   final String roomId;
   final String roomName;
   final List<int> memberAccountIds;
+  final int? matingId;
   const ChatRoomView({
     super.key,
     required this.roomId,
     required this.roomName,
     this.memberAccountIds = const [],
+    this.matingId,
   });
 
   @override
@@ -26,21 +30,35 @@ class ChatRoomView extends ConsumerStatefulWidget {
 }
 
 class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final Map<int, AccountProfile> _profileCache = {};
   bool _stompConnected = false;
+  bool _isMateOwner = false;
   late final StompService _stompService;
 
   @override
   void initState() {
     super.initState();
     _stompService = ref.read(stompServiceProvider);
+    _checkMateOwner();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref.read(currentRoomIdProvider.notifier).set(widget.roomId);
       _connectStomp();
     });
+  }
+
+  Future<void> _checkMateOwner() async {
+    if (widget.matingId == null) return;
+    try {
+      final profile = await ref.read(myProfileProvider.future);
+      final mate = await ref.read(mateRepositoryProvider).getMateOne(widget.matingId!);
+      if (mounted && mate.writerAccountId == profile.accountId) {
+        setState(() => _isMateOwner = true);
+      }
+    } catch (_) {}
   }
 
   void _connectStomp() {
@@ -90,35 +108,53 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
     _messageController.clear();
   }
 
-  void _showMemberList(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
+  Widget _buildDrawer() {
+    final drawerTitle = widget.matingId != null ? widget.roomName : '개인 채팅';
+
+    return Drawer(
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  '참여자 ${widget.memberAccountIds.length}명',
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
+      width: MediaQuery.of(context).size.width * 0.75,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      drawerTitle,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+              child: Text(
+                '대화 상대',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey.shade800,
                 ),
               ),
-              const Divider(height: 1),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.4,
-                ),
+            ),
+            if (widget.memberAccountIds.isNotEmpty)
+              Expanded(
                 child: ListView.builder(
-                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   itemCount: widget.memberAccountIds.length,
                   itemBuilder: (context, index) {
                     final accountId = widget.memberAccountIds[index];
@@ -137,7 +173,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
                             ),
                           ),
                           onTap: () {
-                            Navigator.pop(context);
+                            _scaffoldKey.currentState?.closeEndDrawer();
                             _navigateToProfile(accountId);
                           },
                         );
@@ -145,14 +181,120 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
                     );
                   },
                 ),
+              )
+            else
+              const Expanded(child: SizedBox()),
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: ListTile(
+                leading: Icon(Icons.exit_to_app,
+                    color: _isMateOwner ? Colors.grey.shade400 : Colors.black87, size: 22),
+                title: Text('나가기',
+                    style: TextStyle(
+                        color: _isMateOwner ? Colors.grey.shade400 : Colors.black87,
+                        fontSize: 14)),
+                onTap: () {
+                  if (_isMateOwner) {
+                    _scaffoldKey.currentState?.closeEndDrawer();
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: Colors.white,
+                        title: const Text(
+                          '나가기 불가',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        content: const Text(
+                          '모집글 작성자는 채팅방을 나갈 수 없습니다.',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        actionsAlignment: MainAxisAlignment.end,
+                        actionsPadding: const EdgeInsets.only(right: 12, bottom: 8),
+                        actions: [
+                          TextButton(
+                            style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), minimumSize: Size.zero),
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('확인', style: TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w700, fontSize: 17)),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+                  _scaffoldKey.currentState?.closeEndDrawer();
+                  _showLeaveDialog();
+                },
               ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
+
+  void _showLeaveDialog() {
+    final bool isMateRoom = widget.matingId != null;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text(
+          '채팅방 나가기',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          isMateRoom
+              ? '이 채팅방은 메이트 모집글과 연결되어 있습니다.\n나가면 메이트 신청도 함께 취소됩니다.\n\n정말 나가시겠습니까?'
+              : '채팅방을 나가면 대화 내용이 사라지고\n다시 볼 수 없습니다. 나가시겠습니까?',
+          style: const TextStyle(fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('취소', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                if (isMateRoom) {
+                  await ref.read(mateRepositoryProvider).cancelMateApply(
+                        widget.matingId!,
+                        '채팅방 나가기로 인한 자동 취소',
+                      );
+                } else {
+                  await ref.read(chatRepositoryProvider).leaveChatRoom(widget.roomId);
+                }
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isMateRoom
+                          ? '채팅방을 나가고 메이트 신청이 취소되었습니다.'
+                          : '채팅방을 나갔습니다.'),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('채팅방 나가기에 실패했습니다.')),
+                  );
+                }
+              }
+            },
+            child: const Text(
+              '나가기',
+              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildMemberProfileImage(int? profileImageId, double size) {
     return CachedProfileImage(imageId: profileImageId, size: size);
@@ -185,7 +327,9 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
     final myProfile = ref.watch(myProfileProvider);
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Color(0xffF1F1F1),
+      endDrawer: _buildDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
@@ -202,11 +346,10 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
           ),
         ),
         actions: [
-          if (widget.memberAccountIds.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.people_outline, color: Colors.black),
-              onPressed: () => _showMemberList(context),
-            ),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.black),
+            onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+          ),
         ],
       ),
       body: Column(
