@@ -1,4 +1,5 @@
 import 'package:fitmate_app/config/ImageCacheService.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/chat/ChatRepository.dart';
@@ -46,9 +47,7 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
       ref.invalidate(myProfileProvider);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('팔로우 요청에 실패했습니다.')),
-        );
+        AppSnackBar.show(context, message: '팔로우 요청에 실패했습니다.', type: SnackBarType.error);
       }
     }
   }
@@ -341,9 +340,7 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
                                     }
                                   } catch (e) {
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('회원탈퇴에 실패했습니다.')),
-                                      );
+                                      AppSnackBar.show(context, message: '회원탈퇴에 실패했습니다.', type: SnackBarType.error);
                                     }
                                   }
                                 },
@@ -394,9 +391,7 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
       );
     } catch (e) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('채팅방을 생성할 수 없습니다.')),
-      );
+      AppSnackBar.show(context, message: '채팅방을 생성할 수 없습니다.', type: SnackBarType.error);
     }
   }
 

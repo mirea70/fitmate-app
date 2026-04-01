@@ -1,4 +1,5 @@
 import 'package:fitmate_app/config/StompService.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/chat/ChatMessage.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
@@ -72,9 +73,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
       },
       onError: (error) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error)),
-          );
+          AppSnackBar.show(context, message: error, type: SnackBarType.error);
         }
       },
     );
@@ -269,19 +268,13 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
                 }
                 if (mounted) {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(isMateRoom
-                          ? '채팅방을 나가고 메이트 신청이 취소되었습니다.'
-                          : '채팅방을 나갔습니다.'),
-                    ),
-                  );
+                  AppSnackBar.show(context,
+                      message: isMateRoom ? '채팅방을 나가고 메이트 신청이 취소되었습니다.' : '채팅방을 나갔습니다.',
+                      type: SnackBarType.success);
                 }
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('채팅방 나가기에 실패했습니다.')),
-                  );
+                  AppSnackBar.show(context, message: '채팅방 나가기에 실패했습니다.', type: SnackBarType.error);
                 }
               }
             },

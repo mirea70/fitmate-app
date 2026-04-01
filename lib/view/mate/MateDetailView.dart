@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:fitmate_app/config/ImageCacheService.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
@@ -461,15 +462,11 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                     );
                 _refreshData();
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('신청이 취소되었습니다.')),
-                  );
+                  AppSnackBar.show(context, message: '신청이 취소되었습니다.', type: SnackBarType.success);
                 }
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('신청 취소에 실패했습니다.')),
-                  );
+                  AppSnackBar.show(context, message: '신청 취소에 실패했습니다.', type: SnackBarType.error);
                 }
               }
             },

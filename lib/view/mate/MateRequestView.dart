@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,16 +70,12 @@ class _MateRequestViewState extends ConsumerState<MateRequestView> {
       if (mounted) {
         Navigator.pop(context);
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('메이트 신청이 완료되었습니다!')),
-        );
+        AppSnackBar.show(context, message: '메이트 신청이 완료되었습니다!', type: SnackBarType.success);
       }
     } catch (e) {
       setState(() => _isSubmitting = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('신청에 실패했습니다. ${_parseError(e)}')),
-        );
+        AppSnackBar.show(context, message: '신청에 실패했습니다. ${_parseError(e)}', type: SnackBarType.error);
       }
     }
   }

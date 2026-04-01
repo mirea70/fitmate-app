@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
@@ -420,34 +421,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                       fileViewModel.reset();
                       ref.read(selectNumProvider.notifier).reset();
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.orangeAccent,
-                          content: Column(
-                            children: [
-                              Text(
-                                '메이트 모집 등록이 완료되었습니다.',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.02,
-                              ),
-                              Text(
-                                '운동 메이트와 함께하세요!',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
+                      AppSnackBar.show(context, message: '메이트 모집 등록이 완료되었습니다!', type: SnackBarType.success);
                     } catch (error) {
                       showDialog(
                           context: context,

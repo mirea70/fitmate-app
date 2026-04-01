@@ -1,4 +1,5 @@
 import 'package:fitmate_app/config/ImageCacheService.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
@@ -91,15 +92,11 @@ class _MateApproveViewState extends ConsumerState<MateApproveView>
           _waitingIds.remove(accountId);
           _approvedIds.add(accountId);
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${_profileCache[accountId]?.nickName ?? ''}님을 승인했습니다.')),
-        );
+        AppSnackBar.show(context, message: '${_profileCache[accountId]?.nickName ?? ''}님을 승인했습니다.', type: SnackBarType.success);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('승인에 실패했습니다.')),
-        );
+        AppSnackBar.show(context, message: '승인에 실패했습니다.', type: SnackBarType.error);
       }
     }
   }

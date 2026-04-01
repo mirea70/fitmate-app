@@ -1,4 +1,5 @@
 import 'package:fitmate_app/model/account/Account.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
 import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
@@ -227,34 +228,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                                   ),
                                   (route) => false,
                                 );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    backgroundColor: Colors.orangeAccent,
-                                    content: Column(
-                                      children: [
-                                        Text(
-                                            '환영합니다!',
-                                          style: TextStyle(
-                                            fontSize: 25,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: deviceSize.height*0.02,
-                                        ),
-                                        Text(
-                                          '지금 바로 운동 메이트를 만나보세요!',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
+                                AppSnackBar.show(context, message: '환영합니다! 지금 바로 운동 메이트를 만나보세요!', type: SnackBarType.success);
                               },
                               error: (error, stackTrace) => showDialog(
                                   context: context,
