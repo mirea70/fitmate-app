@@ -90,14 +90,9 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '모집 규칙을 정해봐요',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600),
-                        ),
                         if (hasApprovedMembers)
                           Padding(
-                            padding: EdgeInsets.only(top: deviceSize.height * 0.02),
+                            padding: EdgeInsets.only(bottom: deviceSize.height * 0.02),
                             child: Container(
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
@@ -118,6 +113,11 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                               ),
                             ),
                           ),
+                        Text(
+                          '모집 규칙을 정해봐요',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w600),
+                        ),
                         SizedBox(
                           height: deviceSize.height * 0.05,
                         ),

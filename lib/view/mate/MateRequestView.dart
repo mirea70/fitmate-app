@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/widget/AppSnackBar.dart';
+import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,7 +76,16 @@ class _MateRequestViewState extends ConsumerState<MateRequestView> {
     } catch (e) {
       setState(() => _isSubmitting = false);
       if (mounted) {
-        AppSnackBar.show(context, message: '신청에 실패했습니다. ${_parseError(e)}', type: SnackBarType.error);
+        final errorMsg = _parseError(e);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomAlert(
+              title: errorMsg.isNotEmpty ? errorMsg : '신청에 실패했습니다.',
+              deviceSize: MediaQuery.of(context).size,
+            );
+          },
+        );
       }
     }
   }
