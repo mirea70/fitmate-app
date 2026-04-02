@@ -136,6 +136,21 @@ class AccountRepository {
         .toList();
   }
 
+  Future<int> getUnreadNoticeCount() async {
+    final response = await dio.get(
+      '/api/account/profile/my/notices/unread/count',
+      options: Options(headers: {'accessToken': true}),
+    );
+    return response.data['count'] as int;
+  }
+
+  Future<void> markNoticesAsRead() async {
+    await dio.put(
+      '/api/account/profile/my/notices/read',
+      options: Options(headers: {'accessToken': true}),
+    );
+  }
+
   Future<List<MateRequestResponse>> getMyMateRequests(String approveStatus) async {
     String endPoint = "/api/account/profile/my/mate/request";
     final response = await dio.get(

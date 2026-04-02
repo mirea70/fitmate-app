@@ -1,4 +1,5 @@
 import 'package:fitmate_app/config/ImageCacheService.dart';
+import 'package:fitmate_app/view_model/account/NoticeViewModel.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
@@ -20,7 +21,10 @@ class _MateListViewState extends ConsumerState<MateListView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) ref.read(mateAsyncViewModelProvider.notifier).refresh();
+      if (mounted) {
+        ref.read(mateAsyncViewModelProvider.notifier).refresh();
+        ref.read(unreadNoticeCountProvider.notifier).refresh();
+      }
     });
   }
 

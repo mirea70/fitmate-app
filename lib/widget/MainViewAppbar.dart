@@ -1,3 +1,5 @@
+import 'package:fitmate_app/view/account/NoticeListView.dart';
+import 'package:fitmate_app/view_model/account/NoticeViewModel.dart';
 import 'package:fitmate_app/view/mate/MateFilterView.dart';
 import 'package:fitmate_app/view/mate/MateSearchView.dart';
 import 'package:fitmate_app/view/mate/WishListView.dart';
@@ -14,6 +16,43 @@ class MainViewAppbar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize =>
       const Size.fromHeight(kToolbarHeight + _bottomAreaHeight);
+
+  Widget _buildNoticeIcon(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(unreadNoticeCountProvider);
+
+    return GestureDetector(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const NoticeListView()),
+        );
+        ref.read(unreadNoticeCountProvider.notifier).refresh();
+      },
+      child: SizedBox(
+        width: 27,
+        height: 27,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            const Icon(Icons.notifications_outlined, size: 27),
+            if (unreadCount > 0)
+              Positioned(
+                top: -2,
+                right: -2,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,13 +116,7 @@ class MainViewAppbar extends ConsumerWidget implements PreferredSizeWidget {
                         },
                       ),
                       const SizedBox(width: 12),
-                      CustomIconButton(
-                        icon: const Icon(
-                          Icons.notifications_outlined,
-                          size: 27,
-                        ),
-                        onPressed: () {},
-                      ),
+                      _buildNoticeIcon(context, ref),
                     ],
                   ),
                 ],

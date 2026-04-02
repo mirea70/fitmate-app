@@ -2,6 +2,7 @@ import 'package:fitmate_app/view/account/MyProfileView.dart';
 import 'package:fitmate_app/view/chat/ChatListView.dart';
 import 'package:fitmate_app/view/mate/MateListView.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
+import 'package:fitmate_app/view_model/account/NoticeViewModel.dart';
 import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +25,7 @@ class _MainViewState extends ConsumerState<MainView> {
     setState(() {
       _selectedIndex = index;
     });
+    ref.read(unreadNoticeCountProvider.notifier).refresh();
   }
 
   @override
