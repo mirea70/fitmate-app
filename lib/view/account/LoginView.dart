@@ -26,18 +26,24 @@ class _LoginViewState extends ConsumerState<LoginView> {
     final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
     final viewModel = ref.watch(loginViewModelProvider);
 
-    return Scaffold(
+    final canPop = Navigator.of(context).canPop();
+
+    return PopScope(
+      canPop: canPop,
+      child: Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-        ),
+        leading: canPop
+            ? IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+              )
+            : null,
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -175,6 +181,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           ),
         ),
       ),
+    ),
     );
   }
 }
