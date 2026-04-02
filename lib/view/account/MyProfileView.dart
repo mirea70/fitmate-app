@@ -331,6 +331,8 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
           _buildInfoRow('이메일', profile.email),
           _buildInfoRow('전화번호', profile.phone),
           _buildInfoRow('성별', profile.gender == 'MALE' ? '남성' : '여성'),
+          if (profile.birthDate != null)
+            _buildInfoRow('생년월일', profile.birthDate!),
         ],
       ),
     );

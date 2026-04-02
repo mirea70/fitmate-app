@@ -73,6 +73,10 @@ class AccountJoinViewModel extends Notifier<Account> implements BaseViewModel {
     _errorViewModel.validateEmail(value);
   }
 
+  void setBirthDate(String value) {
+    state = state.copyWith(birthDate: value);
+  }
+
   void setGender(Gender? value) {
     state = state.copyWith(gender: value);
   }

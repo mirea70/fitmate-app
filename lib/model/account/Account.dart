@@ -22,6 +22,7 @@ class Account extends AccountModelBase {
   final String name;
   final String phone;
   final String email;
+  final String? birthDate;
   final Role role;
   final Gender? gender;
   final int? profileImageId;
@@ -34,6 +35,7 @@ class Account extends AccountModelBase {
     required this.name,
     required this.phone,
     required this.email,
+    required this.birthDate,
     required this.role,
     required this.gender,
     required this.profileImageId,
@@ -48,6 +50,7 @@ class Account extends AccountModelBase {
       name: '',
       phone: '',
       email: '',
+      birthDate: null,
       role: Role.USER,
       gender: null,
       profileImageId: null,
@@ -62,6 +65,7 @@ class Account extends AccountModelBase {
     String? name,
     String? phone,
     String? email,
+    String? birthDate,
     Role? role,
     Gender? gender,
     int? profileImageId,
@@ -74,6 +78,7 @@ class Account extends AccountModelBase {
         name: name ?? this.name,
         phone: phone ?? this.phone,
         email: email ?? this.email,
+        birthDate: birthDate ?? this.birthDate,
         role: role ?? this.role,
         gender: gender ?? this.gender,
         profileImageId: profileImageId ?? this.profileImageId,
@@ -87,6 +92,7 @@ class Account extends AccountModelBase {
     name: json["name"],
     phone: json["phone"],
     email: json["email"],
+    birthDate: json["birthDate"],
     role: json["role"],
     gender: json["gender"],
     profileImageId: json["profileImageId"],
@@ -100,6 +106,7 @@ class Account extends AccountModelBase {
     "name": name,
     "phone": phone,
     "email": email,
+    "birthDate": birthDate,
     "role": role.name,
     "gender": gender!.name,
     "profileImageId": profileImageId,

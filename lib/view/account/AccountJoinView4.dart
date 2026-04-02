@@ -6,6 +6,7 @@ import 'package:fitmate_app/view_model/account/join/AccountJoinViewModel.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/widget/CustomAppBar.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
+import 'package:fitmate_app/widget/BirthDatePicker.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:fitmate_app/widget/CustomInputMiddle.dart';
 import 'package:flutter/material.dart';
@@ -153,6 +154,21 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               height: deviceSize.height * 0.07,
                             ),
                             Text(
+                              '생년월일',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.01,
+                            ),
+                            BirthDatePicker(
+                              initialDate: viewModel.birthDate,
+                              onDateChanged: (value) => viewModelNotifier.setBirthDate(value),
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.07,
+                            ),
+                            Text(
                               '이메일',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w600),
@@ -268,6 +284,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
         viewModel.name == '' ||
         viewModel.phone == '' ||
         viewModel.email == '' ||
+        viewModel.birthDate == null ||
         viewModel.gender == '') {
       return false;
     }

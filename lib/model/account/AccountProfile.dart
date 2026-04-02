@@ -7,6 +7,7 @@ class AccountProfile {
   final String name;
   final String phone;
   final String email;
+  final String? birthDate;
   final String role;
   final String gender;
   final List<int> followings;
@@ -21,6 +22,7 @@ class AccountProfile {
     required this.name,
     required this.phone,
     required this.email,
+    this.birthDate,
     required this.role,
     required this.gender,
     required this.followings,
@@ -36,6 +38,7 @@ class AccountProfile {
     name: json['name'],
     phone: json['phone'],
     email: json['email'],
+    birthDate: json['birthDate'],
     role: json['role'],
     gender: json['gender'],
     followings: json['followings'] != null ? List<int>.from(json['followings']) : [],
