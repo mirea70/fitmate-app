@@ -49,7 +49,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
       backgroundColor: Color(0xffF1F1F1),
       body: SingleChildScrollView(
         child: Container(
-          height: deviceSize.height * 1.2,
+          height: deviceSize.height * 1.35,
           width: double.maxFinite,
           child: Stack(
             children: [
@@ -334,6 +334,27 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                       Row(
                         children: [
                           Icon(
+                            Icons.wc_rounded,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
+                          ),
+                          Text(
+                            _getTextPermitGender(viewModel.permitGender),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.02,
+                      ),
+                      Row(
+                        children: [
+                          Icon(
                             Icons.calendar_month_rounded,
                             size: 20,
                           ),
@@ -510,6 +531,15 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
         ],
       ),
     );
+  }
+
+  String _getTextPermitGender(PermitGender? permitGender) {
+    if (permitGender == null) return '누구나';
+    switch (permitGender) {
+      case PermitGender.ALL: return '누구나 참여 가능';
+      case PermitGender.MALE: return '남성만 참여 가능';
+      case PermitGender.FEMALE: return '여성만 참여 가능';
+    }
   }
 
   String formatDate(DateTime dateTime) {

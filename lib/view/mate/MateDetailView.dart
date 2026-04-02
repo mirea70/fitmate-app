@@ -340,6 +340,10 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                             Icons.person_outline,
                             getTextPermitAges(mate.permitMinAge!, mate.permitMaxAge!),
                           ),
+                          _buildInfoRow(
+                            Icons.wc_rounded,
+                            _getTextPermitGender(mate.permitGender),
+                          ),
                           _buildInfoRow(Icons.calendar_month_rounded, formatDate(mate.mateAt!)),
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
@@ -632,6 +636,15 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     if (min == 20) return '${max}세 이하';
     if (max == 50) return '${min}세 이상';
     return '$min ~ ${max}세';
+  }
+
+  String _getTextPermitGender(PermitGender? permitGender) {
+    if (permitGender == null) return '누구나';
+    switch (permitGender) {
+      case PermitGender.ALL: return '누구나 참여 가능';
+      case PermitGender.MALE: return '남성만 참여 가능';
+      case PermitGender.FEMALE: return '여성만 참여 가능';
+    }
   }
 
   Widget _getWriterProfileImage(int? writerImageId, double size) {
