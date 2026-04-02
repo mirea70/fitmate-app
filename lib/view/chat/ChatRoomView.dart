@@ -6,6 +6,7 @@ import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
+import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/chat/ChatMessageViewModel.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
@@ -81,6 +82,16 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
     );
   }
 
+  void _navigateToMateDetail() {
+    if (widget.matingId == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MateDetailView(mateId: widget.matingId!),
+      ),
+    );
+  }
+
   Future<void> _onBack() async {
     await _chatRepository.markAsRead(widget.roomId).timeout(
       const Duration(seconds: 2),
@@ -139,10 +150,21 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      drawerTitle,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                      overflow: TextOverflow.ellipsis,
+                    child: GestureDetector(
+                      onTap: widget.matingId != null ? () {
+                        Navigator.pop(context);
+                        _navigateToMateDetail();
+                      } : null,
+                      child: Text(
+                        drawerTitle,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          decoration: widget.matingId != null ? TextDecoration.underline : null,
+                          decorationColor: Colors.black,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ],
@@ -346,12 +368,17 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: _onBack,
         ),
-        title: Text(
-          widget.roomName,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
+        title: GestureDetector(
+          onTap: widget.matingId != null ? () => _navigateToMateDetail() : null,
+          child: Text(
+            widget.roomName,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              decoration: widget.matingId != null ? TextDecoration.underline : null,
+              decorationColor: Colors.black,
+            ),
           ),
         ),
         actions: [
