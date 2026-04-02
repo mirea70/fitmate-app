@@ -5,7 +5,7 @@ import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:fitmate_app/view/account/FollowListView.dart';
 import 'package:fitmate_app/view/mate/WishListView.dart';
-import 'package:fitmate_app/view/account/LoginView.dart';
+import 'package:fitmate_app/view/homeView.dart';
 import 'package:fitmate_app/view/account/MateRequestListView.dart';
 import 'package:fitmate_app/view/mate/MyMateListView.dart';
 import 'package:fitmate_app/view/account/NoticeListView.dart';
@@ -305,7 +305,7 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
                       await ref.read(loginViewModelProvider.notifier).logout();
                       if (context.mounted) {
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => LoginView()),
+                          MaterialPageRoute(builder: (context) => HomeView()),
                           (route) => false,
                         );
                       }
@@ -345,7 +345,7 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
                                     await ref.read(loginViewModelProvider.notifier).logout();
                                     if (context.mounted) {
                                       Navigator.of(context).pushAndRemoveUntil(
-                                        MaterialPageRoute(builder: (context) => LoginView()),
+                                        MaterialPageRoute(builder: (context) => HomeView()),
                                         (route) => false,
                                       );
                                     }
