@@ -37,4 +37,59 @@ class AuthRepository {
 
     return LoginResponse(accessToken: accessToken!, refreshToken: refreshToken!);
   }
+
+  Future<Map<String, dynamic>> kakaoLogin({required String kakaoAccessToken}) async {
+    final response = await dio.post(
+      '/api/auth/kakao',
+      options: Options(contentType: Headers.jsonContentType),
+      data: {'accessToken': kakaoAccessToken},
+    );
+
+    bool isNewUser = response.data['newUser'] == true;
+
+    if (isNewUser) {
+      return {
+        'isNewUser': true,
+        'kakaoNickName': response.data['kakaoNickName'] ?? '',
+        'kakaoEmail': response.data['kakaoEmail'] ?? '',
+      };
+    }
+
+    return {
+      'isNewUser': false,
+      'loginResponse': LoginResponse(
+        accessToken: 'Bearer ${response.data['accessToken']}',
+        refreshToken: 'Bearer ${response.data['refreshToken']}',
+      ),
+    };
+  }
+
+  Future<LoginResponse> kakaoRegister({
+    required String kakaoAccessToken,
+    required String name,
+    required String gender,
+    required String birthDate,
+    required String phone,
+    required String nickName,
+    String? email,
+  }) async {
+    final response = await dio.post(
+      '/api/auth/kakao/register',
+      options: Options(contentType: Headers.jsonContentType),
+      data: {
+        'accessToken': kakaoAccessToken,
+        'name': name,
+        'gender': gender,
+        'birthDate': birthDate,
+        'phone': phone,
+        'nickName': nickName,
+        'email': email,
+      },
+    );
+
+    return LoginResponse(
+      accessToken: 'Bearer ${response.data['accessToken']}',
+      refreshToken: 'Bearer ${response.data['refreshToken']}',
+    );
+  }
 }

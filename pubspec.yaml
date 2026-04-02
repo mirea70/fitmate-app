@@ -50,6 +50,7 @@ dependencies:
   table_calendar: ^3.1.1
   curl_logger_dio_interceptor: ^1.0.0
   stomp_dart_client: ^2.0.0
+  kakao_flutter_sdk_user: 1.9.5
 
 dev_dependencies:
   flutter_test:

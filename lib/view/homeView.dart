@@ -1,10 +1,82 @@
-
+import 'package:fitmate_app/config/Const.dart';
+import 'package:fitmate_app/config/SecureStorage.dart';
+import 'package:fitmate_app/repository/auth/AuthRepository.dart';
 import 'package:fitmate_app/view/account/LoginView.dart';
+import 'package:fitmate_app/view/account/ProfileCompleteView.dart';
+import 'package:fitmate_app/view/mate/MainView.dart';
+import 'package:fitmate_app/widget/AppSnackBar.dart';
+import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
+
+  @override
+  ConsumerState<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends ConsumerState<HomeView> {
+  bool _isLoading = false;
+
+  Future<void> _handleKakaoLogin() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+
+    try {
+      OAuthToken token;
+      if (await isKakaoTalkInstalled()) {
+        token = await UserApi.instance.loginWithKakaoTalk();
+      } else {
+        token = await UserApi.instance.loginWithKakaoAccount();
+      }
+
+      final result = await ref.read(authRepositoryProvider).kakaoLogin(
+        kakaoAccessToken: token.accessToken,
+      );
+
+      final bool isNewUser = result['isNewUser'];
+
+      if (mounted) {
+        if (isNewUser) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => ProfileCompleteView(
+              kakaoAccessToken: token.accessToken,
+              kakaoNickName: result['kakaoNickName'] ?? '',
+              kakaoEmail: result['kakaoEmail'] ?? '',
+            )),
+            (route) => false,
+          );
+        } else {
+          final loginResponse = result['loginResponse'];
+          final FlutterSecureStorage storage = ref.read(secureStorageProvider);
+          await storage.write(key: accessTokenKey, value: loginResponse.accessToken);
+          await storage.write(key: refreshTokenKey, value: loginResponse.refreshToken);
+
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => MainView()),
+            (route) => false,
+          );
+          AppSnackBar.show(context, message: '환영합니다! 지금 바로 운동 메이트를 만나보세요!', type: SnackBarType.success);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => CustomAlert(
+            title: '카카오 로그인에 실패했습니다.',
+            deviceSize: MediaQuery.of(context).size,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,26 +86,6 @@ class HomeView extends StatelessWidget {
       body: Container(
         child: Stack(
           children: [
-            // Container(
-            // color: Color(0xffFF9800),
-            // color: Colors.orangeAccent,
-            // decoration: BoxDecoration(
-            //   // gradient: LinearGradient(
-            //   //   colors: [
-            //   //     Color(0xfff6d365).withOpacity(0.7),
-            //   //     Color(0xfffda085)
-            //   //   ],
-            //   //   begin: Alignment.topRight,
-            //   //   end: Alignment.bottomLeft,
-            //   // ),
-            //   image: DecorationImage(
-            //     image: AssetImage(
-            //         'assets/images/fitmate_bg.jpg',
-            //     ),
-            //     fit: BoxFit.fill,
-            //   )
-            // ),
-            // ),
             SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,7 +121,6 @@ class HomeView extends StatelessWidget {
                     height: deviceSize.height * 0.2,
                   ),
                   Container(
-                    // height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top*0.1,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -114,36 +165,12 @@ class HomeView extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Container(
-                      //   width: deviceSize.width * 0.9,
-                      //   height: deviceSize.height * 0.07,
-                      //   decoration: BoxDecoration(
-                      //     color: Colors.yellowAccent,
-                      //     borderRadius: BorderRadius.all(Radius.circular(30)),
-                      //   ),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Icon(Icons.start_rounded),
-                      //       SizedBox(
-                      //         width: 10,
-                      //       ),
-                      //       Text(
-                      //         ,
-                      //         style: TextStyle(
-                      //           color: Colors.black,
-                      //           fontWeight: FontWeight.w600,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                       CustomButton(
                         deviceSize: deviceSize,
-                        onTapMethod: (){},
-                        title: '카카오톡으로 5초만에 시작하기',
-                        isEnabled: true,
-                        color: Colors.yellowAccent,
+                        onTapMethod: _isLoading ? () {} : _handleKakaoLogin,
+                        title: _isLoading ? '로그인 중...' : '카카오톡으로 시작하기',
+                        isEnabled: !_isLoading,
+                        color: Color(0xffFEE500),
                         textColor: Colors.black87,
                       ),
                       SizedBox(
@@ -180,11 +207,11 @@ class TrapezoidClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.moveTo(size.width * 0.05, size.height * 0.9); // 좌하단
-    path.lineTo(size.width * 0.13, size.height * 0.1); // 우하단
-    path.lineTo(size.width * 0.95, size.height * 0.1); // 우상단
-    path.lineTo(size.width * 0.87, size.height * 0.9); // 좌상단
-    path.close(); // 닫힌 도형 만들기
+    path.moveTo(size.width * 0.05, size.height * 0.9);
+    path.lineTo(size.width * 0.13, size.height * 0.1);
+    path.lineTo(size.width * 0.95, size.height * 0.1);
+    path.lineTo(size.width * 0.87, size.height * 0.9);
+    path.close();
     return path;
   }
 
