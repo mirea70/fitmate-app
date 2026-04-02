@@ -13,6 +13,8 @@ import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView5.dart';
+import 'package:fitmate_app/repository/chat/ChatRepository.dart';
+import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +112,32 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     );
   }
 
+  Future<void> _navigateToChatRoom(Mate mate) async {
+    try {
+      final chatRooms = await ref.read(chatRepositoryProvider).getMyChatRooms();
+      final room = chatRooms.where((r) => r.matingId == widget.mateId).firstOrNull;
+      if (room != null && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatRoomView(
+              roomId: room.roomId,
+              roomName: mate.title,
+              memberAccountIds: room.memberAccountIds,
+              matingId: room.matingId,
+            ),
+          ),
+        );
+      } else if (mounted) {
+        AppSnackBar.show(context, message: '채팅방을 찾을 수 없습니다.', type: SnackBarType.error);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.show(context, message: '채팅방 입장에 실패했습니다.', type: SnackBarType.error);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
@@ -134,10 +162,40 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                   icon: Icon(Icons.arrow_back, color: Colors.black),
                 ),
                 actions: [
-                  if (_myAccountId != null && mate.writerAccountId == _myAccountId)
-                    IconButton(
-                      onPressed: () => _navigateToEdit(mate),
-                      icon: Icon(Icons.edit, color: Colors.black),
+                  if (_myAccountId != null)
+                    PopupMenuButton<String>(
+                      icon: Icon(Icons.more_vert, color: Colors.black),
+                      color: Colors.white,
+                      onSelected: (value) {
+                        if (value == 'edit') _navigateToEdit(mate);
+                        if (value == 'cancel') _showCancelDialog(mate);
+                      },
+                      itemBuilder: (context) {
+                        final items = <PopupMenuEntry<String>>[];
+                        final isWriter = mate.writerAccountId == _myAccountId;
+                        if (isWriter) {
+                          items.add(PopupMenuItem(
+                            value: 'edit',
+                            child: Row(children: [Icon(Icons.edit, size: 20, color: Colors.grey[700]), SizedBox(width: 10), Text('글 수정')]),
+                          ));
+                        }
+                        if (!isWriter) {
+                          final isApproved = mate.approvedAccountIds.contains(_myAccountId);
+                          final isWaiting = mate.waitingAccountIds.contains(_myAccountId);
+                          if (isApproved) {
+                            items.add(PopupMenuItem(
+                              value: 'cancel',
+                              child: Row(children: [Icon(Icons.exit_to_app, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('참여 취소', style: TextStyle(color: Colors.red[400]))]),
+                            ));
+                          } else if (isWaiting) {
+                            items.add(PopupMenuItem(
+                              value: 'cancel',
+                              child: Row(children: [Icon(Icons.cancel_outlined, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('신청 취소', style: TextStyle(color: Colors.red[400]))]),
+                            ));
+                          }
+                        }
+                        return items;
+                      },
                     ),
                 ],
               ),
@@ -483,13 +541,13 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
         _refreshData();
       };
     } else if (isApproved) {
-      title = '참여 취소';
+      title = '채팅방 입장';
       isEnabled = true;
-      onTap = () => _showCancelDialog(mate);
+      onTap = () => _navigateToChatRoom(mate);
     } else if (isWaiting) {
-      title = '신청 취소';
-      isEnabled = true;
-      onTap = () => _showCancelDialog(mate);
+      title = '승인 대기중';
+      isEnabled = false;
+      onTap = null;
     } else if (isFull) {
       title = '모집 마감';
       isEnabled = false;
