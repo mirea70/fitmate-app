@@ -40,4 +40,12 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
       return _fetchMates(0);
     });
   }
+
+  Future<void> modifyMate(int mateId, Mate mate) async {
+    state = AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(mateRepositoryProvider).requestModify(mateId, mate);
+      return _fetchMates(0);
+    });
+  }
 }

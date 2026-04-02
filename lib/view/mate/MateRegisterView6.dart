@@ -46,6 +46,11 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
     final viewModel = ref.watch(mateRegisterViewModelProvider);
 
+    final editMateId = ref.watch(mateEditModeProvider);
+    final isEditMode = editMateId != null;
+    final hasApprovedMembers = isEditMode &&
+        viewModel.approvedAccountIds.length > 1;
+
     _controller.value = TextEditingValue(
         text: getTextPermitPeopleCnt(viewModel.permitPeopleCnt!),
     );
@@ -53,10 +58,12 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
-        _isPermitGenderEditing = false;
-        _isGatherTypeEditing = false;
-        _isPermitPeopleCntEditing = false;
-        _isPermitAgesEditing = false;
+        if (!hasApprovedMembers) {
+          _isPermitGenderEditing = false;
+          _isGatherTypeEditing = false;
+          _isPermitPeopleCntEditing = false;
+          _isPermitAgesEditing = false;
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -88,6 +95,29 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w600),
                         ),
+                        if (hasApprovedMembers)
+                          Padding(
+                            padding: EdgeInsets.only(top: deviceSize.height * 0.02),
+                            child: Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Color(0xffFFF3E0),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.lock_outline, color: Colors.orangeAccent, size: 20),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      '승인된 참여자가 있어 모집 규칙을 변경할 수 없습니다.',
+                                      style: TextStyle(fontSize: 13, color: Colors.orange[800]),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         SizedBox(
                           height: deviceSize.height * 0.05,
                         ),
@@ -95,7 +125,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                           child: Column(
                             children: [
                               GestureDetector(
-                                onTap: () {
+                                onTap: hasApprovedMembers ? null : () {
                                   setState(() {
                                     _isPermitPeopleCntEditing = !_isPermitPeopleCntEditing;
                                     _isGatherTypeEditing = false;
@@ -103,7 +133,9 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                     _isPermitGenderEditing = false;
                                   });
                                 },
-                                child: Row(
+                                child: Opacity(
+                                  opacity: hasApprovedMembers ? 0.4 : 1.0,
+                                  child: Row(
                                   children: [
                                     Row(
                                       children: [
@@ -141,6 +173,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                     )
                                   ],
                                 ),
+                                ),
                               ),
                               SizedBox(
                                 height: deviceSize.height * 0.02,
@@ -155,7 +188,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                               SizedBox(
                                 height: deviceSize.height * 0.02,
                               ),
-                              if(_isPermitPeopleCntEditing)
+                              if(_isPermitPeopleCntEditing && !hasApprovedMembers)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -275,7 +308,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                 height: deviceSize.height * 0.02,
                               ),
                               GestureDetector(
-                                onTap: () {
+                                onTap: hasApprovedMembers ? null : () {
                                   setState(() {
                                     _isGatherTypeEditing = !_isGatherTypeEditing;
                                     _isPermitPeopleCntEditing = false;
@@ -283,7 +316,9 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                     _isPermitGenderEditing = false;
                                   });
                                 },
-                                child: Row(
+                                child: Opacity(
+                                  opacity: hasApprovedMembers ? 0.4 : 1.0,
+                                  child: Row(
                                   children: [
                                     Row(
                                       children: [
@@ -321,6 +356,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                     )
                                   ],
                                 ),
+                                ),
                               ),
                               SizedBox(
                                 height: deviceSize.height * 0.02,
@@ -335,7 +371,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                               SizedBox(
                                 height: deviceSize.height * 0.02,
                               ),
-                              if(_isGatherTypeEditing)
+                              if(_isGatherTypeEditing && !hasApprovedMembers)
                               Container(
                                 child: Column(
                                   children: [
@@ -461,7 +497,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                 height: deviceSize.height * 0.02,
                               ),
                               GestureDetector(
-                                onTap: () {
+                                onTap: hasApprovedMembers ? null : () {
                                   setState(() {
                                     _isPermitAgesEditing = !_isPermitAgesEditing;
                                     _isPermitPeopleCntEditing = false;
@@ -469,7 +505,9 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                     _isPermitGenderEditing = false;
                                   });
                                 },
-                                child: Row(
+                                child: Opacity(
+                                  opacity: hasApprovedMembers ? 0.4 : 1.0,
+                                  child: Row(
                                   children: [
                                     Row(
                                       children: [
@@ -507,6 +545,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                     ),
                                   ],
                                 ),
+                                ),
                               ),
                               SizedBox(
                                 height: deviceSize.height * 0.02,
@@ -521,7 +560,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                               SizedBox(
                                 height: deviceSize.height * 0.02,
                               ),
-                              if(_isPermitAgesEditing)
+                              if(_isPermitAgesEditing && !hasApprovedMembers)
                               Container(
                                 child: Column(
                                   children: [
@@ -562,7 +601,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                           height: deviceSize.height * 0.02,
                         ),
                         GestureDetector(
-                          onTap: () {
+                          onTap: hasApprovedMembers ? null : () {
                             setState(() {
                               _isPermitGenderEditing = !_isPermitGenderEditing;
                               _isGatherTypeEditing = false;
@@ -570,7 +609,9 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                               _isPermitAgesEditing = false;
                             });
                           },
-                          child: Row(
+                          child: Opacity(
+                            opacity: hasApprovedMembers ? 0.4 : 1.0,
+                            child: Row(
                             children: [
                               Row(
                                 children: [
@@ -608,6 +649,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                               )
                             ],
                           ),
+                          ),
                         ),
                         SizedBox(
                           height: deviceSize.height * 0.02,
@@ -622,7 +664,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                         SizedBox(
                           height: deviceSize.height * 0.02,
                         ),
-                        if(_isPermitGenderEditing)
+                        if(_isPermitGenderEditing && !hasApprovedMembers)
                           Container(
                             child: Row(
                               children: [

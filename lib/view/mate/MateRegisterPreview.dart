@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:fitmate_app/widget/AppSnackBar.dart';
@@ -36,6 +38,8 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
     final viewModel = ref.watch(mateRegisterViewModelProvider);
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
     final fileViewModel = ref.watch(fileViewModelProvider);
+    final editMateId = ref.watch(mateEditModeProvider);
+    final isEditMode = editMateId != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -55,15 +59,17 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                 child: Container(
                   height: deviceSize.height * 0.35,
                   width: deviceSize.width,
-                  child: fileViewModel.files.isEmpty
-                      ? Image.asset(
-                          'assets/images/default_intro_image.jpg',
-                          fit: BoxFit.cover,
-                        )
-                      : Image.file(
+                  child: fileViewModel.files.isNotEmpty
+                      ? Image.file(
                           File(fileViewModel.files[_currentImage].path),
                           fit: BoxFit.cover,
-                        ),
+                        )
+                      : isEditMode && viewModel.introImageIds.isNotEmpty
+                          ? _buildCachedImage(viewModel.introImageIds[_currentImage])
+                          : Image.asset(
+                              'assets/images/default_intro_image.jpg',
+                              fit: BoxFit.cover,
+                            ),
                 ),
               ),
               Positioned(
@@ -83,12 +89,14 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                     onPressed: () {
                       setState(
                         () {
-                          if (fileViewModel.files.isNotEmpty) {
+                          final imageCount = fileViewModel.files.isNotEmpty
+                              ? fileViewModel.files.length
+                              : (isEditMode ? viewModel.introImageIds.length : 0);
+                          if (imageCount > 0) {
                             if (_currentImage > 0) {
                               _currentImage--;
                             } else {
-                              // 이미지가 첫 번째일 때 이전 버튼을 누르면 마지막 이미지로 이동
-                              _currentImage = fileViewModel.files.length - 1;
+                              _currentImage = imageCount - 1;
                             }
                           }
                         },
@@ -114,11 +122,13 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                     onPressed: () {
                       setState(
                         () {
-                          if (fileViewModel.files.isNotEmpty) {
-                            if (_currentImage < fileViewModel.files.length - 1) {
+                          final imageCount = fileViewModel.files.isNotEmpty
+                              ? fileViewModel.files.length
+                              : (isEditMode ? viewModel.introImageIds.length : 0);
+                          if (imageCount > 0) {
+                            if (_currentImage < imageCount - 1) {
                               _currentImage++;
                             } else {
-                              // 이미지가 마지막일 때 다음 버튼을 누르면 첫 번째 이미지로 이동
                               _currentImage = 0;
                             }
                           }
@@ -192,7 +202,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                       width: deviceSize.width * 0.02,
                     ),
                     Text(
-                      '${viewModel.approvedAccountIds.length + 1}/${viewModel.permitPeopleCnt}',
+                      '${isEditMode ? viewModel.approvedAccountIds.length : viewModel.approvedAccountIds.length + 1}/${viewModel.permitPeopleCnt}',
                       style: TextStyle(
                         fontSize: 16,
                       ),
@@ -403,13 +413,16 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
               child: CustomButton(
                   deviceSize: deviceSize,
                   onTapMethod: () async {
-                    List<XFile> introImages =
-                        ref.read(fileViewModelProvider).files;
-                    List<String> introImagePaths = List.generate(
-                        introImages.length, (index) => introImages[index].path);
-
                     try {
-                      ref.watch(mateAsyncViewModelProvider.notifier).addMate(viewModel, introImagePaths);
+                      if (isEditMode) {
+                        ref.watch(mateAsyncViewModelProvider.notifier).modifyMate(editMateId, viewModel);
+                      } else {
+                        List<XFile> introImages =
+                            ref.read(fileViewModelProvider).files;
+                        List<String> introImagePaths = List.generate(
+                            introImages.length, (index) => introImages[index].path);
+                        ref.watch(mateAsyncViewModelProvider.notifier).addMate(viewModel, introImagePaths);
+                      }
 
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
@@ -420,8 +433,11 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                       viewModelNotifier.reset();
                       fileViewModel.reset();
                       ref.read(selectNumProvider.notifier).reset();
+                      ref.read(mateEditModeProvider.notifier).state = null;
 
-                      AppSnackBar.show(context, message: '메이트 모집 등록이 완료되었습니다!', type: SnackBarType.success);
+                      AppSnackBar.show(context,
+                          message: isEditMode ? '메이트 모집 글이 수정되었습니다!' : '메이트 모집 등록이 완료되었습니다!',
+                          type: SnackBarType.success);
                     } catch (error) {
                       showDialog(
                           context: context,
@@ -433,12 +449,31 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                           });
                     }
                   },
-                  title: '메이트 모집하기',
+                  title: isEditMode ? '수정하기' : '메이트 모집하기',
                   isEnabled: hasNotEmpty()),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCachedImage(int imageId) {
+    final data = ref.read(imageCacheServiceProvider).get(imageId);
+    if (data != null) {
+      return Image.memory(data, fit: BoxFit.cover);
+    }
+    return FutureBuilder<Uint8List?>(
+      future: ref.read(imageCacheServiceProvider).load(imageId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+          return Image.memory(snapshot.data!, fit: BoxFit.cover);
+        }
+        if (snapshot.hasError) {
+          return Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover);
+        }
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 

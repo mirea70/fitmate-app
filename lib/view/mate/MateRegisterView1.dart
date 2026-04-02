@@ -33,9 +33,15 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
         appBar: CustomAppBar(
           resetViewModel: viewModelNotifier,
           onPressed: () {
+            final isEditMode = ref.read(mateEditModeProvider) != null;
             viewModelNotifier.reset();
             selectNumNotifier.reset();
-            MainView.of(context)?.selectTab(0);
+            ref.read(mateEditModeProvider.notifier).state = null;
+            if (isEditMode) {
+              Navigator.pop(context);
+            } else {
+              MainView.of(context)?.selectTab(0);
+            }
           },
           deviceSize: deviceSize,
           devicePadding: devicePadding,

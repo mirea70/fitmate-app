@@ -3,6 +3,7 @@ import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view_model/BaseViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 final mateRegisterViewModelProvider =
     NotifierProvider<MateRegisterViewModel, Mate>(
@@ -17,6 +18,10 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
   @override
   void reset() {
     state = Mate.initial();
+  }
+
+  void loadFromMate(Mate mate) {
+    state = mate;
   }
 
   void resetMateFees() {
@@ -147,3 +152,6 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
     // else return AsyncValue.data(null);
   }
 }
+
+final mateEditModeProvider =
+    StateProvider<int?>((ref) => null);

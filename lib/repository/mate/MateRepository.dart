@@ -48,6 +48,35 @@ class MateRepository {
     }
   }
 
+  Future<dynamic> requestModify(int mateId, Mate mate) async {
+    String endPoint = "/api/mate/$mateId";
+    final jsonBody = mate.toJson();
+    jsonBody.remove('writerAccountId');
+    jsonBody.remove('writerNickName');
+    jsonBody.remove('writerImageId');
+    jsonBody.remove('waitingAccountIds');
+    jsonBody.remove('approvedAccountIds');
+    jsonBody.remove('totalFee');
+
+    final headers = {
+      'accessToken': true,
+    };
+
+    try {
+      await dio.patch(
+        endPoint,
+        options: Options(
+          contentType: Headers.jsonContentType,
+          headers: headers,
+        ),
+        data: jsonBody,
+      );
+      return null;
+    } on DioException catch (e) {
+      return e.response!.data;
+    }
+  }
+
   String generateCurlCommand(String url, Map<String, dynamic> headers, FormData formData) {
     final buffer = StringBuffer();
     buffer.write('curl -X POST ');

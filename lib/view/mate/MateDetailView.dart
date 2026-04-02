@@ -7,8 +7,12 @@ import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateApproveView.dart';
+import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
+import 'package:fitmate_app/view_model/file/FileViewModel.dart';
+import 'package:fitmate_app/view/mate/MateRegisterView5.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +80,36 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     });
   }
 
+  void _navigateToEdit(Mate mate) {
+    // Set edit mode with mateId
+    ref.read(mateEditModeProvider.notifier).state = widget.mateId;
+
+    // Load existing data into register view model
+    ref.read(mateRegisterViewModelProvider.notifier).loadFromMate(mate);
+
+    // Set category selection state
+    if (mate.fitCategory == FitCategory.FITNESS) {
+      ref.read(selectNumProvider.notifier).setSelectNum(1);
+    } else if (mate.fitCategory == FitCategory.CROSSFIT) {
+      ref.read(selectNumProvider.notifier).setSelectNum(2);
+    }
+
+    // Set fee state
+    if (mate.mateFees.isNotEmpty) {
+      ref.read(hasMateFeeProvider.notifier).setHasMateFee(true);
+    }
+
+    // Reset file view model (edit mode uses server image IDs)
+    ref.read(fileViewModelProvider).reset();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MateRegisterView1(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
@@ -99,6 +133,13 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(Icons.arrow_back, color: Colors.black),
                 ),
+                actions: [
+                  if (_myAccountId != null && mate.writerAccountId == _myAccountId)
+                    IconButton(
+                      onPressed: () => _navigateToEdit(mate),
+                      icon: Icon(Icons.edit, color: Colors.black),
+                    ),
+                ],
               ),
               body: SingleChildScrollView(
                 clipBehavior: Clip.none,
