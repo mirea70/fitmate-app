@@ -17,7 +17,7 @@ class MateRepository {
 
   MateRepository(this.dio);
 
-  Future<dynamic> requestRegister(Mate mate, List<String> introImagePaths) async {
+  Future<void> requestRegister(Mate mate, List<String> introImagePaths) async {
     String endPoint = "/api/mate";
     final jsonBody = mate.toJson();
     jsonBody.remove('introImageIds');
@@ -33,22 +33,17 @@ class MateRepository {
       'accessToken': true
     };
 
-    try {
-      await dio.post(
-        endPoint,
-        options: Options(
-          contentType: Headers.multipartFormDataContentType,
-          headers: headers,
-        ),
-        data: body,
-      );
-      return null;
-    } on DioException catch (e) {
-      return e.response!.data;
-    }
+    await dio.post(
+      endPoint,
+      options: Options(
+        contentType: Headers.multipartFormDataContentType,
+        headers: headers,
+      ),
+      data: body,
+    );
   }
 
-  Future<dynamic> requestModify(int mateId, Mate mate) async {
+  Future<void> requestModify(int mateId, Mate mate) async {
     String endPoint = "/api/mate/$mateId";
     final jsonBody = mate.toJson();
     jsonBody.remove('writerAccountId');
@@ -62,19 +57,14 @@ class MateRepository {
       'accessToken': true,
     };
 
-    try {
-      await dio.patch(
-        endPoint,
-        options: Options(
-          contentType: Headers.jsonContentType,
-          headers: headers,
-        ),
-        data: jsonBody,
-      );
-      return null;
-    } on DioException catch (e) {
-      return e.response!.data;
-    }
+    await dio.patch(
+      endPoint,
+      options: Options(
+        contentType: Headers.jsonContentType,
+        headers: headers,
+      ),
+      data: jsonBody,
+    );
   }
 
   String generateCurlCommand(String url, Map<String, dynamic> headers, FormData formData) {

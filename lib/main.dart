@@ -12,10 +12,9 @@ void main() async {
 
   const env = String.fromEnvironment('ENV', defaultValue: 'dev');
   AppConfig.init(env == 'prod' ? Environment.prod : Environment.dev);
+  debugPrint('=== 실행 환경: $env | baseUrl: ${AppConfig().baseUrl} ===');
 
   KakaoSdk.init(nativeAppKey: '424680dee5aab20e18748db709c66460');
-  final keyHash = await KakaoSdk.origin;
-  debugPrint('=== 카카오 키 해시: $keyHash ===');
   await initializeDateFormatting();
   runApp(
     ProviderScope(

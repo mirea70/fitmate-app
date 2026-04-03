@@ -39,6 +39,9 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
       await ref.read(mateRepositoryProvider).requestRegister(mate, introImagePaths);
       return _fetchMates(0);
     });
+    if (state.hasError) {
+      throw state.error!;
+    }
   }
 
   Future<void> modifyMate(int mateId, Mate mate) async {
@@ -47,5 +50,8 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
       await ref.read(mateRepositoryProvider).requestModify(mateId, mate);
       return _fetchMates(0);
     });
+    if (state.hasError) {
+      throw state.error!;
+    }
   }
 }

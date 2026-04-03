@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
@@ -435,13 +436,13 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                           newImageIds = uploaded.map((f) => f['attachFileId'] as int).toList();
                         }
                         mateToSubmit = mateToSubmit.copyWith(introImageIds: [...keepIds, ...newImageIds]);
-                        ref.watch(mateAsyncViewModelProvider.notifier).modifyMate(editMateId, mateToSubmit);
+                        await ref.read(mateAsyncViewModelProvider.notifier).modifyMate(editMateId, mateToSubmit);
                       } else {
                         List<XFile> introImages =
                             ref.read(fileViewModelProvider).files;
                         List<String> introImagePaths = List.generate(
                             introImages.length, (index) => introImages[index].path);
-                        ref.watch(mateAsyncViewModelProvider.notifier).addMate(viewModel, introImagePaths);
+                        await ref.read(mateAsyncViewModelProvider.notifier).addMate(viewModel, introImagePaths);
                       }
 
                       Navigator.of(context).pushAndRemoveUntil(
@@ -460,11 +461,21 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                           message: isEditMode ? '메이트 모집 글이 수정되었습니다!' : '메이트 모집 등록이 완료되었습니다!',
                           type: SnackBarType.success);
                     } catch (error) {
+                      String errorMessage = isEditMode
+                          ? '수정 중 문제가 발생했습니다. 다시 시도해주세요.'
+                          : '등록 중 문제가 발생했습니다. 다시 시도해주세요.';
+                      if (error is DioException && error.response?.data is Map) {
+                        final data = error.response!.data as Map;
+                        final serverMessage = data['message'] as String?;
+                        if (serverMessage != null && serverMessage.isNotEmpty) {
+                          errorMessage = serverMessage;
+                        }
+                      }
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return CustomAlert(
-                                title: '$error',
+                                title: errorMessage,
                                 deviceSize: deviceSize,
                             );
                           });
