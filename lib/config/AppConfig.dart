@@ -1,7 +1,10 @@
 import 'dart:io';
 
+enum Environment { dev, prod }
+
 class AppConfig {
   static final AppConfig _instance = AppConfig._privateConstructor();
+  static Environment _environment = Environment.dev;
 
   factory AppConfig() {
     return _instance;
@@ -9,10 +12,16 @@ class AppConfig {
 
   AppConfig._privateConstructor();
 
-  final String baseUrl = getBaseUrl();
-  // final String baseUrl = 'http://10.0.2.2:8090';
+  static void init(Environment env) {
+    _environment = env;
+  }
 
-  static String getBaseUrl() {
+  String get baseUrl => _getBaseUrl();
+
+  String _getBaseUrl() {
+    if (_environment == Environment.prod) {
+      return 'https://www.fitmate.site';
+    }
     if (Platform.isAndroid) {
       return 'http://10.0.2.2:8090';
     }
