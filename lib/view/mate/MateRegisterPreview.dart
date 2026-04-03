@@ -10,6 +10,7 @@ import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
+import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
@@ -40,6 +41,8 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
     final fileViewModel = ref.watch(fileViewModelProvider);
     final editMateId = ref.watch(mateEditModeProvider);
     final isEditMode = editMateId != null;
+    final keepImageIds = ref.watch(keepImageIdsProvider);
+    final totalImageCount = keepImageIds.length + fileViewModel.files.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -59,17 +62,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                 child: Container(
                   height: deviceSize.height * 0.35,
                   width: deviceSize.width,
-                  child: fileViewModel.files.isNotEmpty
-                      ? Image.file(
-                          File(fileViewModel.files[_currentImage].path),
-                          fit: BoxFit.cover,
-                        )
-                      : isEditMode && viewModel.introImageIds.isNotEmpty
-                          ? _buildCachedImage(viewModel.introImageIds[_currentImage])
-                          : Image.asset(
-                              'assets/images/default_intro_image.jpg',
-                              fit: BoxFit.cover,
-                            ),
+                  child: _buildPreviewImage(keepImageIds, fileViewModel, _currentImage),
                 ),
               ),
               Positioned(
@@ -89,9 +82,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                     onPressed: () {
                       setState(
                         () {
-                          final imageCount = fileViewModel.files.isNotEmpty
-                              ? fileViewModel.files.length
-                              : (isEditMode ? viewModel.introImageIds.length : 0);
+                          final imageCount = totalImageCount;
                           if (imageCount > 0) {
                             if (_currentImage > 0) {
                               _currentImage--;
@@ -122,9 +113,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                     onPressed: () {
                       setState(
                         () {
-                          final imageCount = fileViewModel.files.isNotEmpty
-                              ? fileViewModel.files.length
-                              : (isEditMode ? viewModel.introImageIds.length : 0);
+                          final imageCount = totalImageCount;
                           if (imageCount > 0) {
                             if (_currentImage < imageCount - 1) {
                               _currentImage++;
@@ -436,7 +425,17 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                   onTapMethod: () async {
                     try {
                       if (isEditMode) {
-                        ref.watch(mateAsyncViewModelProvider.notifier).modifyMate(editMateId, viewModel);
+                        var mateToSubmit = viewModel;
+                        // 유지 중인 서버 이미지 ID + 새로 업로드한 이미지 ID 합산
+                        List<int> keepIds = List<int>.from(ref.read(keepImageIdsProvider));
+                        List<int> newImageIds = [];
+                        if (fileViewModel.files.isNotEmpty) {
+                          List<String> newImagePaths = fileViewModel.files.map((f) => f.path).toList();
+                          List<Map<String, dynamic>> uploaded = await ref.read(fileRepositoryProvider).uploadFiles(newImagePaths);
+                          newImageIds = uploaded.map((f) => f['attachFileId'] as int).toList();
+                        }
+                        mateToSubmit = mateToSubmit.copyWith(introImageIds: [...keepIds, ...newImageIds]);
+                        ref.watch(mateAsyncViewModelProvider.notifier).modifyMate(editMateId, mateToSubmit);
                       } else {
                         List<XFile> introImages =
                             ref.read(fileViewModelProvider).files;
@@ -455,6 +454,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                       fileViewModel.reset();
                       ref.read(selectNumProvider.notifier).reset();
                       ref.read(mateEditModeProvider.notifier).state = null;
+                      ref.read(keepImageIdsProvider.notifier).state = [];
 
                       AppSnackBar.show(context,
                           message: isEditMode ? '메이트 모집 글이 수정되었습니다!' : '메이트 모집 등록이 완료되었습니다!',
@@ -477,6 +477,21 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
         ),
       ),
     );
+  }
+
+  Widget _buildPreviewImage(List<int> keepIds, FileViewModel fvm, int index) {
+    final totalCount = keepIds.length + fvm.files.length;
+    if (totalCount == 0) {
+      return Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover);
+    }
+    if (index < keepIds.length) {
+      return _buildCachedImage(keepIds[index]);
+    }
+    final fileIndex = index - keepIds.length;
+    if (fileIndex < fvm.files.length) {
+      return Image.file(File(fvm.files[fileIndex].path), fit: BoxFit.cover);
+    }
+    return Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover);
   }
 
   Widget _buildCachedImage(int imageId) {

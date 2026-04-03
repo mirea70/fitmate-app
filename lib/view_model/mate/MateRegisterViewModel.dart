@@ -155,3 +155,7 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
 
 final mateEditModeProvider =
     StateProvider<int?>((ref) => null);
+
+// 수정 모드에서 유지 중인 기존 서버 이미지 ID 목록
+final keepImageIdsProvider =
+    StateProvider<List<int>>((ref) => []);

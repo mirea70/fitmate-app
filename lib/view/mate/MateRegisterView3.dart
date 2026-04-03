@@ -1,3 +1,4 @@
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/error/CustomException.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
@@ -21,6 +22,50 @@ class MateRegisterView3 extends ConsumerStatefulWidget {
 }
 
 class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
+
+  Widget _buildServerImageThumbnail(int imageId, Size deviceSize) {
+    final data = ref.read(imageCacheServiceProvider).get(imageId);
+    ImageProvider imageProvider;
+    if (data != null) {
+      imageProvider = MemoryImage(data);
+    } else {
+      imageProvider = AssetImage('assets/images/default_intro_image.jpg');
+    }
+    return Stack(
+      children: [
+        Container(
+          height: 77,
+          width: 77,
+          decoration: BoxDecoration(
+            image: DecorationImage(fit: BoxFit.cover, image: imageProvider),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Color(0xffE8E8E8), width: 2),
+          ),
+        ),
+        Positioned(
+          top: 5,
+          left: 57,
+          child: Container(
+            height: deviceSize.height * 0.02,
+            width: deviceSize.width * 0.05,
+            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.grey),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                final keepIds = ref.read(keepImageIdsProvider.notifier);
+                final current = List<int>.from(keepIds.state);
+                current.remove(imageId);
+                keepIds.state = current;
+              },
+              icon: Icon(Icons.close, color: Colors.white, size: 10),
+              alignment: Alignment.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
@@ -28,6 +73,8 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
     final viewModel = ref.watch(mateRegisterViewModelProvider);
     final fileViewModel = ref.watch(fileViewModelProvider);
+    final isEditMode = ref.watch(mateEditModeProvider) != null;
+    final keepImageIds = ref.watch(keepImageIdsProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -78,20 +125,20 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
                                   ),
                                   Expanded(
                                     child: ListView.separated(
-                                      itemCount: fileViewModel.files.length,
+                                      itemCount: keepImageIds.length + fileViewModel.files.length,
                                       itemBuilder: (context, index) {
+                                        if (index < keepImageIds.length) {
+                                          return _buildServerImageThumbnail(keepImageIds[index], deviceSize);
+                                        }
+                                        final fileIndex = index - keepImageIds.length;
                                         return CustomViewImage(
                                           deviceSize: deviceSize,
-                                          index: index,
+                                          index: fileIndex,
                                           fileViewModel: fileViewModel,
                                         );
                                       },
                                       scrollDirection: Axis.horizontal,
-                                      separatorBuilder: (context, index) {
-                                        return SizedBox(
-                                          width: deviceSize.width * 0.02,
-                                        );
-                                      },
+                                      separatorBuilder: (context, index) => SizedBox(width: deviceSize.width * 0.02),
                                     ),
                                   ),
                                 ],

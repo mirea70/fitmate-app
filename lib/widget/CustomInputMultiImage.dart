@@ -1,5 +1,6 @@
 
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,7 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
 
   void _showImageSourceSheet() {
     final fileViewModel = ref.read(fileViewModelProvider);
+    final keepCount = ref.read(keepImageIdsProvider).length;
 
     showModalBottomSheet(
       context: context,
@@ -33,7 +35,7 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
                   Navigator.pop(context);
                   final image = await ImagePicker().pickImage(source: ImageSource.camera);
                   if (image != null) {
-                    if (fileViewModel.isOver([image])) {
+                    if (fileViewModel.files.length + keepCount + 1 > 3) {
                       showDialog(
                         context: this.context,
                         builder: (BuildContext context) {
@@ -55,7 +57,7 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
                 onTap: () async {
                   Navigator.pop(context);
                   final images = await ImagePicker().pickMultiImage();
-                  if (fileViewModel.isOver(images)) {
+                  if (fileViewModel.files.length + keepCount + images.length > 3) {
                     showDialog(
                       context: this.context,
                       builder: (BuildContext context) {
@@ -80,7 +82,8 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
   @override
   Widget build(BuildContext context) {
     final fileViewModel = ref.watch(fileViewModelProvider);
-    int count = fileViewModel.files.length;
+    final keepImageIds = ref.watch(keepImageIdsProvider);
+    int count = keepImageIds.length + fileViewModel.files.length;
 
     return Stack(
       children: [

@@ -37,6 +37,7 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
             viewModelNotifier.reset();
             selectNumNotifier.reset();
             ref.read(mateEditModeProvider.notifier).state = null;
+            ref.read(keepImageIdsProvider.notifier).state = [];
             if (isEditMode) {
               Navigator.pop(context);
             } else {

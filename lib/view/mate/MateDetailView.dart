@@ -101,8 +101,8 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
       ref.read(hasMateFeeProvider.notifier).setHasMateFee(true);
     }
 
-    // Reset file view model (edit mode uses server image IDs)
     ref.read(fileViewModelProvider).reset();
+    ref.read(keepImageIdsProvider.notifier).state = List<int>.from(mate.introImageIds);
 
     Navigator.push(
       context,
