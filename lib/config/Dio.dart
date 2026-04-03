@@ -7,6 +7,7 @@ import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as Storage;
+import 'package:flutter/foundation.dart';
 import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 
 final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) => GlobalKey<NavigatorState>());
@@ -14,8 +15,10 @@ final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) => Global
 final dioProvider = Provider<Dio>((ref) {
   final storage = ref.watch(secureStorageProvider);
   final dio = Dio(BaseOptions(baseUrl: AppConfig().baseUrl))
-    ..interceptors.add(CurlLoggerDioInterceptor())
     ..interceptors.add(CustomInterceptor(storage: storage, ref: ref));
+  if (kDebugMode) {
+    dio.interceptors.add(CurlLoggerDioInterceptor());
+  }
   return dio;
 });
 

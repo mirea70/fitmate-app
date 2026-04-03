@@ -465,7 +465,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                           ? '수정 중 문제가 발생했습니다. 다시 시도해주세요.'
                           : '등록 중 문제가 발생했습니다. 다시 시도해주세요.';
                       if (error is DioException && error.response?.data is Map) {
-                        final data = error.response!.data as Map;
+                        final data = error.response?.data as Map;
                         final serverMessage = data['message'] as String?;
                         if (serverMessage != null && serverMessage.isNotEmpty) {
                           errorMessage = serverMessage;

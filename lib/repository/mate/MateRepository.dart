@@ -104,8 +104,6 @@ class MateRepository {
       ),
       data: body
     );
-    print(response.data.toString());
-
     List<MateListItem> mates = List<Map<String, dynamic>>.from(response.data['content'])
     .map((item) {
       return MateListItem.fromJson(item);

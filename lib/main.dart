@@ -14,7 +14,8 @@ void main() async {
   AppConfig.init(env == 'prod' ? Environment.prod : Environment.dev);
   debugPrint('=== 실행 환경: $env | baseUrl: ${AppConfig().baseUrl} ===');
 
-  KakaoSdk.init(nativeAppKey: '424680dee5aab20e18748db709c66460');
+  const kakaoAppKey = String.fromEnvironment('KAKAO_NATIVE_APP_KEY');
+  KakaoSdk.init(nativeAppKey: kakaoAppKey);
   await initializeDateFormatting();
   runApp(
     ProviderScope(

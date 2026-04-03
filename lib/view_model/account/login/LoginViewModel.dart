@@ -87,8 +87,12 @@ class LoginViewModel extends Notifier<LoginState> {
       state = state.copyWith(isLoading: false);
       return AsyncValue.data(null);
     } on DioException catch (e) {
-      if(e.response!.data =="") return AsyncValue.error("알수없는 에러가 발생하였습니다.", StackTrace.empty);
-      return AsyncValue.error(e.response!.data['message'] ?? "알수없는 에러가 발생하였습니다.", StackTrace.empty);
+      final data = e.response?.data;
+      if (data == null || data == "") {
+        return AsyncValue.error("알수없는 에러가 발생하였습니다.", StackTrace.empty);
+      }
+      final message = data is Map ? data['message'] : null;
+      return AsyncValue.error(message ?? "알수없는 에러가 발생하였습니다.", StackTrace.empty);
     }
   }
 

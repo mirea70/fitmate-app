@@ -38,8 +38,11 @@ class ValidateCodeViewModel extends Notifier<ValidateCode> {
 
   void requestValidateCode(String phone) async {
     final result = await ref.read(accountRepositoryProvider).requestSmsCode(phone);
-    if(result == true) state = state.copyWith(isVisibleCheckView: true);
-    else throw 'UnKnown Exception';
+    if(result == true) {
+      state = state.copyWith(isVisibleCheckView: true);
+    } else {
+      throw Exception('인증번호 요청 중 오류가 발생했습니다.');
+    }
   }
 
   Future<AsyncValue<void>> checkValidateCode(String phone, String inputCode) async {

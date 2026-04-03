@@ -25,10 +25,10 @@ class AccountRepository {
       await dio.get(endPoint, queryParameters: queryString);
       return true;
     } on DioException catch (e) {
-      if (e.response!.data['code'] == 'DUPLICATED_ACCOUNT_JOIN')
+      if (e.response?.data?['code'] == 'DUPLICATED_ACCOUNT_JOIN') {
         return false;
-      else
-        throw 'UnKnown Exception';
+      }
+      throw Exception('아이디 중복 확인 중 오류가 발생했습니다.');
     }
   }
 
@@ -40,10 +40,10 @@ class AccountRepository {
       await dio.get(endPoint, queryParameters: queryString);
       return true;
     } on DioException catch (e) {
-      if (e.response!.data['code'] == 'DUPLICATED_ACCOUNT_JOIN')
+      if (e.response?.data?['code'] == 'DUPLICATED_ACCOUNT_JOIN') {
         return false;
-      else
-        throw 'UnKnown Exception';
+      }
+      throw Exception('전화번호 중복 확인 중 오류가 발생했습니다.');
     }
   }
 
@@ -216,7 +216,7 @@ class AccountRepository {
       );
       return null;
     } on DioException catch (e) {
-      return e.response!.data;
+      return e.response?.data;
     }
   }
 

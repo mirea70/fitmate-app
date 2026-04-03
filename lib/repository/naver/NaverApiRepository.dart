@@ -8,8 +8,8 @@ final naverApiRepositoryProvider = Provider<NaverApiRepository>((ref) {
 
 class NaverApiRepository {
   final Dio dio = Dio();
-  final String clientId = 'GgIyfE57D5kvunVCFqwn';
-  final String clientSecret = 'HT_KxQ2zVN';
+  final String clientId = const String.fromEnvironment('NAVER_CLIENT_ID');
+  final String clientSecret = const String.fromEnvironment('NAVER_CLIENT_SECRET');
 
   Future<List<Map<String, dynamic>>> searchPlace(String keyword) async {
     String url = 'https://openapi.naver.com/v1/search/local.json';
