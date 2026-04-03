@@ -32,7 +32,7 @@ class _WishListViewState extends ConsumerState<WishListView> {
         imageIds.add(item.thumbnailImageId);
         imageIds.add(item.writerImageId);
       }
-      await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+      ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
       if (mounted) {
         setState(() {
           _wishList = items;
@@ -89,6 +89,7 @@ class _WishListViewState extends ConsumerState<WishListView> {
 
   Widget _buildItem(MateListItem item, Size deviceSize) {
     return GestureDetector(
+      key: ValueKey(item.id),
       onTap: () async {
         await Navigator.push(
           context,

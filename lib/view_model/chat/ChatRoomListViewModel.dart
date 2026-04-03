@@ -30,8 +30,13 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
   }
 
   Future<ChatRoomListState> _loadAll() async {
-    final profile = await ref.read(accountRepositoryProvider).getMyProfile();
-    final rooms = await ref.read(chatRepositoryProvider).getMyChatRooms();
+    // 내 프로필과 채팅방 목록을 병렬 조회
+    final results = await Future.wait([
+      ref.read(accountRepositoryProvider).getMyProfile(),
+      ref.read(chatRepositoryProvider).getMyChatRooms(),
+    ]);
+    final profile = results[0] as AccountProfile;
+    final rooms = results[1] as List<ChatRoom>;
 
     final newIds = <int>{};
     for (final room in rooms) {
@@ -51,7 +56,7 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
           imageIds.add(p.profileImageId);
         } catch (_) {}
       }));
-      await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+      ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
     }
 
     return ChatRoomListState(

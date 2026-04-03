@@ -440,7 +440,10 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
         final msg = messages[index];
 
         if (msg.isSystem) {
-          return _buildSystemMessage(msg);
+          return KeyedSubtree(
+            key: ValueKey(index),
+            child: _buildSystemMessage(msg),
+          );
         }
 
         final isMe = msg.senderId == myAccountId;
@@ -453,7 +456,10 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
             nextMsg.senderId != msg.senderId ||
             _isDifferentMinute(msg.createdAt, nextMsg.createdAt);
 
-        return _buildMessageBubble(msg, isMe, showProfile, showTime, deviceSize);
+        return KeyedSubtree(
+          key: ValueKey(index),
+          child: _buildMessageBubble(msg, isMe, showProfile, showTime, deviceSize),
+        );
       },
     );
   }

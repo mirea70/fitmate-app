@@ -120,6 +120,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                               itemCount: items.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
+                                  key: ValueKey(items[index].id),
                                   onTap: () async {
                                     await Navigator.push(
                                       context,

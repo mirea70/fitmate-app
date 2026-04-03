@@ -53,7 +53,7 @@ class _MateApproveViewState extends ConsumerState<MateApproveView>
         imageIds.add(profile.profileImageId);
       } catch (_) {}
     }));
-    await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+    ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
     if (mounted) setState(() => _isLoading = false);
   }
 
@@ -172,6 +172,7 @@ class _MateApproveViewState extends ConsumerState<MateApproveView>
         final profile = _profileCache[accountId];
 
         return ListTile(
+          key: ValueKey(accountId),
           leading: _buildProfileImage(profile?.profileImageId, 44),
           title: Text(
             profile?.nickName ?? '...',

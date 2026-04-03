@@ -24,7 +24,7 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
       imageIds.add(item.thumbnailImageId);
       imageIds.add(item.writerImageId);
     }
-    await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
+    ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
     return items;
   }
 

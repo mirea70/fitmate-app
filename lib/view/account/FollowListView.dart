@@ -53,7 +53,7 @@ class _FollowListViewState extends ConsumerState<FollowListView>
         } catch (_) {}
       }));
 
-      await ref.read(imageCacheServiceProvider).preloadAll(
+      ref.read(imageCacheServiceProvider).preloadInBackground(
         _profileCache.values.map((p) => p.profileImageId).toList(),
       );
 
@@ -149,6 +149,7 @@ class _FollowListViewState extends ConsumerState<FollowListView>
       itemBuilder: (context, index) {
         final profile = list[index];
         return ListTile(
+          key: ValueKey(profile.accountId),
           leading: _buildProfileImage(profile.profileImageId, 44),
           title: Text(
             profile.nickName,

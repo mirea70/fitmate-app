@@ -22,7 +22,6 @@ class _MateListViewState extends ConsumerState<MateListView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        ref.read(mateAsyncViewModelProvider.notifier).refresh();
         ref.read(unreadNoticeCountProvider.notifier).refresh();
       }
     });
@@ -63,13 +62,13 @@ class _MateListViewState extends ConsumerState<MateListView> {
                         itemCount: items.length,
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
+                            key: ValueKey(items[index].id),
                             onTap: () async {
                               await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           MateDetailView(mateId: items[index].id)));
-                              ref.read(mateAsyncViewModelProvider.notifier).refresh();
                             },
                             child: Stack(
                               children: [

@@ -105,6 +105,7 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
 
   Widget _buildMateItem(MateListItem item, Size deviceSize) {
     return GestureDetector(
+      key: ValueKey(item.id),
       onTap: () async {
         await Navigator.push(
           context,

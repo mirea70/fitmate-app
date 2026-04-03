@@ -71,8 +71,11 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                 indent: deviceSize.width * 0.2,
               ),
               itemBuilder: (context, index) {
-                return _buildChatRoomItem(
-                    data.rooms[index], data.myAccountId, deviceSize);
+                return KeyedSubtree(
+                    key: ValueKey(data.rooms[index].roomId),
+                    child: _buildChatRoomItem(
+                      data.rooms[index], data.myAccountId, deviceSize),
+                );
               },
             ),
           );
