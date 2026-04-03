@@ -15,6 +15,10 @@ class ImageCacheService {
 
   Uint8List? get(int fileId) => _cache[fileId];
 
+  void put(int fileId, Uint8List data) => _cache[fileId] = data;
+
+  void remove(int fileId) => _cache.remove(fileId);
+
   bool has(int fileId) => _cache.containsKey(fileId);
 
   Future<Uint8List?> load(int fileId) async {

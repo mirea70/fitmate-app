@@ -30,6 +30,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
   int? _profileImageId;
   Uint8List? _newImageBytes;
   bool _isSaving = false;
+  bool _resetToDefault = false;
 
   @override
   void initState() {
@@ -77,6 +78,19 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
                   if (image != null) await _uploadImage(image);
                 },
               ),
+              if (_profileImageId != null || _newImageBytes != null)
+                ListTile(
+                  leading: Icon(Icons.person_outline),
+                  title: Text('기본 이미지로 변경'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      _profileImageId = null;
+                      _newImageBytes = null;
+                      _resetToDefault = true;
+                    });
+                  },
+                ),
             ],
           ),
         );
@@ -92,6 +106,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
         setState(() {
           _profileImageId = files[0]['attachFileId'];
           _newImageBytes = bytes;
+          _resetToDefault = false;
         });
       }
     } catch (e) {
@@ -118,6 +133,12 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
         email: _emailController.text,
         profileImageId: _profileImageId,
       );
+      if (_newImageBytes != null && _profileImageId != null) {
+        ref.read(imageCacheServiceProvider).put(_profileImageId!, _newImageBytes!);
+      }
+      if (_resetToDefault && widget.profile.profileImageId != null) {
+        ref.read(imageCacheServiceProvider).remove(widget.profile.profileImageId!);
+      }
       ref.invalidate(myProfileProvider);
       if (mounted) Navigator.pop(context);
     } on DioException catch (e) {
@@ -221,6 +242,9 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
   }
 
   Widget _buildCurrentProfileImage(Size deviceSize) {
+    if (_resetToDefault) {
+      return DefaultProfileImage(size: deviceSize.width * 0.25);
+    }
     if (_newImageBytes != null) {
       return _buildCircle(MemoryImage(_newImageBytes!), deviceSize);
     }
