@@ -1,7 +1,6 @@
 import 'package:fitmate_app/model/mate/Mate.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
-import 'package:fitmate_app/widget/CustomInputBox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -71,35 +70,52 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                                   fontSize: 20, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
-                              height: deviceSize.height * 0.05,
+                              height: deviceSize.height * 0.03,
                             ),
                             Container(
                               child: Column(
                                 children: [
-                                  CustomInputBox(
-                                    onTap: () {
-                                      selectNumNotifier.setSelectNum(1);
-                                      viewModelNotifier.setFitCategory(FitCategory.FITNESS);
-                                    },
-                                    index: 1,
-                                    title: '헬스',
-                                    imagePath: 'assets/images/fit_category1.png',
-                                    deviceSize: deviceSize,
-                                    selectNum: selectNum,
-                                  ),
-                                  SizedBox(
-                                    height: deviceSize.height*0.02,
-                                  ),
-                                  CustomInputBox(
-                                    onTap: () {
-                                      selectNumNotifier.setSelectNum(2);
-                                      viewModelNotifier.setFitCategory(FitCategory.CROSSFIT);
-                                    },
-                                    index: 2,
-                                    title: '크로스핏',
-                                    imagePath: 'assets/images/fit_category2.png',
-                                    deviceSize: deviceSize,
-                                    selectNum: selectNum,
+                                  Wrap(
+                                    spacing: deviceSize.width * 0.03,
+                                    runSpacing: deviceSize.height * 0.015,
+                                    children: FitCategory.values
+                                        .where((c) => c != FitCategory.undefined)
+                                        .toList()
+                                        .asMap()
+                                        .entries
+                                        .map((entry) {
+                                      final index = entry.key + 1;
+                                      final category = entry.value;
+                                      final isSelected = selectNum == index;
+                                      return GestureDetector(
+                                        onTap: () {
+                                          selectNumNotifier.setSelectNum(index);
+                                          viewModelNotifier.setFitCategory(category);
+                                        },
+                                        child: Container(
+                                          width: deviceSize.width * 0.27,
+                                          height: deviceSize.height * 0.055,
+                                          decoration: BoxDecoration(
+                                            color: isSelected ? Colors.orangeAccent : Colors.white,
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: isSelected ? Colors.orangeAccent : Color(0xffE8E8E8),
+                                              width: 2,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              category.label,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: isSelected ? Colors.white : Colors.black87,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
                                 ],
                               ),
