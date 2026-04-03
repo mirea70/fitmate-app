@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,42 +17,58 @@ class CachedProfileImage extends ConsumerStatefulWidget {
 }
 
 class _CachedProfileImageState extends ConsumerState<CachedProfileImage> {
-  bool _loaded = false;
+  Uint8List? _data;
+  bool _fadeIn = false;
 
   @override
   void initState() {
     super.initState();
-    _tryLoad();
+    _initImage();
   }
 
-  void _tryLoad() {
+  void _initImage() {
     if (widget.imageId == null) return;
     final cache = ref.read(imageCacheServiceProvider);
-    if (cache.has(widget.imageId!)) return;
-    cache.load(widget.imageId!).then((_) {
-      if (mounted) setState(() => _loaded = true);
+    final cached = cache.get(widget.imageId!);
+    if (cached != null) {
+      _data = cached;
+      return;
+    }
+    cache.load(widget.imageId!).then((data) {
+      if (mounted && data != null) setState(() { _data = data; _fadeIn = true; });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.imageId == null) return DefaultProfileImage(size: widget.size);
-    final data = ref.read(imageCacheServiceProvider).get(widget.imageId!);
-    if (data != null) {
-      final cacheSize = (widget.size * MediaQuery.devicePixelRatioOf(context)).toInt();
-      return Container(
-        width: widget.size,
-        height: widget.size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            image: ResizeImage(MemoryImage(data), width: cacheSize, height: cacheSize),
-            fit: BoxFit.cover,
-          ),
+
+    if (_data == null) {
+      return ShimmerBox.circle(size: widget.size);
+    }
+
+    final cacheSize = (widget.size * MediaQuery.devicePixelRatioOf(context)).toInt();
+    final image = Container(
+      width: widget.size,
+      height: widget.size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        image: DecorationImage(
+          image: ResizeImage(MemoryImage(_data!), width: cacheSize, height: cacheSize),
+          fit: BoxFit.cover,
         ),
+      ),
+    );
+
+    if (_fadeIn) {
+      return TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 200),
+        builder: (context, opacity, child) => Opacity(opacity: opacity, child: child),
+        child: image,
       );
     }
-    return DefaultProfileImage(size: widget.size);
+    return image;
   }
 }
 
@@ -72,37 +91,49 @@ class CachedThumbnailImage extends ConsumerStatefulWidget {
 }
 
 class _CachedThumbnailImageState extends ConsumerState<CachedThumbnailImage> {
+  Uint8List? _data;
+  bool _fadeIn = false;
+
   @override
   void initState() {
     super.initState();
-    _tryLoad();
+    _initImage();
   }
 
-  void _tryLoad() {
+  void _initImage() {
     if (widget.imageId == null) return;
     final cache = ref.read(imageCacheServiceProvider);
-    if (cache.has(widget.imageId!)) return;
-    cache.load(widget.imageId!).then((_) {
-      if (mounted) setState(() {});
+    final cached = cache.get(widget.imageId!);
+    if (cached != null) {
+      _data = cached;
+      return;
+    }
+    cache.load(widget.imageId!).then((data) {
+      if (mounted && data != null) setState(() { _data = data; _fadeIn = true; });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider imageProvider = const AssetImage('assets/images/default_intro_image.jpg');
-    if (widget.imageId != null) {
-      final data = ref.read(imageCacheServiceProvider).get(widget.imageId!);
-      if (data != null) {
-        final dpr = MediaQuery.devicePixelRatioOf(context);
-        imageProvider = ResizeImage(
-          MemoryImage(data),
-          width: (widget.width * dpr).toInt(),
-          height: (widget.height * dpr).toInt(),
-        );
-      }
+    if (_data == null && widget.imageId != null) {
+      return ShimmerBox(
+        width: widget.width,
+        height: widget.height,
+        borderRadius: widget.borderRadius,
+      );
     }
 
-    return Container(
+    ImageProvider imageProvider = const AssetImage('assets/images/default_intro_image.jpg');
+    if (_data != null) {
+      final dpr = MediaQuery.devicePixelRatioOf(context);
+      imageProvider = ResizeImage(
+        MemoryImage(_data!),
+        width: (widget.width * dpr).toInt(),
+        height: (widget.height * dpr).toInt(),
+      );
+    }
+
+    final container = Container(
       width: widget.width,
       height: widget.height,
       decoration: BoxDecoration(
@@ -110,5 +141,15 @@ class _CachedThumbnailImageState extends ConsumerState<CachedThumbnailImage> {
         image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
       ),
     );
+
+    if (_fadeIn) {
+      return TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 200),
+        builder: (context, opacity, child) => Opacity(opacity: opacity, child: child),
+        child: container,
+      );
+    }
+    return container;
   }
 }

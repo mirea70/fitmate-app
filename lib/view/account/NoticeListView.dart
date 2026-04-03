@@ -3,6 +3,7 @@ import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/view_model/account/NoticeListViewModel.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +29,7 @@ class NoticeListView extends ConsumerWidget {
         ),
       ),
       body: noticeState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const NoticeListSkeleton(),
         error: (_, __) => Center(
           child: Text(
             '알림을 불러오는데 실패했습니다.',

@@ -12,6 +12,7 @@ import 'package:fitmate_app/view/account/NoticeListView.dart';
 import 'package:fitmate_app/view/account/ProfileEditView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,7 +38,7 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
     final profileAsync = ref.watch(myProfileProvider);
 
     return profileAsync.when(
-      loading: () => Center(child: CircularProgressIndicator()),
+      loading: () => const ProfileSkeleton(),
       error: (error, stack) => Center(
         child: Text(
           '프로필을 불러올 수 없습니다.',

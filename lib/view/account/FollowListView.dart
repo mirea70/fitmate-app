@@ -3,6 +3,7 @@ import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -122,7 +123,7 @@ class _FollowListViewState extends ConsumerState<FollowListView>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const ChatListSkeleton()
           : TabBarView(
               controller: _tabController,
               children: [

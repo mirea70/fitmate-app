@@ -17,6 +17,7 @@ import 'package:fitmate_app/repository/chat/ChatRepository.dart';
 import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -142,7 +143,8 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     return detailState.when(
       loading: () => Scaffold(
         backgroundColor: Color(0xffF5F5F5),
-        body: Center(child: CircularProgressIndicator()),
+        appBar: AppBar(backgroundColor: Color(0xffF5F5F5), elevation: 0),
+        body: DetailViewSkeleton(deviceSize: deviceSize),
       ),
       error: (error, __) => Scaffold(
         body: CustomAlert(

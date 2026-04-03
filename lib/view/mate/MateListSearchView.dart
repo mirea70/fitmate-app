@@ -6,6 +6,7 @@ import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:fitmate_app/widget/CustomInputWithoutFocus.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -100,9 +101,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                   future: ref.read(mateListRequestViewModelProvider.notifier).requestFilter(page: 0, keyword: _keyword),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if(snapshot.hasData == false) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return MateListSkeleton(deviceSize: deviceSize);
                     }
                     else if(snapshot.hasError) {
                       return CustomAlert(

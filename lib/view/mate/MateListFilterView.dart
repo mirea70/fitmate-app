@@ -5,6 +5,7 @@ import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/mate/MateListRequestViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/MateListFilterViewAppbar.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -42,8 +43,8 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                 future: ref.read(mateListRequestViewModelProvider.notifier).requestFilter(page: 0),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if(snapshot.hasData == false) {
-                    return Center(
-                      child: CircularProgressIndicator(),
+                    return Expanded(
+                      child: MateListSkeleton(deviceSize: deviceSize),
                     );
                   }
                   else if(snapshot.hasError) {

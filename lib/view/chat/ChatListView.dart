@@ -6,6 +6,7 @@ import 'package:fitmate_app/model/chat/ChatRoom.dart';
 import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -94,7 +95,7 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
             ],
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const ChatListSkeleton(),
       ),
     );
   }

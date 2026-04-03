@@ -4,6 +4,7 @@ import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/widget/MainViewAppbar.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -214,8 +215,8 @@ class _MateListViewState extends ConsumerState<MateListView> {
                     ),
                   ),
               error: (e, stack) => Text('Error: $e'),
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
+              loading: () => Expanded(
+                child: MateListSkeleton(deviceSize: deviceSize),
               ),
             ),
           ],

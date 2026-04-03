@@ -3,6 +3,7 @@ import 'package:fitmate_app/model/mate/MateListItem.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -63,7 +64,7 @@ class _WishListViewState extends ConsumerState<WishListView> {
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? MateListSkeleton(deviceSize: deviceSize)
           : _wishList.isEmpty
               ? const Center(
                   child: Text(

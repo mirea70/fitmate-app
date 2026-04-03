@@ -14,6 +14,7 @@ import 'package:fitmate_app/view/chat/ChatRoomView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
+import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,7 +90,7 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
         future: ref.read(accountRepositoryProvider).getProfileByAccountId(widget.accountId),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return Center(child: CircularProgressIndicator());
+            return const ProfileSkeleton();
           }
           if (snapshot.hasError) {
             return Center(
