@@ -4,6 +4,7 @@ import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/chat/ChatMessage.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/chat/ChatRepository.dart';
+import 'package:fitmate_app/repository/chat/IChatRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
@@ -39,7 +40,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
   bool _stompConnected = false;
   bool _isMateOwner = false;
   late final StompService _stompService;
-  late final ChatRepository _chatRepository;
+  late final IChatRepository _chatRepository;
 
   @override
   void initState() {

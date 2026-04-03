@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:fitmate_app/config/AppConfig.dart';
 import 'package:fitmate_app/config/Const.dart';
 import 'package:fitmate_app/config/SecureStorage.dart';
-import 'package:fitmate_app/view/homeView.dart';
+import 'package:fitmate_app/config/AuthState.dart';
 import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,11 +95,7 @@ class CustomInterceptor extends Interceptor {
       }
       on DioException catch (e) {
         await ref.read(loginViewModelProvider.notifier).logout();
-        final navKey = ref.read(navigatorKeyProvider);
-        navKey.currentState?.pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => HomeView()),
-          (route) => false,
-        );
+        ref.read(authStatusProvider.notifier).state = AuthStatus.unauthenticated;
         return handler.reject(e);
       }
     }

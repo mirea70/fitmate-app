@@ -1,15 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:fitmate_app/repository/auth/IAuthRepository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../config/Dio.dart';
 import '../../model/login/LoginResponse.dart';
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
+final authRepositoryProvider = Provider<IAuthRepository>((ref) {
   final dio = ref.watch(dioProvider);
   return AuthRepository(dio);
 });
 
-class AuthRepository {
+class AuthRepository implements IAuthRepository {
   final Dio dio;
 
   AuthRepository(this.dio);

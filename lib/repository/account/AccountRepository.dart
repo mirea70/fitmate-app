@@ -4,15 +4,16 @@ import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/model/account/FollowDetail.dart';
 import 'package:fitmate_app/model/account/MateRequestResponse.dart';
 import 'package:fitmate_app/model/account/NoticeResponse.dart';
+import 'package:fitmate_app/repository/account/IAccountRepository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
-final accountRepositoryProvider = Provider<AccountRepository>((ref) {
+final accountRepositoryProvider = Provider<IAccountRepository>((ref) {
   final dio = ref.watch(dioProvider);
   return AccountRepository(dio);
 });
 
-class AccountRepository {
+class AccountRepository implements IAccountRepository {
   final Dio dio;
 
   AccountRepository(this.dio);

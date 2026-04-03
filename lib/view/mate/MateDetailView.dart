@@ -9,7 +9,7 @@ import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateApproveView.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
-import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateDetailViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView5.dart';
@@ -31,40 +31,13 @@ class MateDetailView extends ConsumerStatefulWidget {
 
 class _MateDetailViewState extends ConsumerState<MateDetailView> {
   int _currentImage = 0;
-  int? _myAccountId;
-  bool _isWished = false;
-  late Future<Mate> _mateFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-    _checkWishState();
-  }
-
-  void _loadData() {
-    _mateFuture = ref.read(mateRepositoryProvider).getMateOne(widget.mateId);
-    ref.read(myProfileProvider.future).then((profile) {
-      if (mounted) setState(() => _myAccountId = profile.accountId);
-    }).catchError((_) {});
-  }
-
-  Future<void> _checkWishState() async {
-    try {
-      final wishList = await ref.read(mateRepositoryProvider).getMyWishList();
-      if (mounted) {
-        setState(() {
-          _isWished = wishList.any((item) => item.id == widget.mateId);
-        });
-      }
-    } catch (_) {}
-  }
+  bool? _wishedOverride;
 
   Future<void> _toggleWish() async {
     try {
       final wished = await ref.read(mateRepositoryProvider).toggleWish(widget.mateId);
       if (mounted) {
-        setState(() => _isWished = wished);
+        setState(() => _wishedOverride = wished);
         AppSnackBar.show(context,
             message: wished ? '찜 목록에 추가되었습니다.' : '찜 목록에서 제거되었습니다.',
             type: SnackBarType.success);
@@ -74,12 +47,6 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
         AppSnackBar.show(context, message: '찜 요청에 실패했습니다.', type: SnackBarType.error);
       }
     }
-  }
-
-  void _refreshData() {
-    setState(() {
-      _mateFuture = ref.read(mateRepositoryProvider).getMateOne(widget.mateId);
-    });
   }
 
   void _navigateToEdit(Mate mate) {
@@ -129,7 +96,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
 
     try {
       await ref.read(mateRepositoryProvider).closeMate(widget.mateId);
-      _refreshData();
+      ref.invalidate(mateDetailProvider(widget.mateId));
       if (mounted) {
         AppSnackBar.show(context, message: '모집이 마감되었습니다.', type: SnackBarType.success);
       }
@@ -170,191 +137,167 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
     final double imageHeight = deviceSize.height * 0.38;
+    final detailState = ref.watch(mateDetailProvider(widget.mateId));
 
-    return FutureBuilder(
-      future: _mateFuture,
-      builder: (BuildContext context, AsyncSnapshot<Mate> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            final mate = snapshot.data!;
-            final int imageCount = mate.introImageIds.isEmpty ? 1 : mate.introImageIds.length;
+    return detailState.when(
+      loading: () => Scaffold(
+        backgroundColor: Color(0xffF5F5F5),
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, __) => Scaffold(
+        body: CustomAlert(
+          title: error.toString(),
+          deviceSize: deviceSize,
+        ),
+      ),
+      data: (detail) {
+        final mate = detail.mate;
+        final myAccountId = detail.myAccountId;
+        final isWished = _wishedOverride ?? detail.isWished;
+        final currentImage = _currentImage;
+        final int imageCount = mate.introImageIds.isEmpty ? 1 : mate.introImageIds.length;
 
-            return Scaffold(
-              backgroundColor: Color(0xffF5F5F5),
-              appBar: AppBar(
-                backgroundColor: Color(0xffF5F5F5),
-                elevation: 0,
-                scrolledUnderElevation: 0,
-                leading: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
+        return Scaffold(
+          backgroundColor: Color(0xffF5F5F5),
+          appBar: AppBar(
+            backgroundColor: Color(0xffF5F5F5),
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back, color: Colors.black),
+            ),
+            actions: [
+              if (myAccountId != null)
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert, color: Colors.black),
+                  color: Colors.white,
+                  onSelected: (value) {
+                    if (value == 'edit') _navigateToEdit(mate);
+                    if (value == 'cancel') _showCancelDialog(mate);
+                    if (value == 'close') _closeMate(mate);
+                  },
+                  itemBuilder: (context) {
+                    final items = <PopupMenuEntry<String>>[];
+                    final isWriter = mate.writerAccountId == myAccountId;
+                    if (isWriter) {
+                      if (!mate.closed) {
+                        items.add(PopupMenuItem(
+                          value: 'edit',
+                          child: Row(children: [Icon(Icons.edit, size: 20, color: Colors.grey[700]), SizedBox(width: 10), Text('글 수정')]),
+                        ));
+                        items.add(PopupMenuItem(
+                          value: 'close',
+                          child: Row(children: [Icon(Icons.block, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('모집 마감', style: TextStyle(color: Colors.red[400]))]),
+                        ));
+                      }
+                    }
+                    if (!isWriter) {
+                      final isApproved = mate.approvedAccountIds.contains(myAccountId);
+                      final isWaiting = mate.waitingAccountIds.contains(myAccountId);
+                      if (isApproved) {
+                        items.add(PopupMenuItem(
+                          value: 'cancel',
+                          child: Row(children: [Icon(Icons.exit_to_app, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('참여 취소', style: TextStyle(color: Colors.red[400]))]),
+                        ));
+                      } else if (isWaiting) {
+                        items.add(PopupMenuItem(
+                          value: 'cancel',
+                          child: Row(children: [Icon(Icons.cancel_outlined, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('신청 취소', style: TextStyle(color: Colors.red[400]))]),
+                        ));
+                      }
+                    }
+                    return items;
+                  },
                 ),
-                actions: [
-                  if (_myAccountId != null)
-                    PopupMenuButton<String>(
-                      icon: Icon(Icons.more_vert, color: Colors.black),
-                      color: Colors.white,
-                      onSelected: (value) {
-                        if (value == 'edit') _navigateToEdit(mate);
-                        if (value == 'cancel') _showCancelDialog(mate);
-                        if (value == 'close') _closeMate(mate);
-                      },
-                      itemBuilder: (context) {
-                        final items = <PopupMenuEntry<String>>[];
-                        final isWriter = mate.writerAccountId == _myAccountId;
-                        if (isWriter) {
-                          if (!mate.closed) {
-                            items.add(PopupMenuItem(
-                              value: 'edit',
-                              child: Row(children: [Icon(Icons.edit, size: 20, color: Colors.grey[700]), SizedBox(width: 10), Text('글 수정')]),
-                            ));
-                            items.add(PopupMenuItem(
-                              value: 'close',
-                              child: Row(children: [Icon(Icons.block, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('모집 마감', style: TextStyle(color: Colors.red[400]))]),
-                            ));
-                          }
-                        }
-                        if (!isWriter) {
-                          final isApproved = mate.approvedAccountIds.contains(_myAccountId);
-                          final isWaiting = mate.waitingAccountIds.contains(_myAccountId);
-                          if (isApproved) {
-                            items.add(PopupMenuItem(
-                              value: 'cancel',
-                              child: Row(children: [Icon(Icons.exit_to_app, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('참여 취소', style: TextStyle(color: Colors.red[400]))]),
-                            ));
-                          } else if (isWaiting) {
-                            items.add(PopupMenuItem(
-                              value: 'cancel',
-                              child: Row(children: [Icon(Icons.cancel_outlined, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('신청 취소', style: TextStyle(color: Colors.red[400]))]),
-                            ));
-                          }
-                        }
-                        return items;
-                      },
-                    ),
-                ],
-              ),
-              body: SingleChildScrollView(
-                clipBehavior: Clip.none,
-                child: Column(
+            ],
+          ),
+          body: SingleChildScrollView(
+            clipBehavior: Clip.none,
+            child: Column(
+              children: [
+                // --- Image + card overlay + profile ---
+                Stack(
+                  clipBehavior: Clip.none,
                   children: [
-                    // --- 이미지 + 카드(이미지 위에 겹침) + 프로필 ---
-                    Stack(
-                      clipBehavior: Clip.none,
+                    Column(
                       children: [
-                        // 1층: 소개 이미지 (하단에 카드 겹침 공간 확보)
-                        Column(
-                          children: [
-                            SizedBox(
-                              height: imageHeight,
-                              width: double.infinity,
-                              child: mate.introImageIds.isEmpty
-                                  ? Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover)
-                                  : _getIntroImage(mate.introImageIds[_currentImage]),
-                            ),
-                            // 카드 높이만큼 아래 여백 (카드가 Positioned로 올라오므로)
-                            SizedBox(height: 80),
+                        SizedBox(
+                          height: imageHeight,
+                          width: double.infinity,
+                          child: mate.introImageIds.isEmpty
+                              ? Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover)
+                              : _getIntroImage(mate.introImageIds[currentImage]),
+                        ),
+                        SizedBox(height: 80),
+                      ],
+                    ),
+                    Positioned(
+                      top: 12,
+                      left: 12,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          mate.fitCategory?.label ?? '',
+                          style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${currentImage + 1}/$imageCount',
+                          style: TextStyle(color: Colors.white, fontSize: 13),
+                        ),
+                      ),
+                    ),
+                    if (imageCount > 1) ...[
+                      Positioned(
+                        left: 8,
+                        top: imageHeight / 2 - 18,
+                        child: _buildArrowButton(Icons.chevron_left, () {
+                          setState(() => _currentImage =
+                            currentImage > 0 ? currentImage - 1 : imageCount - 1,
+                          );
+                        }),
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: imageHeight / 2 - 18,
+                        child: _buildArrowButton(Icons.chevron_right, () {
+                          setState(() => _currentImage =
+                            currentImage < imageCount - 1 ? currentImage + 1 : 0,
+                          );
+                        }),
+                      ),
+                    ],
+                    Positioned(
+                      top: imageHeight - 40,
+                      left: 16,
+                      right: 16,
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
                           ],
                         ),
-                        // 2층: 카테고리 뱃지 (좌상단)
-                        Positioned(
-                          top: 12,
-                          left: 12,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              mate.fitCategory?.label ?? '',
-                              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                        // 2층: 이미지 카운터 (우상단)
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.black45,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${_currentImage + 1}/$imageCount',
-                              style: TextStyle(color: Colors.white, fontSize: 13),
-                            ),
-                          ),
-                        ),
-                        // 2층: 좌우 화살표
-                        if (imageCount > 1) ...[
-                          Positioned(
-                            left: 8,
-                            top: imageHeight / 2 - 18,
-                            child: _buildArrowButton(Icons.chevron_left, () {
-                              setState(() {
-                                _currentImage = _currentImage > 0 ? _currentImage - 1 : imageCount - 1;
-                              });
-                            }),
-                          ),
-                          Positioned(
-                            right: 8,
-                            top: imageHeight / 2 - 18,
-                            child: _buildArrowButton(Icons.chevron_right, () {
-                              setState(() {
-                                _currentImage = _currentImage < imageCount - 1 ? _currentImage + 1 : 0;
-                              });
-                            }),
-                          ),
-                        ],
-                        // 3층: 닉네임 + 제목 카드 (이미지 하단을 덮음)
-                        Positioned(
-                          top: imageHeight - 40,
-                          left: 16,
-                          right: 16,
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    if (mate.writerAccountId != null) {
-                                      Navigator.push(context, MaterialPageRoute(
-                                        builder: (context) => UserProfileView(accountId: mate.writerAccountId!),
-                                      ));
-                                    }
-                                  },
-                                  child: Text(
-                                    mate.writerNickName ?? '',
-                                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  mate.title,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // 4층(최상위): 프로필 이미지 (카드 상단 중앙에 겹침)
-                        Positioned(
-                          top: imageHeight - 68,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: GestureDetector(
+                        child: Column(
+                          children: [
+                            GestureDetector(
                               onTap: () {
                                 if (mate.writerAccountId != null) {
                                   Navigator.push(context, MaterialPageRoute(
@@ -362,196 +305,209 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                                   ));
                                 }
                               },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 1),
-                                ),
-                                child: _getWriterProfileImage(mate.writerImageId, 52),
+                              child: Text(
+                                mate.writerNickName ?? '',
+                                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                               ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    // --- 요약 정보 (장소, 날짜, 인원) ---
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.calendar_month_rounded, size: 18, color: Colors.grey[600]),
-                          SizedBox(width: 4),
-                          Text(
-                            _extractAddress(mate.fitPlaceAddress),
-                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                          ),
-                          Text(' \u00b7 ', style: TextStyle(color: Colors.grey[400])),
-                          Text(
-                            formatDate(mate.mateAt!),
-                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(Icons.group, size: 18, color: Colors.grey[600]),
-                          SizedBox(width: 4),
-                          Text(
-                            '${mate.approvedAccountIds.length}/${mate.permitPeopleCnt}',
-                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // --- 안내사항 섹션 ---
-                    Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(horizontal: 16),
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '안내사항',
-                            style: TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w600, fontSize: 14),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '자세한 정보를 알려드릴게요',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                          ),
-                          SizedBox(height: 24),
-                          _buildInfoRow(Icons.category_rounded, mate.fitCategory?.label ?? '미지정'),
-                          _buildInfoRow(Icons.group, '최대 ${mate.permitPeopleCnt}명 \u00b7 ${mate.gatherType?.label ?? ''}'),
-                          _buildInfoRow(
-                            Icons.attach_money_rounded,
-                            mate.mateFees.isEmpty ? '무료' : '${mate.totalFee}원',
-                          ),
-                          _buildInfoRow(
-                            Icons.person_outline,
-                            getTextPermitAges(mate.permitMinAge!, mate.permitMaxAge!),
-                          ),
-                          _buildInfoRow(
-                            Icons.wc_rounded,
-                            _getTextPermitGender(mate.permitGender),
-                          ),
-                          _buildInfoRow(Icons.calendar_month_rounded, formatDate(mate.mateAt!)),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(Icons.place_rounded, size: 22, color: Colors.grey[700]),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        mate.fitPlaceName,
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                                      ),
-                                      Text(
-                                        '(${mate.fitPlaceAddress})',
-                                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // --- 소개글 ---
-                    if (mate.introduction.isNotEmpty)
-                      Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '소개글',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              mate.introduction,
-                              style: TextStyle(fontSize: 15, color: Colors.grey[800], height: 1.5),
+                              mate.title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                             ),
                           ],
                         ),
                       ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
-              bottomNavigationBar: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 8,
-                      offset: const Offset(0, -2),
+                    ),
+                    Positioned(
+                      top: imageHeight - 68,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (mate.writerAccountId != null) {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => UserProfileView(accountId: mate.writerAccountId!),
+                              ));
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 1),
+                            ),
+                            child: _getWriterProfileImage(mate.writerImageId, 52),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
-                    child: Row(
+                // --- Summary info ---
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GestureDetector(
-                        onTap: _toggleWish,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                      Icon(Icons.calendar_month_rounded, size: 18, color: Colors.grey[600]),
+                      SizedBox(width: 4),
+                      Text(
+                        _extractAddress(mate.fitPlaceAddress),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                      Text(' \u00b7 ', style: TextStyle(color: Colors.grey[400])),
+                      Text(
+                        formatDate(mate.mateAt!),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.group, size: 18, color: Colors.grey[600]),
+                      SizedBox(width: 4),
+                      Text(
+                        '${mate.approvedAccountIds.length}/${mate.permitPeopleCnt}',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+                // --- Info section ---
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '안내사항',
+                        style: TextStyle(color: Colors.orangeAccent, fontWeight: FontWeight.w600, fontSize: 14),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '자세한 정보를 알려드릴게요',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(height: 24),
+                      _buildInfoRow(Icons.category_rounded, mate.fitCategory?.label ?? '미지정'),
+                      _buildInfoRow(Icons.group, '최대 ${mate.permitPeopleCnt}명 \u00b7 ${mate.gatherType?.label ?? ''}'),
+                      _buildInfoRow(
+                        Icons.attach_money_rounded,
+                        mate.mateFees.isEmpty ? '무료' : '${mate.totalFee}원',
+                      ),
+                      _buildInfoRow(
+                        Icons.person_outline,
+                        getTextPermitAges(mate.permitMinAge!, mate.permitMaxAge!),
+                      ),
+                      _buildInfoRow(
+                        Icons.wc_rounded,
+                        _getTextPermitGender(mate.permitGender),
+                      ),
+                      _buildInfoRow(Icons.calendar_month_rounded, formatDate(mate.mateAt!)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              _isWished ? Icons.favorite : Icons.favorite_border,
-                              color: _isWished ? Colors.orangeAccent : Colors.grey,
-                              size: 28,
+                            Icon(Icons.place_rounded, size: 22, color: Colors.grey[700]),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    mate.fitPlaceName,
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                  ),
+                                  Text(
+                                    '(${mate.fitPlaceAddress})',
+                                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(child: _buildBottomButton(mate, deviceSize)),
                     ],
                   ),
                 ),
+                // --- Introduction ---
+                if (mate.introduction.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '소개글',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          mate.introduction,
+                          style: TextStyle(fontSize: 15, color: Colors.grey[800], height: 1.5),
+                        ),
+                      ],
+                    ),
+                  ),
+                SizedBox(height: 20),
+              ],
+            ),
+          ),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
+                child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: _toggleWish,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isWished ? Icons.favorite : Icons.favorite_border,
+                          color: isWished ? Colors.orangeAccent : Colors.grey,
+                          size: 28,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildBottomButton(mate, myAccountId, deviceSize)),
+                ],
               ),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Scaffold(
-              body: CustomAlert(
-                title: snapshot.error.toString(),
-                deviceSize: deviceSize,
-              ),
-            );
-          }
-        }
-        return Scaffold(
-          backgroundColor: Color(0xffF5F5F5),
-          body: Center(child: CircularProgressIndicator()),
+            ),
+          ),
+          ),
         );
       },
     );
   }
 
-  Widget _buildBottomButton(Mate mate, Size deviceSize) {
-    final myAccountId = _myAccountId;
-
+  Widget _buildBottomButton(Mate mate, int? myAccountId, Size deviceSize) {
     final bool isWriter = myAccountId != null && mate.writerAccountId == myAccountId;
     final bool isApproved = myAccountId != null && mate.approvedAccountIds.contains(myAccountId);
     final bool isWaiting = myAccountId != null && mate.waitingAccountIds.contains(myAccountId);
@@ -577,7 +533,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
             approvedAccountIds: mate.approvedAccountIds,
           ),
         ));
-        _refreshData();
+        ref.invalidate(mateDetailProvider(widget.mateId));
       };
     } else if (isApproved) {
       title = '채팅방 입장';
@@ -661,7 +617,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                       widget.mateId,
                       reasonController.text.trim(),
                     );
-                _refreshData();
+                ref.invalidate(mateDetailProvider(widget.mateId));
                 if (mounted) {
                   AppSnackBar.show(context, message: '신청이 취소되었습니다.', type: SnackBarType.success);
                 }

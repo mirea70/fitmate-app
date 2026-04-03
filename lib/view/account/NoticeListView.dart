@@ -1,64 +1,18 @@
-import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/account/NoticeResponse.dart';
-import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
+import 'package:fitmate_app/view_model/account/NoticeListViewModel.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NoticeListView extends ConsumerStatefulWidget {
+class NoticeListView extends ConsumerWidget {
   const NoticeListView({super.key});
 
   @override
-  ConsumerState<NoticeListView> createState() => _NoticeListViewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final noticeState = ref.watch(noticeListProvider);
 
-class _NoticeListViewState extends ConsumerState<NoticeListView> {
-  List<NoticeResponse> _notices = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNotices();
-  }
-
-  Future<void> _loadNotices() async {
-    try {
-      final repo = ref.read(accountRepositoryProvider);
-      await repo.markNoticesAsRead();
-      final notices = await repo.getMyNotices();
-
-      final senderIds = notices
-          .map((n) => n.senderAccountId)
-          .where((id) => id != null)
-          .toSet();
-
-      final imageIds = <int?>[];
-      for (final id in senderIds) {
-        try {
-          final profile = await ref
-              .read(accountRepositoryProvider)
-              .getProfileByAccountId(id!);
-          imageIds.add(profile.profileImageId);
-        } catch (_) {}
-      }
-      await ref.read(imageCacheServiceProvider).preloadAll(imageIds);
-
-      if (mounted) {
-        setState(() {
-          _notices = notices;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -73,40 +27,47 @@ class _NoticeListViewState extends ConsumerState<NoticeListView> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _notices.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.notifications_off_outlined, size: 50, color: Colors.grey.shade400),
-                      const SizedBox(height: 12),
-                      const Text(
-                        '알림이 없습니다.',
-                        style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadNotices,
-                  child: ListView.separated(
-                    itemCount: _notices.length,
-                    separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade100),
-                    itemBuilder: (context, index) {
-                      return _buildNoticeItem(_notices[index]);
-                    },
-                  ),
+      body: noticeState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => Center(
+          child: Text(
+            '알림을 불러오는데 실패했습니다.',
+            style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),
+          ),
+        ),
+        data: (notices) => notices.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.notifications_off_outlined, size: 50, color: Colors.grey.shade400),
+                    const SizedBox(height: 12),
+                    const Text(
+                      '알림이 없습니다.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),
+                    ),
+                  ],
                 ),
+              )
+            : RefreshIndicator(
+                onRefresh: () => ref.read(noticeListProvider.notifier).refresh(),
+                child: ListView.separated(
+                  itemCount: notices.length,
+                  separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade100),
+                  itemBuilder: (context, index) {
+                    return _buildNoticeItem(context, notices[index]);
+                  },
+                ),
+              ),
+      ),
     );
   }
 
-  Widget _buildNoticeItem(NoticeResponse notice) {
+  Widget _buildNoticeItem(BuildContext context, NoticeResponse notice) {
     final config = _getNoticeConfig(notice.noticeType);
 
     return InkWell(
-      onTap: () => _onNoticeTap(notice),
+      onTap: () => _onNoticeTap(context, notice),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
@@ -155,7 +116,7 @@ class _NoticeListViewState extends ConsumerState<NoticeListView> {
     );
   }
 
-  void _onNoticeTap(NoticeResponse notice) {
+  void _onNoticeTap(BuildContext context, NoticeResponse notice) {
     if (notice.noticeType == 'FOLLOWED' && notice.senderAccountId != null) {
       Navigator.push(
         context,
