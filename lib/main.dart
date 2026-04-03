@@ -1,3 +1,4 @@
+import 'package:fitmate_app/config/Dio.dart';
 import 'package:fitmate_app/view/homeView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -18,12 +19,15 @@ void main() async {
   );
 }
 
-class FitMateApp extends StatelessWidget {
+class FitMateApp extends ConsumerWidget {
   const FitMateApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final navigatorKey = ref.watch(navigatorKeyProvider);
+
     return MaterialApp(
+      navigatorKey: navigatorKey,
       theme: ThemeData(
         fontFamily: 'Pretendard',
         scaffoldBackgroundColor: Colors.white

@@ -2,10 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:fitmate_app/config/AppConfig.dart';
 import 'package:fitmate_app/config/Const.dart';
 import 'package:fitmate_app/config/SecureStorage.dart';
+import 'package:fitmate_app/view/homeView.dart';
 import 'package:fitmate_app/view_model/account/login/LoginViewModel.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as Storage;
 import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
+
+final navigatorKeyProvider = Provider<GlobalKey<NavigatorState>>((ref) => GlobalKey<NavigatorState>());
 
 final dioProvider = Provider<Dio>((ref) {
   final storage = ref.watch(secureStorageProvider);
@@ -87,7 +91,12 @@ class CustomInterceptor extends Interceptor {
         return handler.resolve(newResponse);
       }
       on DioException catch (e) {
-        ref.read(loginViewModelProvider.notifier).logout();
+        await ref.read(loginViewModelProvider.notifier).logout();
+        final navKey = ref.read(navigatorKeyProvider);
+        navKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomeView()),
+          (route) => false,
+        );
         return handler.reject(e);
       }
     }
