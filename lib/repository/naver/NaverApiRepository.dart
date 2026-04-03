@@ -1,5 +1,6 @@
 
 import 'package:dio/dio.dart';
+import 'package:fitmate_app/config/AppConfig.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final naverApiRepositoryProvider = Provider<NaverApiRepository>((ref) {
@@ -8,8 +9,8 @@ final naverApiRepositoryProvider = Provider<NaverApiRepository>((ref) {
 
 class NaverApiRepository {
   final Dio dio = Dio();
-  final String clientId = const String.fromEnvironment('NAVER_CLIENT_ID');
-  final String clientSecret = const String.fromEnvironment('NAVER_CLIENT_SECRET');
+  final String clientId = AppConfig.naverClientId;
+  final String clientSecret = AppConfig.naverClientSecret;
 
   Future<List<Map<String, dynamic>>> searchPlace(String keyword) async {
     String url = 'https://openapi.naver.com/v1/search/local.json';
