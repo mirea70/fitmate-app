@@ -219,4 +219,37 @@ class AccountRepository {
       return e.response!.data;
     }
   }
+
+  Future<String> findLoginName(String phone) async {
+    final response = await dio.post(
+      '/api/account/recovery/find-id',
+      options: Options(contentType: Headers.jsonContentType),
+      data: {'phone': phone},
+    );
+    return response.data['loginName'];
+  }
+
+  Future<void> requestRecoveryCode(String phone) async {
+    await dio.post(
+      '/api/account/recovery/request-code',
+      options: Options(contentType: Headers.jsonContentType),
+      data: {'phone': phone},
+    );
+  }
+
+  Future<void> verifyRecoveryCode(String phone, String code) async {
+    await dio.post(
+      '/api/account/recovery/verify-code',
+      options: Options(contentType: Headers.jsonContentType),
+      data: {'phone': phone, 'code': code},
+    );
+  }
+
+  Future<void> resetPassword(String phone, String newPassword) async {
+    await dio.post(
+      '/api/account/recovery/reset-password',
+      options: Options(contentType: Headers.jsonContentType),
+      data: {'phone': phone, 'newPassword': newPassword},
+    );
+  }
 }
