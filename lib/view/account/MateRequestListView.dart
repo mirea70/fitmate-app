@@ -104,7 +104,7 @@ class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
   Future<void> _loadData() async {
     try {
       final requests = await ref.read(widget.provider.future);
-      ref.read(imageCacheServiceProvider).preloadInBackground(
+      await ref.read(imageCacheServiceProvider).ensureLoaded(
         requests.map((r) => r.thumbnailImageId).toList(),
       );
 

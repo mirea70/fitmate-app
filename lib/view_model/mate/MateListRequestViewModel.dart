@@ -28,7 +28,7 @@ class MateListRequestViewModel extends Notifier<MateListRequestModel> implements
       imageIds.add(item.thumbnailImageId);
       imageIds.add(item.writerImageId);
     }
-    ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
+    await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
     return items;
   }
 

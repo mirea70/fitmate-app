@@ -38,13 +38,15 @@ class NoticeListViewModel extends AsyncNotifier<List<NoticeResponse>> {
         if (profile != null) imageIds.add(profile.profileImageId);
       }
     }
-    ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
+    await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
 
     return notices;
   }
 
   Future<void> refresh() async {
-    state = const AsyncValue.loading();
+    if (!state.hasValue) {
+      state = const AsyncValue.loading();
+    }
     state = await AsyncValue.guard(() => _loadNotices());
   }
 }

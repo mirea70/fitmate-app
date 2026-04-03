@@ -28,6 +28,13 @@ class _MainViewState extends ConsumerState<MainView> {
     ref.read(unreadNoticeCountProvider.notifier).refresh();
   }
 
+  final List<Widget> _tabs = const [
+    MateListView(),
+    MateRegisterView1(),
+    ChatListView(),
+    MyProfileView(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final chatState = ref.watch(chatRoomListProvider);
@@ -35,17 +42,13 @@ class _MainViewState extends ConsumerState<MainView> {
       data: (data) => data.rooms.fold<int>(0, (sum, room) => sum + room.unreadCount),
     ) ?? 0;
 
-    final List<Widget> _widgetOptions = [
-      MateListView(),
-      MateRegisterView1(),
-      ChatListView(),
-      MyProfileView(),
-    ];
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: _tabs,
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,

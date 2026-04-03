@@ -137,7 +137,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
         ref.read(imageCacheServiceProvider).put(_profileImageId!, _newImageBytes!);
       }
       if (_resetToDefault && widget.profile.profileImageId != null) {
-        ref.read(imageCacheServiceProvider).remove(widget.profile.profileImageId!);
+        ref.read(imageCacheServiceProvider).invalidate(widget.profile.profileImageId!);
       }
       ref.invalidate(myProfileProvider);
       if (mounted) Navigator.pop(context);

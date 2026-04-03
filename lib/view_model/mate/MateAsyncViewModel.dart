@@ -24,12 +24,15 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
       imageIds.add(item.thumbnailImageId);
       imageIds.add(item.writerImageId);
     }
-    ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
+    await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
     return items;
   }
 
   Future<void> refresh({bool includeClosed = false}) async {
-    state = const AsyncValue.loading();
+    // 기존 데이터가 있으면 유지하면서 백그라운드 갱신
+    if (!state.hasValue) {
+      state = const AsyncValue.loading();
+    }
     state = await AsyncValue.guard(() => _fetchMates(0, includeClosed: includeClosed));
   }
 

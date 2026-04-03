@@ -53,7 +53,7 @@ class _MateApproveViewState extends ConsumerState<MateApproveView>
         imageIds.add(profile.profileImageId);
       } catch (_) {}
     }));
-    ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
+    await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
     if (mounted) setState(() => _isLoading = false);
   }
 

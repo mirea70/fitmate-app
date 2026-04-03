@@ -33,7 +33,7 @@ class _WishListViewState extends ConsumerState<WishListView> {
         imageIds.add(item.thumbnailImageId);
         imageIds.add(item.writerImageId);
       }
-      ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
+      await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
       if (mounted) {
         setState(() {
           _wishList = items;

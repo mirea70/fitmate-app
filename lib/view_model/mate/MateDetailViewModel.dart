@@ -33,7 +33,7 @@ class MateDetailState {
   }
 }
 
-final mateDetailProvider = FutureProvider.autoDispose.family<MateDetailState, int>((ref, mateId) async {
+final mateDetailProvider = FutureProvider.family<MateDetailState, int>((ref, mateId) async {
   // 3개 API를 병렬로 호출
   final mateFuture = ref.read(mateRepositoryProvider).getMateOne(mateId);
   final profileFuture = ref.read(myProfileProvider.future).catchError((_) => null);
@@ -47,7 +47,7 @@ final mateDetailProvider = FutureProvider.autoDispose.family<MateDetailState, in
   final isWished = wishList.any((item) => item.id == mateId);
 
   final imageIds = <int?>[...mate.introImageIds, mate.writerImageId];
-  ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
+  await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
 
   return MateDetailState(
     mate: mate,

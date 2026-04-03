@@ -54,7 +54,7 @@ class _FollowListViewState extends ConsumerState<FollowListView>
         } catch (_) {}
       }));
 
-      ref.read(imageCacheServiceProvider).preloadInBackground(
+      await ref.read(imageCacheServiceProvider).ensureLoaded(
         _profileCache.values.map((p) => p.profileImageId).toList(),
       );
 

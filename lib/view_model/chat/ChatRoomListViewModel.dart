@@ -56,7 +56,7 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
           imageIds.add(p.profileImageId);
         } catch (_) {}
       }));
-      ref.read(imageCacheServiceProvider).preloadInBackground(imageIds);
+      await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
     }
 
     return ChatRoomListState(
@@ -67,7 +67,9 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
   }
 
   Future<void> refresh() async {
-    state = const AsyncValue.loading();
+    if (!state.hasValue) {
+      state = const AsyncValue.loading();
+    }
     state = await AsyncValue.guard(() => _loadAll());
   }
 }
