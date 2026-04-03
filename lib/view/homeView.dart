@@ -64,6 +64,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
         }
       }
     } catch (e) {
+      debugPrint('카카오 로그인 에러: $e');
       if (mounted) {
         showDialog(
           context: context,

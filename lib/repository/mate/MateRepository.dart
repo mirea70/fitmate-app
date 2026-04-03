@@ -223,6 +223,13 @@ class MateRepository {
     );
   }
 
+  Future<void> closeMate(int mateId) async {
+    await dio.patch(
+      '/api/mate/$mateId/close',
+      options: Options(headers: {'accessToken': true}),
+    );
+  }
+
   Future<void> applyMate(int mateId, String comeAnswer) async {
     await dio.put(
       '/api/mate/request/$mateId/apply',

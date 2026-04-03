@@ -129,7 +129,11 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                     );
                                     setState(() {});
                                   },
-                                  child: Container(
+                                  child: Stack(
+                                    children: [
+                                      Opacity(
+                                        opacity: items[index].closed ? 0.4 : 1.0,
+                                        child: Container(
                                   height: deviceSize.height * 0.15,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
@@ -238,7 +242,26 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                        ),
+                                      ),
+                                      if (items[index].closed)
+                                        Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[700],
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              '마감',
+                                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 );
                               },
                               separatorBuilder: (context, index) {

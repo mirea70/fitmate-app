@@ -18,6 +18,7 @@ class MateListItem {
   final PermitGender? permitGender;
   final int permitPeopleCnt;
   final int approvedAccountCnt;
+  final bool closed;
 
   MateListItem({
     required this.id,
@@ -33,6 +34,7 @@ class MateListItem {
     this.permitGender,
     required this.permitPeopleCnt,
     required this.approvedAccountCnt,
+    required this.closed,
   });
 
   MateListItem copyWith({
@@ -49,6 +51,7 @@ class MateListItem {
     PermitGender? permitGender,
     int? permitPeopleCnt,
     int? approvedAccountCnt,
+    bool? closed,
   }) =>
       MateListItem(
         id: id ?? this.id,
@@ -64,6 +67,7 @@ class MateListItem {
         permitGender: permitGender ?? this.permitGender,
         permitPeopleCnt: permitPeopleCnt ?? this.permitPeopleCnt,
         approvedAccountCnt: approvedAccountCnt ?? this.approvedAccountCnt,
+        closed: closed ?? this.closed,
       );
 
   factory MateListItem.fromJson(Map<String, dynamic> json) => MateListItem(
@@ -80,6 +84,7 @@ class MateListItem {
     permitGender: json["permitGender"] != null ? PermitGender.valueOf(json["permitGender"]) : null,
     permitPeopleCnt: json["permitPeopleCnt"],
     approvedAccountCnt: json["approvedAccountCnt"],
+    closed: json["closed"] ?? false,
   );
 
   Map<String, dynamic> toJson() => {

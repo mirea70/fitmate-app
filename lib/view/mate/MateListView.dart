@@ -66,7 +66,11 @@ class _MateListViewState extends ConsumerState<MateListView> {
                                           MateDetailView(mateId: items[index].id)));
                               ref.read(mateAsyncViewModelProvider.notifier).refresh();
                             },
-                            child: Container(
+                            child: Stack(
+                              children: [
+                                Opacity(
+                                  opacity: items[index].closed ? 0.4 : 1.0,
+                                  child: Container(
                               height: deviceSize.height * 0.15,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
@@ -175,6 +179,25 @@ class _MateListViewState extends ConsumerState<MateListView> {
                                   ),
                                 ],
                               ),
+                                  ),
+                                ),
+                                if (items[index].closed)
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[700],
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '마감',
+                                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           );
                         },

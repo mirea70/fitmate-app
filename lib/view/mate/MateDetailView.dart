@@ -112,6 +112,34 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     );
   }
 
+  Future<void> _closeMate(Mate mate) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text('모집 마감', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        content: Text('모집을 마감하시겠습니까?\n마감 후에는 새로운 신청을 받을 수 없습니다.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('취소', style: TextStyle(color: Colors.grey))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('마감하기', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700))),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(mateRepositoryProvider).closeMate(widget.mateId);
+      _refreshData();
+      if (mounted) {
+        AppSnackBar.show(context, message: '모집이 마감되었습니다.', type: SnackBarType.success);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.show(context, message: '마감에 실패했습니다.', type: SnackBarType.error);
+      }
+    }
+  }
+
   Future<void> _navigateToChatRoom(Mate mate) async {
     try {
       final chatRooms = await ref.read(chatRepositoryProvider).getMyChatRooms();
@@ -169,15 +197,22 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                       onSelected: (value) {
                         if (value == 'edit') _navigateToEdit(mate);
                         if (value == 'cancel') _showCancelDialog(mate);
+                        if (value == 'close') _closeMate(mate);
                       },
                       itemBuilder: (context) {
                         final items = <PopupMenuEntry<String>>[];
                         final isWriter = mate.writerAccountId == _myAccountId;
                         if (isWriter) {
-                          items.add(PopupMenuItem(
-                            value: 'edit',
-                            child: Row(children: [Icon(Icons.edit, size: 20, color: Colors.grey[700]), SizedBox(width: 10), Text('글 수정')]),
-                          ));
+                          if (!mate.closed) {
+                            items.add(PopupMenuItem(
+                              value: 'edit',
+                              child: Row(children: [Icon(Icons.edit, size: 20, color: Colors.grey[700]), SizedBox(width: 10), Text('글 수정')]),
+                            ));
+                            items.add(PopupMenuItem(
+                              value: 'close',
+                              child: Row(children: [Icon(Icons.block, size: 20, color: Colors.red[400]), SizedBox(width: 10), Text('모집 마감', style: TextStyle(color: Colors.red[400]))]),
+                            ));
+                          }
                         }
                         if (!isWriter) {
                           final isApproved = mate.approvedAccountIds.contains(_myAccountId);
@@ -526,7 +561,11 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     bool isEnabled;
     VoidCallback? onTap;
 
-    if (isWriter) {
+    if (mate.closed) {
+      title = '모집 마감';
+      isEnabled = false;
+      onTap = null;
+    } else if (isWriter) {
       final waitingCount = mate.waitingAccountIds.length;
       title = waitingCount > 0 ? '신청 관리 (${waitingCount}건 대기중)' : '신청 관리';
       isEnabled = true;

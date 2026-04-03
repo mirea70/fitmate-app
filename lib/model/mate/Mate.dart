@@ -27,6 +27,7 @@ class Mate {
   final String applyQuestion;
   final List<int> waitingAccountIds;
   final List<int> approvedAccountIds;
+  final bool closed;
 
   Mate({
     this.writerAccountId,
@@ -49,6 +50,7 @@ class Mate {
     required this.applyQuestion,
     required this.waitingAccountIds,
     required this.approvedAccountIds,
+    required this.closed,
   });
 
   factory Mate.initial() {
@@ -77,6 +79,7 @@ class Mate {
       applyQuestion: '',
       waitingAccountIds: [],
       approvedAccountIds: [],
+      closed: false,
     );
   }
 
@@ -101,6 +104,7 @@ class Mate {
     String? applyQuestion,
     List<int> ? waitingAccountIds,
     List<int> ? approvedAccountIds,
+    bool? closed,
   }) =>
       Mate(
         writerAccountId: writerAccountId ?? this.writerAccountId,
@@ -123,6 +127,7 @@ class Mate {
         applyQuestion: applyQuestion ?? this.applyQuestion,
         waitingAccountIds: waitingAccountIds ?? this.waitingAccountIds,
         approvedAccountIds: approvedAccountIds ?? this.approvedAccountIds,
+        closed: closed ?? this.closed,
       );
 
   factory Mate.fromJson(Map<String, dynamic> json) => Mate(
@@ -146,6 +151,7 @@ class Mate {
     applyQuestion: json["applyQuestion"] != null ? json["applyQuestion"] : '',
     waitingAccountIds: json['waitingAccountIds'] != null ? List<int>.from(json['waitingAccountIds'].map((x) => x)) : [],
     approvedAccountIds: List<int>.from(json['approvedAccountIds'].map((x) => x)),
+    closed: json['closed'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
