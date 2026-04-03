@@ -8,6 +8,8 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoSdk.init(nativeAppKey: '424680dee5aab20e18748db709c66460');
+  final keyHash = await KakaoSdk.origin;
+  debugPrint('=== 카카오 키 해시: $keyHash ===');
   await initializeDateFormatting();
   runApp(
     ProviderScope(
