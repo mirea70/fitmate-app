@@ -1,6 +1,7 @@
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInputCalendar.dart';
+import 'package:fitmate_app/widget/TimePicker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -68,44 +69,60 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
                             SizedBox(
                               height: deviceSize.height * 0.05,
                             ),
-                            Container(
-                              child: Column(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      isIngCalendarNotifier.setIsIng(!isIngCalendar);
-                                    },
+                            Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    isIngCalendarNotifier.setIsIng(!isIngCalendar);
+                                  },
+                                  child: Container(
+                                    width: deviceSize.width * 0.9,
+                                    height: deviceSize.height * 0.06,
+                                    padding: EdgeInsets.symmetric(horizontal: 15),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                        color: isIngCalendar ? Colors.orangeAccent : Color(0xffE8E8E8),
+                                        width: 2,
+                                      ),
+                                    ),
                                     child: Row(
                                       children: [
                                         Icon(
                                           Icons.calendar_month_outlined,
+                                          size: 20,
+                                          color: Colors.orangeAccent,
                                         ),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.02,
-                                        ),
-                                        Text(
-                                          '${viewModel.mateAt!.month}.${viewModel.mateAt!.day} '
-                                              '(${DateFormat('E', 'ko_KR').format(viewModel.mateAt!)})',
-                                          style: TextStyle(
-                                            fontSize: 15,
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            '${viewModel.mateAt!.year}년 ${viewModel.mateAt!.month}월 ${viewModel.mateAt!.day}일 '
+                                                '(${DateFormat('E', 'ko_KR').format(viewModel.mateAt!)})',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
+                                        ),
+                                        Icon(
+                                          isIngCalendar ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                                          color: Colors.grey,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: deviceSize.height * 0.02,
-                                  ),
-                                  Center(
-                                    child: Container(
-                                      height: 2,
-                                      width: deviceSize.width * 0.9,
-                                      color: Color(0xffE8E8E8),
+                                ),
+                                AnimatedCrossFade(
+                                  firstChild: SizedBox.shrink(),
+                                  secondChild: Container(
+                                    margin: EdgeInsets.only(top: 8),
+                                    width: deviceSize.width * 0.9,
+                                    height: deviceSize.height * 0.45,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xffFAFAFA),
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(color: Color(0xffE8E8E8)),
                                     ),
-                                  ),
-                                  if(isIngCalendar)
-                                  Container(
-                                    height: deviceSize.height * 0.5,
                                     child: CustomInputCalendar(
                                       initDay: viewModel.mateAt,
                                       onDaySelected: (selectedDay, focusedDay) {
@@ -114,56 +131,18 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
                                       },
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: deviceSize.height * 0.03,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      final TimeOfDay? selectTime = await showTimePicker(
-                                        context: context,
-                                        initialTime: TimeOfDay(
-                                            hour: viewModel.mateAt!.hour,
-                                            minute: viewModel.mateAt!.minute,
-                                        ),
-                                        initialEntryMode: TimePickerEntryMode.dialOnly,
-                                      );
-                                      if(selectTime != null)
-                                        viewModelNotifier.setMateAtTime(selectTime);
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.watch_later_outlined,
-                                        ),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.02,
-                                        ),
-                                        Text(
-                                          '${formatTimeOfDay(
-                                              TimeOfDay(
-                                                  hour: viewModel.mateAt!.hour,
-                                                  minute: viewModel.mateAt!.minute,
-                                              ),
-                                          )}',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: deviceSize.height * 0.02,
-                                  ),
-                                  Center(
-                                    child: Container(
-                                      height: 2,
-                                      width: deviceSize.width * 0.9,
-                                      color: Color(0xffE8E8E8),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                  crossFadeState: isIngCalendar ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                                  duration: Duration(milliseconds: 250),
+                                ),
+                                SizedBox(height: deviceSize.height * 0.02),
+                                CustomTimePicker(
+                                  initialHour: viewModel.mateAt!.hour,
+                                  initialMinute: viewModel.mateAt!.minute,
+                                  onTimeChanged: (time) {
+                                    viewModelNotifier.setMateAtTime(time);
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
