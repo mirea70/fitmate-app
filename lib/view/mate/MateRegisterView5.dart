@@ -19,20 +19,18 @@ class MateRegisterView5 extends ConsumerStatefulWidget {
 }
 
 class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
-    final ScrollController _scrollController = ScrollController();
-
-    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
-    final viewModel = ref.watch(mateRegisterViewModelProvider);
-
-    final hasMateFee = ref.watch(hasMateFeeProvider);
-    final hasMateFeeNotifier = ref.read(hasMateFeeProvider.notifier);
-
-    final mateFeeState = ref.watch(mateFeeStateProvider);
-    final mateFeeStateNotifier = ref.read(mateFeeStateProvider.notifier);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -81,329 +79,11 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                         SizedBox(
                           height: deviceSize.height * 0.05,
                         ),
-                        Container(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    hasMateFeeNotifier.setHasMateFee(true);
-                                  },
-                                  child: Container(
-                                    height: deviceSize.height * 0.07,
-                                    decoration: BoxDecoration(
-                                      color: hasMateFee
-                                          ? Colors.orangeAccent
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(15),
-                                      border: Border.all(
-                                        color: Color(0xffE8E8E8),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '있음',
-                                        style: TextStyle(
-                                          color: hasMateFee
-                                              ? Colors.white
-                                              : Colors.black,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: deviceSize.width * 0.05,
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    hasMateFeeNotifier.setHasMateFee(false);
-                                  },
-                                  child: Container(
-                                    height: deviceSize.height * 0.07,
-                                    decoration: BoxDecoration(
-                                      color: hasMateFee
-                                          ? Colors.white
-                                          : Colors.orangeAccent,
-                                      borderRadius: BorderRadius.circular(15),
-                                      border: Border.all(
-                                        color: Color(0xffE8E8E8),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '없음',
-                                        style: TextStyle(
-                                          color: hasMateFee
-                                              ? Colors.black
-                                              : Colors.white,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        _MateFeeToggleSection(deviceSize: deviceSize),
+                        _MateFeeContentSection(
+                          deviceSize: deviceSize,
+                          scrollController: _scrollController,
                         ),
-                        if (!hasMateFee)
-                          SizedBox(
-                            height: deviceSize.height * 0.02,
-                          ),
-                        if (!hasMateFee)
-                          Container(
-                            height: deviceSize.height * 0.1,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Color(0xffE8E8E8),
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: deviceSize.width * 0.02,
-                                ),
-                                Icon(
-                                  Icons.warning_amber_rounded,
-                                  size: 35,
-                                ),
-                                SizedBox(
-                                  width: deviceSize.width * 0.03,
-                                ),
-                                Text(
-                                  "모임진행에 비용이 발생한다면 \n"
-                                  "참가비를 '있음'으로 설정해 주세요.",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        if (hasMateFee)
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: deviceSize.height * 0.05,
-                              ),
-                              Container(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        CustomIconButton(
-                                          onPressed: () {
-                                            try {
-                                              viewModelNotifier.addMateFee(mateFeeState);
-                                              mateFeeStateNotifier.reset();
-                                              _scrollController.animateTo(
-                                                _scrollController.position.maxScrollExtent,
-                                                duration: Duration(milliseconds: 500),
-                                                curve: Curves.easeInOut,
-                                              );
-                                            } on CustomException catch (e) {
-                                              if (e.domain == ErrorDomain.MATE &&
-                                                  e.type == ErrorType.INVALID_INPUT)
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (BuildContext context) {
-                                                    return CustomAlert(title: e.msg, deviceSize: deviceSize);
-                                                  },
-                                                );
-                                              else throw 'UnKnown Exception';
-                                            }
-                                          },
-                                          icon: Icon(Icons.add_circle_outlined, color: Colors.orangeAccent,),
-                                          // padding: EdgeInsets.zero,
-                                          // constraints: BoxConstraints(
-                                          //   minHeight: 0,
-                                          //   minWidth: 0,
-                                          // ),
-                                          // visualDensity: VisualDensity.compact,
-                                          // visualDensity: const VisualDensity(horizontal: -4),
-                                          // color: Colors.orangeAccent,
-                                          // disabledColor: Colors.black,
-                                        ),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.02,
-                                        ),
-                                        Text(
-                                          '참가비 추가',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.01,
-                                    ),
-                                    Text(
-                                      '참가비를 직접 추가해보세요!',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.05,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          left: deviceSize.width * 0.01),
-                                      child: Text(
-                                        '참가비 종류',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.01,
-                                    ),
-                                    CustomInputSmall(
-                                      deviceSize: deviceSize,
-                                      onChangeMethod: (value) {
-                                        mateFeeStateNotifier.setName(value);
-                                      },
-                                      hintText: '노쇼방지비',
-                                      text: mateFeeState.name,
-                                      maxLength: 20,
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.01,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          left: deviceSize.width * 0.01),
-                                      child: Text(
-                                        '참가비',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.01,
-                                    ),
-                                    CustomInputSmall(
-                                      deviceSize: deviceSize,
-                                      onChangeMethod: (value) {
-                                        if (value != '')
-                                          mateFeeStateNotifier
-                                              .setFee(int.parse(value));
-                                      },
-                                      hintText: '10000',
-                                      text: mateFeeState.fee.toString(),
-                                      maxLength: 20,
-                                      type: 'number',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.05,
-                              ),
-                              Container(
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(Icons.info, color: Colors.orangeAccent,),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.02,
-                                        ),
-                                        Text(
-                                          '총 ${viewModel.totalFee}원',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: deviceSize.height * 0.02,
-                                    ),
-                                    Column(
-                                      children: List.generate(
-                                        viewModel.mateFees.length,
-                                        (index) {
-                                          String name =
-                                              viewModel.mateFees[index].name;
-                                          int fee =
-                                              viewModel.mateFees[index].fee;
-                                          // return Text('test');
-                                          return Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(15),
-                                                  color: Color(0xffE8E8E8),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                                  child: Text(
-                                                    name,
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight: FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height:
-                                                    deviceSize.height * 0.01,
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.attach_money, color: Colors.orangeAccent,),
-                                                  SizedBox(
-                                                    width:
-                                                        deviceSize.width * 0.01,
-                                                  ),
-                                                  Text(
-                                                    fee.toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: deviceSize.height * 0.02,
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: deviceSize.height * 0.05,
-                              ),
-                            ],
-                          ),
                       ],
                     ),
                   ),
@@ -418,21 +98,7 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
           child: Column(
             children: [
               Center(
-                child: CustomButton(
-                    deviceSize: deviceSize,
-                    onTapMethod: () {
-                      if(!hasMateFee)
-                        viewModelNotifier.resetMateFees();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  MateRegisterView6()));
-                      mateFeeStateNotifier.reset();
-                    },
-                    title: '다음',
-                    isEnabled: true
-                ),
+                child: _NextButton(),
               ),
               // SizedBox(
               //   height:
@@ -442,6 +108,393 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _MateFeeToggleSection extends ConsumerWidget {
+  const _MateFeeToggleSection({required this.deviceSize});
+  final Size deviceSize;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasMateFee = ref.watch(hasMateFeeProvider);
+    final hasMateFeeNotifier = ref.read(hasMateFeeProvider.notifier);
+
+    return Container(
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                hasMateFeeNotifier.setHasMateFee(true);
+              },
+              child: Container(
+                height: deviceSize.height * 0.07,
+                decoration: BoxDecoration(
+                  color: hasMateFee
+                      ? Colors.orangeAccent
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: Color(0xffE8E8E8),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    '있음',
+                    style: TextStyle(
+                      color: hasMateFee
+                          ? Colors.white
+                          : Colors.black,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: deviceSize.width * 0.05,
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                hasMateFeeNotifier.setHasMateFee(false);
+              },
+              child: Container(
+                height: deviceSize.height * 0.07,
+                decoration: BoxDecoration(
+                  color: hasMateFee
+                      ? Colors.white
+                      : Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: Color(0xffE8E8E8),
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    '없음',
+                    style: TextStyle(
+                      color: hasMateFee
+                          ? Colors.black
+                          : Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MateFeeContentSection extends ConsumerWidget {
+  const _MateFeeContentSection({
+    required this.deviceSize,
+    required this.scrollController,
+  });
+  final Size deviceSize;
+  final ScrollController scrollController;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasMateFee = ref.watch(hasMateFeeProvider);
+    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
+    final mateFeeStateNotifier = ref.read(mateFeeStateProvider.notifier);
+
+    if (!hasMateFee) {
+      return Column(
+        children: [
+          SizedBox(
+            height: deviceSize.height * 0.02,
+          ),
+          Container(
+            height: deviceSize.height * 0.1,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Color(0xffE8E8E8),
+            ),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: deviceSize.width * 0.02,
+                ),
+                Icon(
+                  Icons.warning_amber_rounded,
+                  size: 35,
+                ),
+                SizedBox(
+                  width: deviceSize.width * 0.03,
+                ),
+                Text(
+                  "모임진행에 비용이 발생한다면 \n"
+                  "참가비를 '있음'으로 설정해 주세요.",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    final viewModel = ref.watch(mateRegisterViewModelProvider);
+
+    return Column(
+      children: [
+        SizedBox(
+          height: deviceSize.height * 0.05,
+        ),
+        Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CustomIconButton(
+                    onPressed: () {
+                      try {
+                        final mateFeeState = ref.read(mateFeeStateProvider);
+                        viewModelNotifier.addMateFee(mateFeeState);
+                        mateFeeStateNotifier.reset();
+                        scrollController.animateTo(
+                          scrollController.position.maxScrollExtent,
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.easeInOut,
+                        );
+                      } on CustomException catch (e) {
+                        if (e.domain == ErrorDomain.MATE &&
+                            e.type == ErrorType.INVALID_INPUT)
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CustomAlert(title: e.msg, deviceSize: deviceSize);
+                            },
+                          );
+                        else throw 'UnKnown Exception';
+                      }
+                    },
+                    icon: Icon(Icons.add_circle_outlined, color: Colors.orangeAccent,),
+                    // padding: EdgeInsets.zero,
+                    // constraints: BoxConstraints(
+                    //   minHeight: 0,
+                    //   minWidth: 0,
+                    // ),
+                    // visualDensity: VisualDensity.compact,
+                    // visualDensity: const VisualDensity(horizontal: -4),
+                    // color: Colors.orangeAccent,
+                    // disabledColor: Colors.black,
+                  ),
+                  SizedBox(
+                    width: deviceSize.width * 0.02,
+                  ),
+                  Text(
+                    '참가비 추가',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.01,
+              ),
+              Text(
+                '참가비를 직접 추가해보세요!',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.05,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    left: deviceSize.width * 0.01),
+                child: Text(
+                  '참가비 종류',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.01,
+              ),
+              CustomInputSmall(
+                deviceSize: deviceSize,
+                onChangeMethod: (value) {
+                  mateFeeStateNotifier.setName(value);
+                },
+                hintText: '노쇼방지비',
+                text: '',
+                maxLength: 20,
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.01,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    left: deviceSize.width * 0.01),
+                child: Text(
+                  '참가비',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.01,
+              ),
+              CustomInputSmall(
+                deviceSize: deviceSize,
+                onChangeMethod: (value) {
+                  if (value != '')
+                    mateFeeStateNotifier
+                        .setFee(int.parse(value));
+                },
+                hintText: '10000',
+                text: '',
+                maxLength: 20,
+                type: 'number',
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: deviceSize.height * 0.05,
+        ),
+        Container(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.info, color: Colors.orangeAccent,),
+                  SizedBox(
+                    width: deviceSize.width * 0.02,
+                  ),
+                  Text(
+                    '총 ${viewModel.totalFee}원',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: deviceSize.height * 0.02,
+              ),
+              Column(
+                children: List.generate(
+                  viewModel.mateFees.length,
+                  (index) {
+                    String name =
+                        viewModel.mateFees[index].name;
+                    int fee =
+                        viewModel.mateFees[index].fee;
+                    // return Text('test');
+                    return Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Color(0xffE8E8E8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                            child: Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height:
+                              deviceSize.height * 0.01,
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.attach_money, color: Colors.orangeAccent,),
+                            SizedBox(
+                              width:
+                                  deviceSize.width * 0.01,
+                            ),
+                            Text(
+                              fee.toString(),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight:
+                                    FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: deviceSize.height * 0.02,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: deviceSize.height * 0.05,
+        ),
+      ],
+    );
+  }
+}
+
+class _NextButton extends ConsumerWidget {
+  const _NextButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
+    final hasMateFee = ref.watch(hasMateFeeProvider);
+    final mateFeeStateNotifier = ref.read(mateFeeStateProvider.notifier);
+
+    return CustomButton(
+        deviceSize: deviceSize,
+        onTapMethod: () {
+          if(!hasMateFee)
+            viewModelNotifier.resetMateFees();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MateRegisterView6()));
+          mateFeeStateNotifier.reset();
+        },
+        title: '다음',
+        isEnabled: true
     );
   }
 }

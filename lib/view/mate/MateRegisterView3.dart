@@ -22,8 +22,121 @@ class MateRegisterView3 extends ConsumerStatefulWidget {
 }
 
 class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
+  @override
+  Widget build(BuildContext context) {
+    final EdgeInsets devicePadding = MediaQuery.of(context).padding;
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
 
-  Widget _buildServerImageThumbnail(int imageId, Size deviceSize) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: CustomAppBar(
+          deviceSize: deviceSize,
+          devicePadding: devicePadding,
+          step: 3,
+          totalStep: 7,
+        ),
+        resizeToAvoidBottomInset: true,
+        body: LayoutBuilder(
+          builder: (context, constraint) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraint.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(deviceSize.width * 0.05, 0,
+                            deviceSize.width * 0.05, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '일정에 대해 소개해봐요!',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.05,
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.1,
+                              child: _ImageListSection(deviceSize: deviceSize),
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.02,
+                            ),
+                            CustomInput(
+                              deviceSize: deviceSize,
+                              onChangeMethod: (value) {
+                                viewModelNotifier.setTitle(value);
+                              },
+                              hintText: '제목을 입력해 주세요',
+                              text: '',
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  left: deviceSize.width * 0.02),
+                              child: Text(
+                                '예시 : 아침헬스 함께 가실 분!',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: deviceSize.height * 0.02,
+                            ),
+                            CustomInputLarge(
+                              deviceSize: deviceSize,
+                              onChangeMethod: (value) {
+                                viewModelNotifier.setIntroduction(value);
+                              },
+                              hintText: '소개글을 입력해 주세요 (선택)',
+                              text: '',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
+          elevation: 0,
+          child: Column(
+            children: [
+              Center(
+                child: _NextButton(),
+              ),
+              // SizedBox(
+              //   height:
+              //   devicePadding.bottom + deviceSize.height * 0.03,
+              // ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageListSection extends ConsumerWidget {
+  const _ImageListSection({required this.deviceSize});
+  final Size deviceSize;
+
+  Widget _buildServerImageThumbnail(WidgetRef ref, int imageId) {
     final data = ref.read(imageCacheServiceProvider).get(imageId);
     ImageProvider imageProvider;
     if (data != null) {
@@ -67,167 +180,75 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final EdgeInsets devicePadding = MediaQuery.of(context).padding;
-    final Size deviceSize = MediaQuery.of(context).size;
-    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
-    final viewModel = ref.watch(mateRegisterViewModelProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
     final fileViewModel = ref.watch(fileViewModelProvider);
-    final isEditMode = ref.watch(mateEditModeProvider) != null;
     final keepImageIds = ref.watch(keepImageIdsProvider);
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: CustomAppBar(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomInputMultiImage(
           deviceSize: deviceSize,
-          devicePadding: devicePadding,
-          step: 3,
-          totalStep: 7,
         ),
-        resizeToAvoidBottomInset: true,
-        body: LayoutBuilder(
-          builder: (context, constraint) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraint.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(deviceSize.width * 0.05, 0,
-                            deviceSize.width * 0.05, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '일정에 대해 소개해봐요!',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.05,
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.1,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomInputMultiImage(
-                                    deviceSize: deviceSize,
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.02,
-                                  ),
-                                  Expanded(
-                                    child: ListView.separated(
-                                      itemCount: keepImageIds.length + fileViewModel.files.length,
-                                      itemBuilder: (context, index) {
-                                        if (index < keepImageIds.length) {
-                                          return _buildServerImageThumbnail(keepImageIds[index], deviceSize);
-                                        }
-                                        final fileIndex = index - keepImageIds.length;
-                                        return CustomViewImage(
-                                          deviceSize: deviceSize,
-                                          index: fileIndex,
-                                          fileViewModel: fileViewModel,
-                                        );
-                                      },
-                                      scrollDirection: Axis.horizontal,
-                                      separatorBuilder: (context, index) => SizedBox(width: deviceSize.width * 0.02),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.02,
-                            ),
-                            CustomInput(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) {
-                                viewModelNotifier.setTitle(value);
-                              },
-                              hintText: '제목을 입력해 주세요',
-                              text: viewModel.title,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: deviceSize.width * 0.02),
-                              child: Text(
-                                '예시 : 아침헬스 함께 가실 분!',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.02,
-                            ),
-                            CustomInputLarge(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) {
-                                viewModelNotifier.setIntroduction(value);
-                              },
-                              hintText: '소개글을 입력해 주세요 (선택)',
-                              text: viewModel.introduction,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
+        SizedBox(
+          width: deviceSize.width * 0.02,
         ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.white,
-          elevation: 0,
-          child: Column(
-            children: [
-              Center(
-                child: CustomButton(
-                    deviceSize: deviceSize,
-                    onTapMethod: () {
-                      try {
-                        viewModelNotifier.validateTitle(viewModel.title);
-                      } on CustomException catch (e) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CustomAlert(
-                              title: e.msg,
-                              deviceSize: deviceSize,
-                            );
-                          },
-                        );
-                        return;
-                      }
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  MateRegisterView4()));
-                    },
-                    title: '다음',
-                    isEnabled: viewModel.title.length >= 5),
-              ),
-              // SizedBox(
-              //   height:
-              //   devicePadding.bottom + deviceSize.height * 0.03,
-              // ),
-            ],
+        Expanded(
+          child: ListView.separated(
+            itemCount: keepImageIds.length + fileViewModel.files.length,
+            itemBuilder: (context, index) {
+              if (index < keepImageIds.length) {
+                return _buildServerImageThumbnail(ref, keepImageIds[index]);
+              }
+              final fileIndex = index - keepImageIds.length;
+              return CustomViewImage(
+                deviceSize: deviceSize,
+                index: fileIndex,
+                fileViewModel: fileViewModel,
+              );
+            },
+            scrollDirection: Axis.horizontal,
+            separatorBuilder: (context, index) => SizedBox(width: deviceSize.width * 0.02),
           ),
         ),
-      ),
+      ],
     );
+  }
+}
+
+class _NextButton extends ConsumerWidget {
+  const _NextButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(mateRegisterViewModelProvider);
+    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
+
+    return CustomButton(
+        deviceSize: deviceSize,
+        onTapMethod: () {
+          try {
+            viewModelNotifier.validateTitle(viewModel.title);
+          } on CustomException catch (e) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return CustomAlert(
+                  title: e.msg,
+                  deviceSize: deviceSize,
+                );
+              },
+            );
+            return;
+          }
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      MateRegisterView4()));
+        },
+        title: '다음',
+        isEnabled: viewModel.title.length >= 5);
   }
 }

@@ -22,7 +22,6 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
-    final viewModel = ref.watch(mateRegisterViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -75,7 +74,7 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
                               },
                               hintText: '주 운동루틴은?',
                               maxLength: 20,
-                              text: viewModel.applyQuestion,
+                              text: '',
                             ),
                           ],
                         ),
@@ -93,30 +92,7 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
           child: Column(
             children: [
               Center(
-                child: CustomButton(
-                    deviceSize: deviceSize,
-                    onTapMethod: () {
-                      try {
-                        viewModelNotifier.validateApplyQuestion(viewModel.applyQuestion);
-                      } on CustomException catch (e) {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CustomAlert(
-                              title: e.msg,
-                              deviceSize: deviceSize,
-                            );
-                          },
-                        );
-                        return;
-                      }
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MateRegisterPreview()));
-                    },
-                    title: '미리보기',
-                    isEnabled: viewModel.applyQuestion.length >= 5),
+                child: _NextButton(),
               ),
               // SizedBox(
               //   height:
@@ -127,5 +103,41 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
         ),
       ),
     );
+  }
+}
+
+class _NextButton extends ConsumerWidget {
+  const _NextButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(mateRegisterViewModelProvider);
+    final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
+
+    return CustomButton(
+        deviceSize: deviceSize,
+        onTapMethod: () {
+          try {
+            viewModelNotifier.validateApplyQuestion(viewModel.applyQuestion);
+          } on CustomException catch (e) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return CustomAlert(
+                  title: e.msg,
+                  deviceSize: deviceSize,
+                );
+              },
+            );
+            return;
+          }
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MateRegisterPreview()));
+        },
+        title: '미리보기',
+        isEnabled: viewModel.applyQuestion.length >= 5);
   }
 }

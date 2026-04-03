@@ -22,13 +22,8 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
-    final viewModel = ref.watch(accountJoinViewModelProvider);
-    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
-
-    String? currentPwdError = errorViewModel.passwordError;
-    String? checkPwdError = errorViewModel.checkPasswordError;
-
-    final checkPasswordState = ref.watch(checkPasswordStateProvider);
+    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+    final errorViewModelNotifier = ref.read(accountJoinErrorViewModelProvider.notifier);
     final checkPasswordStateNotifier = ref.read(checkPasswordStateProvider.notifier);
 
     return GestureDetector(
@@ -75,12 +70,11 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                           ),
                           CustomInput(
                             deviceSize: deviceSize,
-                            onChangeMethod: (value) => ref.read(accountJoinViewModelProvider.notifier).setPassword(value),
+                            onChangeMethod: (value) => viewModelNotifier.setPassword(value),
                             hintText: '비밀번호를 입력해 주세요',
-                            errorText:
-                                errorViewModel.passwordError,
+                            errorText: null,
                             maxLength: 20,
-                            text: viewModel.password,
+                            text: '',
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.1,
@@ -88,33 +82,21 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                           CustomInput(
                             deviceSize: deviceSize,
                             onChangeMethod: (value) {
-                                ref.read(accountJoinErrorViewModelProvider.notifier).validateCheckPassword(
-                                    viewModel.password, value);
+                                final password = ref.read(accountJoinViewModelProvider).password;
+                                errorViewModelNotifier.validateCheckPassword(
+                                    password, value);
                                 checkPasswordStateNotifier.state = value;
                             },
                             hintText: '비밀번호를 한 번 더 입력해 주세요',
-                            errorText:
-                                errorViewModel.checkPasswordError,
+                            errorText: null,
                             maxLength: 20,
-                            text: checkPasswordState,
+                            text: '',
                           ),
                         ],
                       ),
                     ),
                     Expanded(child: SizedBox()),
-                    Center(
-                      child: CustomButton(
-                        deviceSize: deviceSize,
-                        onTapMethod: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AccountJoinView3())),
-                        title: '다음',
-                        isEnabled: viewModel.password != '' && ref.watch(checkPasswordStateProvider) != '' &&
-                            currentPwdError == null &&
-                            checkPwdError == null,
-                      ),
-                    ),
+                    _NextButton2(),
                     SizedBox(
                       height: devicePadding.bottom + deviceSize.height * 0.03,
                     ),
@@ -124,6 +106,32 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
             ),
           );
         }),
+      ),
+    );
+  }
+}
+
+class _NextButton2 extends ConsumerWidget {
+  const _NextButton2();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(accountJoinViewModelProvider);
+    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+    final checkPasswordState = ref.watch(checkPasswordStateProvider);
+
+    return Center(
+      child: CustomButton(
+        deviceSize: deviceSize,
+        onTapMethod: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AccountJoinView3())),
+        title: '다음',
+        isEnabled: viewModel.password != '' && checkPasswordState != '' &&
+            errorViewModel.passwordError == null &&
+            errorViewModel.checkPasswordError == null,
       ),
     );
   }

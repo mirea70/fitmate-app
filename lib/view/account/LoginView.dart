@@ -21,10 +21,8 @@ class LoginView extends ConsumerStatefulWidget {
 class _LoginViewState extends ConsumerState<LoginView> {
   @override
   Widget build(BuildContext context) {
-    final Size deviceSize = MediaQuery.of(context).size;
+    final Size deviceSize = MediaQuery.sizeOf(context);
     final viewModelNotifier = ref.read(loginViewModelProvider.notifier);
-    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
-    final viewModel = ref.watch(loginViewModelProvider);
 
     final canPop = Navigator.of(context).canPop();
 
@@ -38,7 +36,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back,
                   color: Colors.black,
                 ),
@@ -56,7 +54,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
               ),
               Container(
                 padding: EdgeInsets.only(left: deviceSize.width * 0.05),
-                child: Text(
+                child: const Text(
                   'FitMate',
                   style: TextStyle(
                     color: Colors.orangeAccent,
@@ -70,84 +68,55 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 height: deviceSize.height * 0.05,
               ),
               Center(
-                child: Container(
-                  child: Column(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.only(left: deviceSize.width * 0.03),
-                            child: CustomInputTitle('아이디'),
-                          ),
-                          SizedBox(
-                            height: 7,
-                          ),
-                          CustomInput(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) =>
-                                  viewModelNotifier.setLoginName(value),
-                              hintText: '아이디를 입력해주세요.',
-                            text: viewModel.loginName,
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.05,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.only(left: deviceSize.width * 0.03),
-                            child: CustomInputTitle('비밀번호'),
-                          ),
-                          SizedBox(
-                            height: 7,
-                          ),
-                          CustomInput(
+                child: Column(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding:
+                              EdgeInsets.only(left: deviceSize.width * 0.03),
+                          child: CustomInputTitle('아이디'),
+                        ),
+                        const SizedBox(height: 7),
+                        CustomInput(
                             deviceSize: deviceSize,
                             onChangeMethod: (value) =>
-                                viewModelNotifier.setPassword(value),
-                            hintText: '비밀번호를 입력해주세요',
-                            text: viewModel.password,
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
+                                viewModelNotifier.setLoginName(value),
+                            hintText: '아이디를 입력해주세요.',
+                          text: '',
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: deviceSize.height * 0.05,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding:
+                              EdgeInsets.only(left: deviceSize.width * 0.03),
+                          child: CustomInputTitle('비밀번호'),
+                        ),
+                        const SizedBox(height: 7),
+                        CustomInput(
+                          deviceSize: deviceSize,
+                          onChangeMethod: (value) =>
+                              viewModelNotifier.setPassword(value),
+                          hintText: '비밀번호를 입력해주세요',
+                          text: '',
+                        )
+                      ],
+                    ),
+                  ],
                 ),
               ),
               SizedBox(
                 height: deviceSize.height * 0.03,
               ),
-              Center(
-                child: CustomButton(
-                  deviceSize: deviceSize,
-                  onTapMethod: () async {
-                    final result = await viewModelNotifier.login(context);
-                    result.when(
-                      data: (_){},
-                      loading: () => CircularProgressIndicator(),
-                      error: (error, stackTrace) =>
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return CustomAlert(
-                                  title: '$error',
-                                  deviceSize: deviceSize);
-                            }),
-                    );
-                  },
-                  title: '로그인',
-                  isEnabled: viewModel.loginName != '' &&
-                      viewModel.password != '' &&
-                      errorViewModel.loginNameError == null &&
-                      errorViewModel.passwordError == null,
-                ),
-              ),
+              // 로그인 버튼만 상태 변화를 감시
+              Center(child: _LoginButton(deviceSize: deviceSize)),
               SizedBox(
                 height: deviceSize.height * 0.02,
               ),
@@ -182,6 +151,43 @@ class _LoginViewState extends ConsumerState<LoginView> {
         ),
       ),
     ),
+    );
+  }
+}
+
+/// 로그인 버튼만 독립적으로 상태를 감시하여 리빌드
+class _LoginButton extends ConsumerWidget {
+  final Size deviceSize;
+  const _LoginButton({required this.deviceSize});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(loginViewModelProvider);
+    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+    final viewModelNotifier = ref.read(loginViewModelProvider.notifier);
+
+    return CustomButton(
+      deviceSize: deviceSize,
+      onTapMethod: () async {
+        final result = await viewModelNotifier.login(context);
+        result.when(
+          data: (_){},
+          loading: () => CircularProgressIndicator(),
+          error: (error, stackTrace) =>
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return CustomAlert(
+                      title: '$error',
+                      deviceSize: deviceSize);
+                }),
+        );
+      },
+      title: '로그인',
+      isEnabled: viewModel.loginName != '' &&
+          viewModel.password != '' &&
+          errorViewModel.loginNameError == null &&
+          errorViewModel.passwordError == null,
     );
   }
 }

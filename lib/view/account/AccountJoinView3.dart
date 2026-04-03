@@ -23,10 +23,7 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
-    final viewModel = ref.read(accountJoinViewModelProvider);
-    final codeViewModel = ref.watch(validateCodeViewModelProvider);
     final codeViewModelNotifier = ref.read(validateCodeViewModelProvider.notifier);
-    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -71,100 +68,16 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                             SizedBox(
                               height: deviceSize.height * 0.1,
                             ),
-                            CustomInputWithButton(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) {
-                                viewModelNotifier.setPhone(value);
-                                if (codeViewModel.isChecked) {
-                                  codeViewModelNotifier.reset();
-                                }
-                              },
-                              hintText: '010-0000-0000',
-                              onPressMethod: () async {
-                                codeViewModelNotifier.reset();
-                                final validateResult = await viewModelNotifier
-                                    .validateDuplicatedPhone();
-                                validateResult.when(
-                                  data: (_) {
-                                    codeViewModelNotifier
-                                        .requestValidateCode(viewModel.phone);
-                                  },
-                                  error: (error, stackTrace) => showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        List<String> errorArr =
-                                            '$error'.split('||');
-                                        return CustomAlert(
-                                            title: errorArr[0],
-                                            content: errorArr[1],
-                                            deviceSize: deviceSize);
-                                      }),
-                                  loading: () => CircularProgressIndicator(),
-                                );
-                              },
-                              buttonTitle:
-                                  !codeViewModel.isVisibleCheckView
-                                      ? '인증요청'
-                                      : '재요청',
-                              isEnableButton: viewModel.phone != '' &&
-                                  errorViewModel.phoneError == null &&
-                                  !codeViewModel.isChecked,
-                              maxLength: 11,
-                              isEnableInput: true,
-                              text: viewModel.phone,
-                            ),
+                            _PhoneInputSection(),
                             SizedBox(
                               height: deviceSize.height * 0.1,
                             ),
-                            if (codeViewModel.isVisibleCheckView)
-                              CustomInputWithButton(
-                                deviceSize: deviceSize,
-                                onChangeMethod: (value) =>
-                                    codeViewModelNotifier.setCode(value),
-                                hintText: '인증번호 8자리를 입력해주세요.',
-                                onPressMethod: () async {
-                                  final checkResult =
-                                      await codeViewModelNotifier.checkValidateCode(
-                                          viewModel.phone, codeViewModel.code!);
-                                  checkResult.when(
-                                    data: (_) => codeViewModelNotifier.setIsChecked(true),
-                                    error: (error, stackTrace) =>
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              List<String> errorArr = '$error'.split('||');
-                                              return CustomAlert(
-                                                  title: errorArr[0],
-                                                  content: errorArr[1],
-                                                  deviceSize: deviceSize
-                                              );
-                                            }),
-                                    loading: () => CircularProgressIndicator(),
-                                  );
-                                },
-                                buttonTitle: '인증확인',
-                                isEnableButton:
-                                    codeViewModel.code != null &&
-                                        codeViewModel.code != '',
-                                maxLength: 8,
-                                text: codeViewModel.code ?? '',
-                              ),
+                            _CodeInputSection(),
                           ],
                         ),
                       ),
                       Expanded(child: SizedBox()),
-                      Center(
-                        child: CustomButton(
-                          deviceSize: deviceSize,
-                          onTapMethod: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AccountJoinView4())),
-                          title: '다음',
-                          // TODO: 인증 확인시에만 활성화 로직 추가 필요
-                          isEnabled: codeViewModel.isChecked,
-                        ),
-                      ),
+                      _NextButton3(),
                       SizedBox(
                         height: devicePadding.bottom + deviceSize.height * 0.03,
                       ),
@@ -175,6 +88,137 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _PhoneInputSection extends ConsumerWidget {
+  const _PhoneInputSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+    final codeViewModelNotifier = ref.read(validateCodeViewModelProvider.notifier);
+    final codeViewModel = ref.watch(validateCodeViewModelProvider);
+    final viewModel = ref.watch(accountJoinViewModelProvider);
+    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+
+    return CustomInputWithButton(
+      deviceSize: deviceSize,
+      onChangeMethod: (value) {
+        viewModelNotifier.setPhone(value);
+        if (codeViewModel.isChecked) {
+          codeViewModelNotifier.reset();
+        }
+      },
+      hintText: '010-0000-0000',
+      onPressMethod: () async {
+        codeViewModelNotifier.reset();
+        final phone = ref.read(accountJoinViewModelProvider).phone;
+        final validateResult = await viewModelNotifier
+            .validateDuplicatedPhone();
+        validateResult.when(
+          data: (_) {
+            codeViewModelNotifier
+                .requestValidateCode(phone);
+          },
+          error: (error, stackTrace) => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                List<String> errorArr =
+                    '$error'.split('||');
+                return CustomAlert(
+                    title: errorArr[0],
+                    content: errorArr[1],
+                    deviceSize: deviceSize);
+              }),
+          loading: () => CircularProgressIndicator(),
+        );
+      },
+      buttonTitle:
+          !codeViewModel.isVisibleCheckView
+              ? '인증요청'
+              : '재요청',
+      isEnableButton: viewModel.phone != '' &&
+          errorViewModel.phoneError == null &&
+          !codeViewModel.isChecked,
+      maxLength: 11,
+      isEnableInput: true,
+      text: '',
+    );
+  }
+}
+
+class _CodeInputSection extends ConsumerWidget {
+  const _CodeInputSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final codeViewModel = ref.watch(validateCodeViewModelProvider);
+    final codeViewModelNotifier = ref.read(validateCodeViewModelProvider.notifier);
+
+    if (!codeViewModel.isVisibleCheckView) {
+      return SizedBox.shrink();
+    }
+
+    return CustomInputWithButton(
+      deviceSize: deviceSize,
+      onChangeMethod: (value) =>
+          codeViewModelNotifier.setCode(value),
+      hintText: '인증번호 8자리를 입력해주세요.',
+      onPressMethod: () async {
+        final phone = ref.read(accountJoinViewModelProvider).phone;
+        final code = ref.read(validateCodeViewModelProvider).code!;
+        final checkResult =
+            await codeViewModelNotifier.checkValidateCode(
+                phone, code);
+        checkResult.when(
+          data: (_) => codeViewModelNotifier.setIsChecked(true),
+          error: (error, stackTrace) =>
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    List<String> errorArr = '$error'.split('||');
+                    return CustomAlert(
+                        title: errorArr[0],
+                        content: errorArr[1],
+                        deviceSize: deviceSize
+                    );
+                  }),
+          loading: () => CircularProgressIndicator(),
+        );
+      },
+      buttonTitle: '인증확인',
+      isEnableButton:
+          codeViewModel.code != null &&
+              codeViewModel.code != '',
+      maxLength: 8,
+      text: '',
+    );
+  }
+}
+
+class _NextButton3 extends ConsumerWidget {
+  const _NextButton3();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final codeViewModel = ref.watch(validateCodeViewModelProvider);
+
+    return Center(
+      child: CustomButton(
+        deviceSize: deviceSize,
+        onTapMethod: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AccountJoinView4())),
+        title: '다음',
+        // TODO: 인증 확인시에만 활성화 로직 추가 필요
+        isEnabled: codeViewModel.isChecked,
       ),
     );
   }

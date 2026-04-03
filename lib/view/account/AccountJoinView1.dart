@@ -38,8 +38,6 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
         .of(context)
         .size;
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
-    final viewModel = ref.watch(accountJoinViewModelProvider);
-    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -90,44 +88,15 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setLoginName(value),
                               hintText: 'amsidl777',
-                              errorText: errorViewModel.loginNameError,
+                              errorText: null,
                               maxLength: 20,
-                              text: viewModel.loginName,
+                              text: '',
                             ),
                           ],
                         ),
                       ),
                       Expanded(child: SizedBox()),
-                      Center(
-                        child: CustomButton(
-                          deviceSize: deviceSize,
-                          onTapMethod: () async {
-                            final validateResult = await viewModelNotifier
-                                .validateDuplicatedLoginName();
-                            validateResult.when(
-                              data: (_) => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AccountJoinView2())),
-                              error: (error, stackTrace) =>
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        List<String> errorArr = '$error'.split('||');
-                                    return CustomAlert(
-                                        title: errorArr[0],
-                                        content: errorArr[1],
-                                        deviceSize: deviceSize
-                                    );
-                                  }),
-                              loading: () => CircularProgressIndicator(),
-                            );
-                          },
-                          title: '다음',
-                          isEnabled: viewModel.loginName != '' &&
-                              errorViewModel.loginNameError == null,
-                        ),
-                      ),
+                      _NextButton1(),
                       SizedBox(
                         height: devicePadding.bottom + deviceSize.height * 0.03,
                       ),
@@ -138,6 +107,49 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _NextButton1 extends ConsumerWidget {
+  const _NextButton1();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(accountJoinViewModelProvider);
+    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
+    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+
+    return Center(
+      child: CustomButton(
+        deviceSize: deviceSize,
+        onTapMethod: () async {
+          final validateResult = await viewModelNotifier
+              .validateDuplicatedLoginName();
+          validateResult.when(
+            data: (_) => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AccountJoinView2())),
+            error: (error, stackTrace) =>
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      List<String> errorArr = '$error'.split('||');
+                  return CustomAlert(
+                      title: errorArr[0],
+                      content: errorArr[1],
+                      deviceSize: deviceSize
+                  );
+                }),
+            loading: () => CircularProgressIndicator(),
+          );
+        },
+        title: '다음',
+        isEnabled: viewModel.loginName != '' &&
+            errorViewModel.loginNameError == null,
       ),
     );
   }

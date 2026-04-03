@@ -28,9 +28,6 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
     final Size deviceSize = MediaQuery.of(context).size;
 
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
-    final viewModel = ref.watch(accountJoinViewModelProvider);
-    final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
-    final fileViewModel = ref.watch(fileViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -93,9 +90,9 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setName(value),
                               hintText: '홍길동',
-                              errorText: errorViewModel.nameError,
+                              errorText: null,
                               maxLength: 5,
-                              text: viewModel.name,
+                              text: '',
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.07,
@@ -108,48 +105,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                             SizedBox(
                               height: deviceSize.height * 0.01,
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  right: deviceSize.width * 0.05),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Radio(
-                                    value: Gender.MALE,
-                                    activeColor: Colors.orangeAccent,
-                                    groupValue: viewModel.gender,
-                                    onChanged: (value) {
-                                      viewModelNotifier.setGender(value);
-                                    },
-                                  ),
-                                  Text(
-                                    '남성',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: deviceSize.width * 0.2,
-                                  ),
-                                  Radio(
-                                    value: Gender.FEMALE,
-                                    activeColor: Colors.orangeAccent,
-                                    groupValue: viewModel.gender,
-                                    onChanged: (value) {
-                                      viewModelNotifier.setGender(value);
-                                    },
-                                  ),
-                                  Text(
-                                    '여성',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            _GenderSelector(),
                             SizedBox(
                               height: deviceSize.height * 0.07,
                             ),
@@ -161,10 +117,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                             SizedBox(
                               height: deviceSize.height * 0.01,
                             ),
-                            BirthDatePicker(
-                              initialDate: viewModel.birthDate,
-                              onDateChanged: (value) => viewModelNotifier.setBirthDate(value),
-                            ),
+                            _BirthDateSelector(),
                             SizedBox(
                               height: deviceSize.height * 0.07,
                             ),
@@ -181,9 +134,9 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setEmail(value),
                               hintText: 'abc@naver.com',
-                              errorText: errorViewModel.emailError,
+                              errorText: null,
                               maxLength: 30,
-                              text: viewModel.email,
+                              text: '',
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.07,
@@ -201,9 +154,9 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                               onChangeMethod: (value) =>
                                   viewModelNotifier.setNickName(value),
                               hintText: '가지',
-                              errorText: errorViewModel.nickNameError,
+                              errorText: null,
                               maxLength: 10,
-                              text: viewModel.nickName,
+                              text: '',
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.07,
@@ -222,7 +175,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                                   viewModelNotifier.setIntroduction(value),
                               hintText: '안녕하세요...',
                               maxLength: 50,
-                              text: viewModel.introduction,
+                              text: '',
                             ),
                             SizedBox(
                               height: deviceSize.height * 0.02,
@@ -231,35 +184,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                         ),
                       ),
                       Expanded(child: SizedBox()),
-                      Center(
-                        child: CustomButton(
-                          deviceSize: deviceSize,
-                          onTapMethod: () async {
-                            final joinResult = await viewModelNotifier.join();
-                            joinResult.when(
-                              data: (_) {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (context) => MainView(),
-                                  ),
-                                  (route) => false,
-                                );
-                                AppSnackBar.show(context, message: '환영합니다! 지금 바로 운동 메이트를 만나보세요!', type: SnackBarType.success);
-                              },
-                              error: (error, stackTrace) => showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return CustomAlert(
-                                        title: '$error',
-                                        deviceSize: deviceSize);
-                                  }),
-                              loading: () => CircularProgressIndicator(),
-                            );
-                          },
-                          title: '가입하기',
-                          isEnabled: hasNotError(),
-                        ),
-                      ),
+                      _SubmitButton4(),
                       SizedBox(
                         height: devicePadding.bottom + deviceSize.height * 0.03,
                       ),
@@ -273,30 +198,139 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
       ),
     );
   }
+}
 
-  bool hasNotError() {
+class _GenderSelector extends ConsumerWidget {
+  const _GenderSelector();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(accountJoinViewModelProvider);
+    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+
+    return Padding(
+      padding: EdgeInsets.only(
+          right: deviceSize.width * 0.05),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Radio(
+            value: Gender.MALE,
+            activeColor: Colors.orangeAccent,
+            groupValue: viewModel.gender,
+            onChanged: (value) {
+              viewModelNotifier.setGender(value);
+            },
+          ),
+          Text(
+            '남성',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(
+            width: deviceSize.width * 0.2,
+          ),
+          Radio(
+            value: Gender.FEMALE,
+            activeColor: Colors.orangeAccent,
+            groupValue: viewModel.gender,
+            onChanged: (value) {
+              viewModelNotifier.setGender(value);
+            },
+          ),
+          Text(
+            '여성',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BirthDateSelector extends ConsumerWidget {
+  const _BirthDateSelector();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(accountJoinViewModelProvider);
+    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+
+    return BirthDatePicker(
+      initialDate: viewModel.birthDate,
+      onDateChanged: (value) => viewModelNotifier.setBirthDate(value),
+    );
+  }
+}
+
+class _SubmitButton4 extends ConsumerWidget {
+  const _SubmitButton4();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Size deviceSize = MediaQuery.of(context).size;
     final viewModel = ref.watch(accountJoinViewModelProvider);
     final errorViewModel = ref.watch(accountJoinErrorViewModelProvider);
-    // 비어있는지 체크
-    if (viewModel.loginName == '' ||
-        viewModel.password == '' ||
-        viewModel.nickName == '' ||
-        viewModel.name == '' ||
-        viewModel.phone == '' ||
-        viewModel.email == '' ||
-        viewModel.birthDate == null ||
-        viewModel.gender == '') {
-      return false;
+    final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+
+    bool hasNotError() {
+      // 비어있는지 체크
+      if (viewModel.loginName == '' ||
+          viewModel.password == '' ||
+          viewModel.nickName == '' ||
+          viewModel.name == '' ||
+          viewModel.phone == '' ||
+          viewModel.email == '' ||
+          viewModel.birthDate == null ||
+          viewModel.gender == '') {
+        return false;
+      }
+      // 에러 체크
+      if (errorViewModel.loginNameError != null ||
+          errorViewModel.passwordError != null ||
+          errorViewModel.nickNameError != null ||
+          errorViewModel.nameError != null ||
+          errorViewModel.phoneError != null ||
+          errorViewModel.emailError != null) {
+        return false;
+      }
+      return true;
     }
-    // 에러 체크
-    if (errorViewModel.loginNameError != null ||
-        errorViewModel.passwordError != null ||
-        errorViewModel.nickNameError != null ||
-        errorViewModel.nameError != null ||
-        errorViewModel.phoneError != null ||
-        errorViewModel.emailError != null) {
-      return false;
-    }
-    return true;
+
+    return Center(
+      child: CustomButton(
+        deviceSize: deviceSize,
+        onTapMethod: () async {
+          final joinResult = await viewModelNotifier.join();
+          joinResult.when(
+            data: (_) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => MainView(),
+                ),
+                (route) => false,
+              );
+              AppSnackBar.show(context, message: '환영합니다! 지금 바로 운동 메이트를 만나보세요!', type: SnackBarType.success);
+            },
+            error: (error, stackTrace) => showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return CustomAlert(
+                      title: '$error',
+                      deviceSize: deviceSize);
+                }),
+            loading: () => CircularProgressIndicator(),
+          );
+        },
+        title: '가입하기',
+        isEnabled: hasNotError(),
+      ),
+    );
   }
 }
