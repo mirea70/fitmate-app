@@ -46,15 +46,20 @@ class _MateListViewState extends ConsumerState<MateListView> {
         color: Color(0xffF1F1F1),
         child: Column(
           children: [
-            SizedBox(
-              height: deviceSize.height * 0.02,
-            ),
+            SizedBox(height: deviceSize.height * 0.02),
             mates.when(
               data: (items) =>
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(deviceSize.width * 0.05, 0, deviceSize.width * 0.05, 0),
-                      child: ListView.separated(
+                      child: items.isEmpty
+                          ? Center(
+                              child: Text(
+                                '모집 중인 메이트가 없습니다.',
+                                style: TextStyle(fontSize: 15, color: Colors.grey),
+                              ),
+                            )
+                          : ListView.separated(
                         itemCount: items.length,
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(

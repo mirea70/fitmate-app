@@ -96,12 +96,13 @@ class MateRepository {
     return buffer.toString();
   }
 
-  Future<List<MateListItem>> findAll(int page) async {
+  Future<List<MateListItem>> findAll(int page, {bool includeClosed = false}) async {
     String endPoint = "/api/mate/list";
 
     Map<String, dynamic> body = MateListRequestModel.initial().toJson();
     body['page'] = page;
     body['size'] = 15;
+    body['includeClosed'] = includeClosed;
     final headers = {
       'accessToken': true
     };

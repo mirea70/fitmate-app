@@ -2,6 +2,7 @@ import 'package:fitmate_app/model/mate/MateListItem.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
+import 'package:fitmate_app/widget/ClosedToggleChip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +17,7 @@ class MyMateListView extends ConsumerStatefulWidget {
 class _MyMateListViewState extends ConsumerState<MyMateListView> {
   List<MateListItem> _myMates = [];
   bool _isLoading = true;
+  bool _showClosed = false;
 
   @override
   void initState() {
@@ -57,26 +59,47 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _myMates.isEmpty
-              ? const Center(
-                  child: Text(
-                    '작성한 모집글이 없습니다.',
-                    style: TextStyle(fontSize: 15, color: Colors.grey),
+          : Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(deviceSize.width * 0.04, 8, deviceSize.width * 0.04, 4),
+                  child: Row(
+                    children: [
+                      ClosedToggleChip(
+                        isActive: _showClosed,
+                        onTap: () => setState(() => _showClosed = !_showClosed),
+                      ),
+                    ],
                   ),
-                )
-              : ListView.separated(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: deviceSize.width * 0.04,
-                    vertical: deviceSize.height * 0.02,
-                  ),
-                  itemCount: _myMates.length,
-                  separatorBuilder: (_, __) =>
-                      SizedBox(height: deviceSize.height * 0.015),
-                  itemBuilder: (context, index) {
-                    final item = _myMates[index];
-                    return _buildMateItem(item, deviceSize);
-                  },
                 ),
+                Expanded(
+                  child: Builder(builder: (context) {
+                    final filtered = _showClosed ? _myMates : _myMates.where((item) => !item.closed).toList();
+                    if (filtered.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          '작성한 모집글이 없습니다.',
+                          style: TextStyle(fontSize: 15, color: Colors.grey),
+                        ),
+                      );
+                    }
+                    return ListView.separated(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: deviceSize.width * 0.04,
+                        vertical: deviceSize.height * 0.01,
+                      ),
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, __) =>
+                          SizedBox(height: deviceSize.height * 0.015),
+                      itemBuilder: (context, index) {
+                        final item = filtered[index];
+                        return _buildMateItem(item, deviceSize);
+                      },
+                    );
+                  }),
+                ),
+              ],
+            ),
     );
   }
 
@@ -91,49 +114,69 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
         );
         _loadMyMates();
       },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Color(0xffE8E8E8)),
-        ),
-        child: Row(
-          children: [
-            _buildThumbnail(item.thumbnailImageId, deviceSize),
-            SizedBox(width: deviceSize.width * 0.03),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        children: [
+          Opacity(
+            opacity: item.closed ? 0.4 : 1.0,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Color(0xffE8E8E8)),
+              ),
+              child: Row(
                 children: [
-                  Text(
-                    item.title,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  _buildThumbnail(item.thumbnailImageId, deviceSize),
+                  SizedBox(width: deviceSize.width * 0.03),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.group, size: 14, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${item.approvedAccountCnt}/${item.permitPeopleCnt}',
+                              style: const TextStyle(fontSize: 13, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _formatDate(item.mateAt),
+                          style: const TextStyle(fontSize: 13, color: Colors.grey),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.group, size: 14, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${item.approvedAccountCnt}/${item.permitPeopleCnt}',
-                        style: const TextStyle(fontSize: 13, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatDate(item.mateAt),
-                    style: const TextStyle(fontSize: 13, color: Colors.grey),
-                  ),
+                  const Icon(Icons.chevron_right, color: Colors.grey),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.grey),
-          ],
-        ),
+          ),
+          if (item.closed)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text('마감', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -9,6 +9,7 @@ class MateRequestResponse {
   final int approvedAccountCnt;
   final int totalFee;
   final DateTime applyAt;
+  final bool closed;
 
   MateRequestResponse({
     required this.mateId,
@@ -21,6 +22,7 @@ class MateRequestResponse {
     required this.approvedAccountCnt,
     required this.totalFee,
     required this.applyAt,
+    required this.closed,
   });
 
   factory MateRequestResponse.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class MateRequestResponse {
       approvedAccountCnt: json['approvedAccountCnt'],
       totalFee: json['totalFee'],
       applyAt: DateTime.parse(json['applyAt']),
+      closed: json['closed'] ?? false,
     );
   }
 }

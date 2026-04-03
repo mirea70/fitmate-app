@@ -129,21 +129,21 @@ class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
     }
 
     if (_requests.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.inbox_outlined, size: 50, color: Colors.grey),
-                SizedBox(height: deviceSize.height * 0.02),
-                Text(
-                  '신청 내역이 없습니다.',
-                  style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w600),
-                ),
-              ],
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.inbox_outlined, size: 50, color: Colors.grey),
+            SizedBox(height: deviceSize.height * 0.02),
+            Text(
+              '신청 내역이 없습니다.',
+              style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.w600),
             ),
-          );
-        }
-        return ListView.separated(
+          ],
+        ),
+      );
+    }
+    return ListView.separated(
           padding: EdgeInsets.symmetric(
             horizontal: deviceSize.width * 0.04,
             vertical: deviceSize.height * 0.02,

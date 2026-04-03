@@ -17,8 +17,8 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
     return _fetchMates(0);
   }
 
-  Future<List<MateListItem>> _fetchMates(int page) async {
-    final items = await ref.read(mateRepositoryProvider).findAll(page);
+  Future<List<MateListItem>> _fetchMates(int page, {bool includeClosed = false}) async {
+    final items = await ref.read(mateRepositoryProvider).findAll(page, includeClosed: includeClosed);
     final imageIds = <int?>[];
     for (final item in items) {
       imageIds.add(item.thumbnailImageId);
@@ -28,9 +28,9 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
     return items;
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh({bool includeClosed = false}) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _fetchMates(0));
+    state = await AsyncValue.guard(() => _fetchMates(0, includeClosed: includeClosed));
   }
 
   Future<void> addMate(Mate mate, List<String> introImagePaths) async {

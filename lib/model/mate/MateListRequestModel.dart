@@ -90,6 +90,18 @@ class MateListRequestModel {
 enum FitCategory {
   FITNESS('FITNESS','헬스'),
   CROSSFIT('CROSSFIT', '크로스핏'),
+  RUNNING('RUNNING', '러닝'),
+  PILATES('PILATES', '필라테스'),
+  YOGA('YOGA', '요가'),
+  SWIMMING('SWIMMING', '수영'),
+  BADMINTON('BADMINTON', '배드민턴'),
+  TENNIS('TENNIS', '테니스'),
+  CLIMBING('CLIMBING', '클라이밍'),
+  SOCCER('SOCCER', '축구/풋살'),
+  BASKETBALL('BASKETBALL', '농구'),
+  BASEBALL('BASEBALL', '야구'),
+  CYCLING('CYCLING', '자전거'),
+  ETC('ETC', '기타'),
   undefined('undefined', '');
 
   final String code;
