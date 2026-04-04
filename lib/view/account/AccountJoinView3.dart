@@ -119,23 +119,34 @@ class _PhoneInputSection extends ConsumerWidget {
         final phone = ref.read(accountJoinViewModelProvider).phone;
         final validateResult = await viewModelNotifier
             .validateDuplicatedPhone();
-        validateResult.when(
-          data: (_) {
-            codeViewModelNotifier
-                .requestValidateCode(phone);
-          },
-          error: (error, stackTrace) => showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                List<String> errorArr =
-                    '$error'.split('||');
-                return CustomAlert(
-                    title: errorArr[0],
-                    content: errorArr[1],
-                    deviceSize: deviceSize);
-              }),
-          loading: () => CircularProgressIndicator(),
-        );
+        if (validateResult.hasError) {
+          final errorArr = '${validateResult.error}'.split('||');
+          if (context.mounted) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return CustomAlert(
+                      title: errorArr[0],
+                      content: errorArr.length > 1 ? errorArr[1] : null,
+                      deviceSize: deviceSize);
+                });
+          }
+          return;
+        }
+        try {
+          await codeViewModelNotifier.requestValidateCode(phone);
+        } catch (e) {
+          if (context.mounted) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return CustomAlert(
+                      title: '인증번호 요청에 실패했습니다.',
+                      content: '$e',
+                      deviceSize: deviceSize);
+                });
+          }
+        }
       },
       buttonTitle:
           !codeViewModel.isVisibleCheckView
@@ -164,11 +175,37 @@ class _CodeInputSection extends ConsumerWidget {
       return SizedBox.shrink();
     }
 
-    return CustomInputWithButton(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          margin: EdgeInsets.only(right: deviceSize.width * 0.05),
+          decoration: BoxDecoration(
+            color: Color(0xFFFFF3E0),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.orangeAccent.withOpacity(0.3)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, color: Colors.orangeAccent, size: 18),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '인증번호가 발송되었습니다. 5분 이내에 입력해주세요.',
+                  style: TextStyle(fontSize: 13, color: Colors.brown),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: deviceSize.height * 0.02),
+        CustomInputWithButton(
       deviceSize: deviceSize,
       onChangeMethod: (value) =>
           codeViewModelNotifier.setCode(value),
-      hintText: '인증번호 8자리를 입력해주세요.',
+      hintText: '인증번호 6자리를 입력해주세요.',
       onPressMethod: () async {
         final phone = ref.read(accountJoinViewModelProvider).phone;
         final code = ref.read(validateCodeViewModelProvider).code!;
@@ -195,8 +232,10 @@ class _CodeInputSection extends ConsumerWidget {
       isEnableButton:
           codeViewModel.code != null &&
               codeViewModel.code != '',
-      maxLength: 8,
+      maxLength: 6,
       text: '',
+    ),
+      ],
     );
   }
 }

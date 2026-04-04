@@ -1,5 +1,5 @@
 import 'package:fitmate_app/model/code/ValidateCode.dart';
-import 'package:fitmate_app/repository/account/AccountRepository.dart';
+import 'package:fitmate_app/service/FirebasePhoneAuthService.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final validateCodeViewModelProvider = NotifierProvider<ValidateCodeViewModel, ValidateCode>(
@@ -36,9 +36,9 @@ class ValidateCodeViewModel extends Notifier<ValidateCode> {
     state = state.copyWith(code: () => value);
   }
 
-  void requestValidateCode(String phone) async {
-    final result = await ref.read(accountRepositoryProvider).requestSmsCode(phone);
-    if(result == true) {
+  Future<void> requestValidateCode(String phone) async {
+    final result = await ref.read(firebasePhoneAuthServiceProvider).requestCode(phone);
+    if (result == true) {
       state = state.copyWith(isVisibleCheckView: true);
     } else {
       throw Exception('인증번호 요청 중 오류가 발생했습니다.');
@@ -46,12 +46,13 @@ class ValidateCodeViewModel extends Notifier<ValidateCode> {
   }
 
   Future<AsyncValue<void>> checkValidateCode(String phone, String inputCode) async {
-    final result = await ref.read(accountRepositoryProvider).checkValidateCode(phone, inputCode);
-    if(result == false) {
+    try {
+      await ref.read(firebasePhoneAuthServiceProvider).verifyCode(inputCode);
+      return AsyncValue.data(null);
+    } catch (e) {
       String errorTitle = '유효하지 않은 인증번호입니다.';
       String errorContent = '인증번호를 확인하고 다시 입력해주세요.';
       return AsyncValue.error(errorTitle + '||' + errorContent, StackTrace.empty);
     }
-    else return AsyncValue.data(null);
   }
 }

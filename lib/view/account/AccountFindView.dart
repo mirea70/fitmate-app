@@ -1,4 +1,5 @@
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
+import 'package:fitmate_app/service/FirebasePhoneAuthService.dart';
 import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
@@ -224,8 +225,14 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
   Future<void> _requestCode() async {
     setState(() => _isLoading = true);
     try {
-      await ref.read(accountRepositoryProvider).requestRecoveryCode(_phone);
-      setState(() => _step = 1);
+      // 먼저 해당 전화번호로 가입된 계정이 있는지 확인
+      await ref.read(accountRepositoryProvider).checkPhoneExists(_phone);
+      // Firebase로 인증번호 발송
+      await ref.read(firebasePhoneAuthServiceProvider).requestCode(_phone);
+      setState(() {
+        _step = 1;
+        _code = '';
+      });
       if (mounted) AppSnackBar.show(context, message: '인증번호가 발송되었습니다.', type: SnackBarType.success);
     } catch (e) {
       if (mounted) {
@@ -245,8 +252,14 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
   Future<void> _verifyCode() async {
     setState(() => _isLoading = true);
     try {
-      await ref.read(accountRepositoryProvider).verifyRecoveryCode(_phone, _code);
-      setState(() => _step = 2);
+      await ref.read(firebasePhoneAuthServiceProvider).verifyCode(_code);
+      setState(() {
+        _step = 2;
+        _newPassword = '';
+        _confirmPassword = '';
+        _passwordError = null;
+        _confirmError = null;
+      });
     } catch (e) {
       if (mounted) {
         showDialog(
@@ -350,26 +363,45 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
       children: [
         Text('인증번호를 입력해주세요',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-        SizedBox(height: deviceSize.height * 0.01),
-        Text('$_phone (으)로 발송된 인증번호를 입력해주세요.',
-            style: TextStyle(fontSize: 14, color: Colors.grey)),
+        SizedBox(height: deviceSize.height * 0.02),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Color(0xFFFFF3E0),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.orangeAccent.withOpacity(0.3)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, color: Colors.orangeAccent, size: 18),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '$_phone (으)로 인증번호가 발송되었습니다. 5분 이내에 입력해주세요.',
+                  style: TextStyle(fontSize: 13, color: Colors.brown),
+                ),
+              ),
+            ],
+          ),
+        ),
         SizedBox(height: deviceSize.height * 0.04),
         Text('인증번호', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
         CustomInput(
           deviceSize: deviceSize,
           onChangeMethod: (value) => setState(() => _code = value),
-          hintText: '인증번호 8자리',
-          maxLength: 8,
+          hintText: '인증번호 6자리',
+          maxLength: 6,
           text: _code,
         ),
         SizedBox(height: deviceSize.height * 0.04),
         Center(
           child: CustomButton(
             deviceSize: deviceSize,
-            onTapMethod: _code.length == 8 && !_isLoading ? _verifyCode : () {},
+            onTapMethod: _code.length == 6 && !_isLoading ? _verifyCode : () {},
             title: _isLoading ? '확인 중...' : '인증 확인',
-            isEnabled: _code.length == 8 && !_isLoading,
+            isEnabled: _code.length == 6 && !_isLoading,
           ),
         ),
       ],

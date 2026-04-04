@@ -230,19 +230,11 @@ class AccountRepository implements IAccountRepository {
     return response.data['loginName'];
   }
 
-  Future<void> requestRecoveryCode(String phone) async {
+  Future<void> checkPhoneExists(String phone) async {
     await dio.post(
-      '/api/account/recovery/request-code',
+      '/api/account/recovery/check-phone',
       options: Options(contentType: Headers.jsonContentType),
       data: {'phone': phone},
-    );
-  }
-
-  Future<void> verifyRecoveryCode(String phone, String code) async {
-    await dio.post(
-      '/api/account/recovery/verify-code',
-      options: Options(contentType: Headers.jsonContentType),
-      data: {'phone': phone, 'code': code},
     );
   }
 

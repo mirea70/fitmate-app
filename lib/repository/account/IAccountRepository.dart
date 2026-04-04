@@ -29,7 +29,6 @@ abstract class IAccountRepository {
   Future<void> followUser(int targetAccountId);
   Future<dynamic> requestJoin(Account account);
   Future<String> findLoginName(String phone);
-  Future<void> requestRecoveryCode(String phone);
-  Future<void> verifyRecoveryCode(String phone, String code);
+  Future<void> checkPhoneExists(String phone);
   Future<void> resetPassword(String phone, String newPassword);
 }

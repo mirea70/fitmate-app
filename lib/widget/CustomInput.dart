@@ -25,7 +25,7 @@ class _CustomInputState extends State<CustomInput> {
   @override
   void didUpdateWidget(covariant CustomInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.text.isNotEmpty && widget.text != _textController.text) {
+    if (widget.text != _textController.text) {
       _textController.text = widget.text;
     }
   }

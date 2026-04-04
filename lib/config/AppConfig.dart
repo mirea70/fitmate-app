@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -28,6 +29,9 @@ class AppConfig {
     // 환경 설정
     _environment = _env == 'prod' ? Environment.prod : Environment.dev;
     debugPrint('=== 실행 환경: $_env | baseUrl: ${AppConfig().baseUrl} ===');
+
+    // Firebase
+    await Firebase.initializeApp();
 
     // Kakao SDK
     KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);

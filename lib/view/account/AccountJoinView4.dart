@@ -42,154 +42,146 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
         body: LayoutBuilder(
           builder: (context, constraint) {
             return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                    minHeight: constraint.maxHeight,
-                    minWidth: constraint.maxWidth),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: deviceSize.width * 0.8,
-                          height: deviceSize.height * 0.05,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.orangeAccent,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: devicePadding.bottom + deviceSize.height * 0.03),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: deviceSize.width * 0.8,
+                        height: deviceSize.height * 0.05,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.orangeAccent,
+                        ),
+                        child: Text(
+                          '이제, 프로필만 작성하면 가입 완료!',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
-                          child: Text(
-                            '이제, 프로필만 작성하면 가입 완료!',
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: deviceSize.width * 0.05),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: deviceSize.height * 0.07,
+                          ),
+                          Text(
+                            '이름',
                             style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
+                                fontSize: 20, fontWeight: FontWeight.w600),
                           ),
-                        ),
+                          SizedBox(
+                            height: deviceSize.height * 0.01,
+                          ),
+                          CustomInput(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) =>
+                                viewModelNotifier.setName(value),
+                            hintText: '홍길동',
+                            errorText: null,
+                            maxLength: 5,
+                            text: '',
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.07,
+                          ),
+                          Text(
+                            '성별',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.01,
+                          ),
+                          _GenderSelector(),
+                          SizedBox(
+                            height: deviceSize.height * 0.07,
+                          ),
+                          Text(
+                            '생년월일',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.01,
+                          ),
+                          _BirthDateSelector(),
+                          SizedBox(
+                            height: deviceSize.height * 0.07,
+                          ),
+                          Text(
+                            '이메일',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.01,
+                          ),
+                          CustomInput(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) =>
+                                viewModelNotifier.setEmail(value),
+                            hintText: 'abc@naver.com',
+                            errorText: null,
+                            maxLength: 30,
+                            text: '',
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.07,
+                          ),
+                          Text(
+                            '닉네임',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.01,
+                          ),
+                          CustomInput(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) =>
+                                viewModelNotifier.setNickName(value),
+                            hintText: '가지',
+                            errorText: null,
+                            maxLength: 10,
+                            text: '',
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.07,
+                          ),
+                          Text(
+                            '간단 자기소개',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.01,
+                          ),
+                          CustomInputMiddle(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) =>
+                                viewModelNotifier.setIntroduction(value),
+                            hintText: '안녕하세요...',
+                            maxLength: 50,
+                            text: '',
+                          ),
+                          SizedBox(
+                            height: deviceSize.height * 0.05,
+                          ),
+                        ],
                       ),
-                      Container(
-                        padding: EdgeInsets.only(left: deviceSize.width * 0.05),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: deviceSize.height * 0.07,
-                            ),
-                            Text(
-                              '이름',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.01,
-                            ),
-                            CustomInput(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) =>
-                                  viewModelNotifier.setName(value),
-                              hintText: '홍길동',
-                              errorText: null,
-                              maxLength: 5,
-                              text: '',
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.07,
-                            ),
-                            Text(
-                              '성별',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.01,
-                            ),
-                            _GenderSelector(),
-                            SizedBox(
-                              height: deviceSize.height * 0.07,
-                            ),
-                            Text(
-                              '생년월일',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.01,
-                            ),
-                            _BirthDateSelector(),
-                            SizedBox(
-                              height: deviceSize.height * 0.07,
-                            ),
-                            Text(
-                              '이메일',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.01,
-                            ),
-                            CustomInput(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) =>
-                                  viewModelNotifier.setEmail(value),
-                              hintText: 'abc@naver.com',
-                              errorText: null,
-                              maxLength: 30,
-                              text: '',
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.07,
-                            ),
-                            Text(
-                              '닉네임',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.01,
-                            ),
-                            CustomInput(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) =>
-                                  viewModelNotifier.setNickName(value),
-                              hintText: '가지',
-                              errorText: null,
-                              maxLength: 10,
-                              text: '',
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.07,
-                            ),
-                            Text(
-                              '간단 자기소개',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.01,
-                            ),
-                            CustomInputMiddle(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) =>
-                                  viewModelNotifier.setIntroduction(value),
-                              hintText: '안녕하세요...',
-                              maxLength: 50,
-                              text: '',
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.02,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(child: SizedBox()),
-                      _SubmitButton4(),
-                      SizedBox(
-                        height: devicePadding.bottom + deviceSize.height * 0.03,
-                      ),
-                    ],
-                  ),
+                    ),
+                    _SubmitButton4(),
+                  ],
                 ),
               ),
             );
