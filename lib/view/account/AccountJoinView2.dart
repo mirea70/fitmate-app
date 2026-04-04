@@ -22,8 +22,10 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(accountJoinViewModelProvider);
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
     final errorViewModelNotifier = ref.read(accountJoinErrorViewModelProvider.notifier);
+    final checkPasswordState = ref.watch(checkPasswordStateProvider);
     final checkPasswordStateNotifier = ref.read(checkPasswordStateProvider.notifier);
 
     return GestureDetector(
@@ -74,7 +76,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             hintText: '비밀번호를 입력해 주세요',
                             errorText: null,
                             maxLength: 20,
-                            text: '',
+                            text: viewModel.password,
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.1,
@@ -90,7 +92,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             hintText: '비밀번호를 한 번 더 입력해 주세요',
                             errorText: null,
                             maxLength: 20,
-                            text: '',
+                            text: checkPasswordState,
                           ),
                         ],
                       ),

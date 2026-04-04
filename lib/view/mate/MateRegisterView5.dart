@@ -207,6 +207,7 @@ class _MateFeeContentSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasMateFee = ref.watch(hasMateFeeProvider);
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
+    final mateFeeState = ref.watch(mateFeeStateProvider);
     final mateFeeStateNotifier = ref.read(mateFeeStateProvider.notifier);
 
     if (!hasMateFee) {
@@ -343,7 +344,7 @@ class _MateFeeContentSection extends ConsumerWidget {
                   mateFeeStateNotifier.setName(value);
                 },
                 hintText: '노쇼방지비',
-                text: '',
+                text: mateFeeState.name,
                 maxLength: 20,
               ),
               SizedBox(
@@ -371,7 +372,7 @@ class _MateFeeContentSection extends ConsumerWidget {
                         .setFee(int.parse(value));
                 },
                 hintText: '10000',
-                text: '',
+                text: mateFeeState.fee > 0 ? mateFeeState.fee.toString() : '',
                 maxLength: 20,
                 type: 'number',
               ),

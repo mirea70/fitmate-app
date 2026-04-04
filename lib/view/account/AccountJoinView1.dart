@@ -37,6 +37,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
     final Size deviceSize = MediaQuery
         .of(context)
         .size;
+    final viewModel = ref.watch(accountJoinViewModelProvider);
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
 
     return GestureDetector(
@@ -90,7 +91,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                               hintText: 'amsidl777',
                               errorText: null,
                               maxLength: 20,
-                              text: '',
+                              text: viewModel.loginName,
                             ),
                           ],
                         ),

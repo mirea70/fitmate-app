@@ -26,6 +26,7 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(mateRegisterViewModelProvider);
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
 
     return GestureDetector(
@@ -77,7 +78,7 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
                                 viewModelNotifier.setTitle(value);
                               },
                               hintText: '제목을 입력해 주세요',
-                              text: '',
+                              text: viewModel.title,
                             ),
                             Padding(
                               padding: EdgeInsets.only(
@@ -100,7 +101,7 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
                                 viewModelNotifier.setIntroduction(value);
                               },
                               hintText: '소개글을 입력해 주세요 (선택)',
-                              text: '',
+                              text: viewModel.introduction ?? '',
                             ),
                           ],
                         ),

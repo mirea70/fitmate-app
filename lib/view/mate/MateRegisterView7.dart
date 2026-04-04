@@ -21,6 +21,7 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
   Widget build(BuildContext context) {
     final EdgeInsets devicePadding = MediaQuery.of(context).padding;
     final Size deviceSize = MediaQuery.of(context).size;
+    final viewModel = ref.watch(mateRegisterViewModelProvider);
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
 
     return GestureDetector(
@@ -74,7 +75,7 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
                               },
                               hintText: '주 운동루틴은?',
                               maxLength: 20,
-                              text: '',
+                              text: viewModel.applyQuestion ?? '',
                             ),
                           ],
                         ),

@@ -157,7 +157,7 @@ class _PhoneInputSection extends ConsumerWidget {
           !codeViewModel.isChecked,
       maxLength: 11,
       isEnableInput: true,
-      text: '',
+      text: viewModel.phone,
     );
   }
 }
@@ -233,7 +233,7 @@ class _CodeInputSection extends ConsumerWidget {
           codeViewModel.code != null &&
               codeViewModel.code != '',
       maxLength: 6,
-      text: '',
+      text: codeViewModel.code ?? '',
     ),
       ],
     );

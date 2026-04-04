@@ -22,6 +22,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.sizeOf(context);
+    final viewModel = ref.watch(loginViewModelProvider);
     final viewModelNotifier = ref.read(loginViewModelProvider.notifier);
 
     final canPop = Navigator.of(context).canPop();
@@ -84,7 +85,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             onChangeMethod: (value) =>
                                 viewModelNotifier.setLoginName(value),
                             hintText: '아이디를 입력해주세요.',
-                          text: '',
+                          text: viewModel.loginName,
                         )
                       ],
                     ),
@@ -105,7 +106,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           onChangeMethod: (value) =>
                               viewModelNotifier.setPassword(value),
                           hintText: '비밀번호를 입력해주세요',
-                          text: '',
+                          text: viewModel.password,
                         )
                       ],
                     ),

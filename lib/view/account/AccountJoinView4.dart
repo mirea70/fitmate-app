@@ -28,6 +28,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
     final Size deviceSize = MediaQuery.of(context).size;
 
     final viewModelNotifier = ref.read(accountJoinViewModelProvider.notifier);
+    final viewModel = ref.watch(accountJoinViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -89,7 +90,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                             hintText: '홍길동',
                             errorText: null,
                             maxLength: 5,
-                            text: '',
+                            text: viewModel.name,
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.07,
@@ -133,7 +134,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                             hintText: 'abc@naver.com',
                             errorText: null,
                             maxLength: 30,
-                            text: '',
+                            text: viewModel.email,
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.07,
@@ -153,7 +154,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                             hintText: '가지',
                             errorText: null,
                             maxLength: 10,
-                            text: '',
+                            text: viewModel.nickName,
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.07,
@@ -172,7 +173,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                                 viewModelNotifier.setIntroduction(value),
                             hintText: '안녕하세요...',
                             maxLength: 50,
-                            text: '',
+                            text: viewModel.introduction ?? '',
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.05,
