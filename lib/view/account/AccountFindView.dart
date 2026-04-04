@@ -21,6 +21,11 @@ class _AccountFindViewState extends ConsumerState<AccountFindView> with SingleTi
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        ref.read(firebasePhoneAuthServiceProvider).reset();
+      }
+    });
   }
 
   @override
@@ -188,7 +193,8 @@ class _ResetPasswordTab extends ConsumerStatefulWidget {
 }
 
 class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
-  int _step = 0; // 0: 전화번호 입력, 1: 인증번호 확인, 2: 새 비밀번호 설정
+  int _step = 0; // 0: 아이디/전화번호 입력, 1: 인증번호 확인, 2: 새 비밀번호 설정
+  String _loginName = '';
   String _phone = '';
   String _code = '';
   String _newPassword = '';
@@ -225,8 +231,8 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
   Future<void> _requestCode() async {
     setState(() => _isLoading = true);
     try {
-      // 먼저 해당 전화번호로 가입된 계정이 있는지 확인
-      await ref.read(accountRepositoryProvider).checkPhoneExists(_phone);
+      // 아이디+전화번호로 계정 존재 확인
+      await ref.read(accountRepositoryProvider).checkAccountExists(_loginName, _phone);
       // Firebase로 인증번호 발송
       await ref.read(firebasePhoneAuthServiceProvider).requestCode(_phone);
       setState(() {
@@ -239,7 +245,7 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
         showDialog(
           context: context,
           builder: (context) => CustomAlert(
-            title: '해당 전화번호로 가입된 계정이 없습니다.',
+            title: '아이디 또는 전화번호가 일치하는 계정이 없습니다.',
             deviceSize: MediaQuery.of(context).size,
           ),
         );
@@ -278,7 +284,7 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
   Future<void> _resetPassword() async {
     setState(() => _isLoading = true);
     try {
-      await ref.read(accountRepositoryProvider).resetPassword(_phone, _newPassword);
+      await ref.read(accountRepositoryProvider).resetPassword(_loginName, _phone, _newPassword);
       if (mounted) {
         Navigator.pop(context);
         AppSnackBar.show(context, message: '비밀번호가 변경되었습니다. 새 비밀번호로 로그인해주세요.', type: SnackBarType.success);
@@ -325,12 +331,24 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('가입 시 등록한 전화번호를 입력해주세요',
+        Text('아이디와 전화번호를 입력해주세요',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
         SizedBox(height: deviceSize.height * 0.01),
-        Text('인증번호를 발송하여 본인 확인 후 비밀번호를 재설정합니다.',
+        Text('본인 확인 후 비밀번호를 재설정합니다.',
             style: TextStyle(fontSize: 14, color: Colors.grey)),
         SizedBox(height: deviceSize.height * 0.04),
+        Text('아이디', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        SizedBox(height: 8),
+        CustomInput(
+          deviceSize: deviceSize,
+          onChangeMethod: (value) {
+            setState(() => _loginName = value);
+          },
+          hintText: '가입 시 등록한 아이디',
+          maxLength: 20,
+          text: _loginName,
+        ),
+        SizedBox(height: deviceSize.height * 0.03),
         Text('전화번호', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
         CustomInput(
@@ -348,9 +366,9 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
         Center(
           child: CustomButton(
             deviceSize: deviceSize,
-            onTapMethod: _phone.length == 11 && _phoneError == null && !_isLoading ? _requestCode : () {},
+            onTapMethod: _loginName.isNotEmpty && _phone.length == 11 && _phoneError == null && !_isLoading ? _requestCode : () {},
             title: _isLoading ? '발송 중...' : '인증번호 받기',
-            isEnabled: _phone.length == 11 && _phoneError == null && !_isLoading,
+            isEnabled: _loginName.isNotEmpty && _phone.length == 11 && _phoneError == null && !_isLoading,
           ),
         ),
       ],
@@ -402,6 +420,38 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
             onTapMethod: _code.length == 6 && !_isLoading ? _verifyCode : () {},
             title: _isLoading ? '확인 중...' : '인증 확인',
             isEnabled: _code.length == 6 && !_isLoading,
+          ),
+        ),
+        SizedBox(height: deviceSize.height * 0.02),
+        Center(
+          child: TextButton(
+            onPressed: !_isLoading ? () async {
+              setState(() => _isLoading = true);
+              try {
+                await ref.read(firebasePhoneAuthServiceProvider).requestCode(_phone);
+                setState(() => _code = '');
+                if (mounted) AppSnackBar.show(context, message: '인증번호가 재발송되었습니다.', type: SnackBarType.success);
+              } catch (e) {
+                if (mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => CustomAlert(
+                      title: '인증번호 재발송에 실패했습니다.',
+                      deviceSize: deviceSize,
+                    ),
+                  );
+                }
+              } finally {
+                if (mounted) setState(() => _isLoading = false);
+              }
+            } : null,
+            child: Text(
+              '인증번호 재발송',
+              style: TextStyle(
+                color: Colors.grey,
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ),
         ),
       ],

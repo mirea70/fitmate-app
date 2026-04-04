@@ -11,6 +11,7 @@ final firebasePhoneAuthServiceProvider = Provider<FirebasePhoneAuthService>((ref
 class FirebasePhoneAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? _verificationId;
+  int? _resendToken;
 
   /// 인증번호 요청. 성공 시 true 반환, 실패 시 예외 throw.
   Future<bool> requestCode(String phone) async {
@@ -21,6 +22,7 @@ class FirebasePhoneAuthService {
 
       await _auth.verifyPhoneNumber(
         phoneNumber: '+82${phone.substring(1)}',
+        forceResendingToken: _resendToken,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (PhoneAuthCredential credential) async {
           debugPrint('[FirebasePhoneAuth] verificationCompleted');
@@ -35,6 +37,7 @@ class FirebasePhoneAuthService {
         codeSent: (String verificationId, int? resendToken) {
           debugPrint('[FirebasePhoneAuth] codeSent: verificationId=$verificationId');
           _verificationId = verificationId;
+          _resendToken = resendToken;
           if (!completer.isCompleted) completer.complete(true);
         },
         codeAutoRetrievalTimeout: (String verificationId) {
@@ -59,6 +62,12 @@ class FirebasePhoneAuthService {
         throw TimeoutException('인증번호 요청 시간이 초과되었습니다.');
       },
     );
+  }
+
+  /// 상태 초기화
+  void reset() {
+    _verificationId = null;
+    _resendToken = null;
   }
 
   /// 인증번호 검증. 성공 시 Firebase ID 토큰 반환.
