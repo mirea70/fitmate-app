@@ -13,6 +13,7 @@ import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateDetailViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
@@ -374,6 +375,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                         }
                         mateToSubmit = mateToSubmit.copyWith(introImageIds: [...keepIds, ...newImageIds]);
                         await ref.read(mateAsyncViewModelProvider.notifier).modifyMate(editMateId, mateToSubmit);
+                        ref.invalidate(mateDetailProvider(editMateId));
                       } else {
                         List<XFile> introImages =
                             ref.read(fileViewModelProvider).files;
@@ -579,19 +581,22 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
   bool hasNotEmpty() {
     final viewModel = ref.watch(mateRegisterViewModelProvider);
     // 비어있는지 체크
-    if (viewModel.fitCategory == null ||
-        viewModel.fitCategory == FitCategory.undefined ||
-        viewModel.title == '' ||
-        viewModel.mateAt == null ||
-        viewModel.fitPlaceName == '' ||
-        viewModel.fitPlaceAddress == '' ||
-        viewModel.gatherType == null ||
-        viewModel.gatherType == GatherType.undefined ||
-        viewModel.permitGender == null ||
-        viewModel.permitMaxAge == null ||
-        viewModel.permitMinAge == null ||
-        viewModel.permitPeopleCnt == null ||
-        viewModel.applyQuestion == '') {
+    final checks = {
+      'fitCategory': viewModel.fitCategory != null && viewModel.fitCategory != FitCategory.undefined,
+      'title': viewModel.title != '',
+      'mateAt': viewModel.mateAt != null,
+      'fitPlaceName': viewModel.fitPlaceName != '',
+      'fitPlaceAddress': viewModel.fitPlaceAddress != '',
+      'gatherType': viewModel.gatherType != null && viewModel.gatherType != GatherType.undefined,
+      'permitGender': viewModel.permitGender != null,
+      'permitMaxAge': viewModel.permitMaxAge != null,
+      'permitMinAge': viewModel.permitMinAge != null,
+      'permitPeopleCnt': viewModel.permitPeopleCnt != null,
+      'applyQuestion': viewModel.applyQuestion != '',
+    };
+    final failed = checks.entries.where((e) => !e.value).map((e) => e.key).toList();
+    if (failed.isNotEmpty) {
+      debugPrint('[hasNotEmpty] 비어있는 필드: $failed');
       return false;
     }
     return true;

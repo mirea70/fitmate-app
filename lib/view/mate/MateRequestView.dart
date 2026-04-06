@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateDetailViewModel.dart';
 import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
@@ -68,6 +70,8 @@ class _MateRequestViewState extends ConsumerState<MateRequestView> {
             widget.mateId,
             _answerController.text.trim(),
           );
+      ref.invalidate(mateDetailProvider(widget.mateId));
+      ref.read(mateAsyncViewModelProvider.notifier).refresh();
       if (mounted) {
         Navigator.pop(context);
         Navigator.pop(context);

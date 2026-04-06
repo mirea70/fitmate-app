@@ -3,6 +3,8 @@ import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/mate/MateRepository.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateDetailViewModel.dart';
 import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:flutter/material.dart';
@@ -87,6 +89,8 @@ class _MateApproveViewState extends ConsumerState<MateApproveView>
 
     try {
       await ref.read(mateRepositoryProvider).approveMate(widget.mateId, accountId);
+      ref.invalidate(mateDetailProvider(widget.mateId));
+      ref.read(mateAsyncViewModelProvider.notifier).refresh();
       if (mounted) {
         setState(() {
           _waitingIds.remove(accountId);
