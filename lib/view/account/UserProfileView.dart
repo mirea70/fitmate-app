@@ -414,13 +414,25 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
 
   Widget _buildProfileImage(int? profileImageId, Size deviceSize) {
     final double size = deviceSize.width * 0.25;
-    final data = profileImageId != null
-        ? ref.read(imageCacheServiceProvider).get(profileImageId)
-        : null;
-    if (data != null) {
-      return _buildProfileCircle(MemoryImage(data), deviceSize);
+    if (profileImageId == null) return DefaultProfileImage(size: size);
+
+    final cached = ref.read(imageCacheServiceProvider).get(profileImageId);
+    if (cached != null) {
+      return _buildProfileCircle(MemoryImage(cached), deviceSize);
     }
-    return DefaultProfileImage(size: size);
+
+    return FutureBuilder<void>(
+      future: ref.read(imageCacheServiceProvider).ensureLoaded([profileImageId]),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          final data = ref.read(imageCacheServiceProvider).get(profileImageId);
+          if (data != null) {
+            return _buildProfileCircle(MemoryImage(data), deviceSize);
+          }
+        }
+        return DefaultProfileImage(size: size);
+      },
+    );
   }
 
   Widget _buildProfileCircle(ImageProvider imageProvider, Size deviceSize) {

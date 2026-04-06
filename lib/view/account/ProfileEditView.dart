@@ -255,10 +255,22 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
       return _buildCircle(MemoryImage(_newImageBytes!), deviceSize);
     }
     if (_profileImageId != null) {
-      final data = ref.read(imageCacheServiceProvider).get(_profileImageId!);
-      if (data != null) {
-        return _buildCircle(MemoryImage(data), deviceSize);
+      final cached = ref.read(imageCacheServiceProvider).get(_profileImageId!);
+      if (cached != null) {
+        return _buildCircle(MemoryImage(cached), deviceSize);
       }
+      return FutureBuilder<void>(
+        future: ref.read(imageCacheServiceProvider).ensureLoaded([_profileImageId]),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final data = ref.read(imageCacheServiceProvider).get(_profileImageId!);
+            if (data != null) {
+              return _buildCircle(MemoryImage(data), deviceSize);
+            }
+          }
+          return DefaultProfileImage(size: deviceSize.width * 0.25);
+        },
+      );
     }
     return DefaultProfileImage(size: deviceSize.width * 0.25);
   }
