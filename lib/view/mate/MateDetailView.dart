@@ -552,10 +552,11 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     } else {
       title = '참여 신청하기';
       isEnabled = true;
-      onTap = () {
-        Navigator.push(context, MaterialPageRoute(
+      onTap = () async {
+        await Navigator.push(context, MaterialPageRoute(
           builder: (context) => MateRequestView(mateId: widget.mateId),
         ));
+        ref.invalidate(mateDetailProvider(widget.mateId));
       };
     }
 
