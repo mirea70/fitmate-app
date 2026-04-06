@@ -140,8 +140,11 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                                               itemCount: items.length,
                                                               itemBuilder: (context, index) {
                                                                 String title = items[index]['title'];
-                                                                String address = items[index]['roadAddress']
-                                                                    ?? items[index]['address'];
+                                                                String roadAddr = items[index]['roadAddress'] ?? '';
+                                                                String addr = items[index]['address'] ?? '';
+                                                                String address = roadAddr.isNotEmpty ? roadAddr
+                                                                    : addr.isNotEmpty ? addr
+                                                                    : title;
                                                                 return ListTile(
                                                                   title: Text(title),
                                                                   titleTextStyle: TextStyle(
@@ -219,12 +222,9 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: deviceSize.height * 0.02,
-                                  ),
                                   Center(
                                     child: Container(
-                                      height: 2,
+                                      height: 1,
                                       width: deviceSize.width * 0.9,
                                       color: Color(0xffE8E8E8),
                                     ),
