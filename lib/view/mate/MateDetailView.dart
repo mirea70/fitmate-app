@@ -58,10 +58,12 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     ref.read(mateRegisterViewModelProvider.notifier).loadFromMate(mate);
 
     // Set category selection state
-    if (mate.fitCategory == FitCategory.FITNESS) {
-      ref.read(selectNumProvider.notifier).setSelectNum(1);
-    } else if (mate.fitCategory == FitCategory.CROSSFIT) {
-      ref.read(selectNumProvider.notifier).setSelectNum(2);
+    if (mate.fitCategory != null && mate.fitCategory != FitCategory.undefined) {
+      final categories = FitCategory.values.where((c) => c != FitCategory.undefined).toList();
+      final index = categories.indexOf(mate.fitCategory!) + 1;
+      if (index > 0) {
+        ref.read(selectNumProvider.notifier).setSelectNum(index);
+      }
     }
 
     // Set fee state

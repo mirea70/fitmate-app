@@ -6,6 +6,9 @@ import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/repository/file/FileRepository.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateDetailViewModel.dart';
+import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,6 +143,9 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
         ref.read(imageCacheServiceProvider).invalidate(widget.profile.profileImageId!);
       }
       ref.invalidate(myProfileProvider);
+      // 메이트 목록/채팅 목록에서 변경된 프로필이 반영되도록 갱신
+      ref.read(mateAsyncViewModelProvider.notifier).refresh();
+      ref.read(chatRoomListProvider.notifier).refresh();
       if (mounted) Navigator.pop(context);
     } on DioException catch (e) {
       if (mounted) {
