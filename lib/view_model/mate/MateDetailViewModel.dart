@@ -36,14 +36,18 @@ class MateDetailState {
 final mateDetailProvider = FutureProvider.family<MateDetailState, int>((ref, mateId) async {
   // 3개 API를 병렬로 호출
   final mateFuture = ref.read(mateRepositoryProvider).getMateOne(mateId);
-  final profileFuture = ref.read(myProfileProvider.future).catchError((_) => null);
+  final profileFuture = ref.read(myProfileProvider.future);
   final wishFuture = ref.read(mateRepositoryProvider).getMyWishList().catchError((_) => <MateListItem>[]);
 
   final mate = await mateFuture;
-  final profile = await profileFuture;
-  final wishList = await wishFuture;
 
-  final myAccountId = profile?.accountId;
+  int? myAccountId;
+  try {
+    final profile = await profileFuture;
+    myAccountId = profile.accountId;
+  } catch (_) {}
+
+  final wishList = await wishFuture;
   final isWished = wishList.any((item) => item.id == mateId);
 
   final imageIds = <int?>[...mate.introImageIds, mate.writerImageId];
