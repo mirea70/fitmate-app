@@ -52,367 +52,304 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
       ),
       backgroundColor: Color(0xffF1F1F1),
       body: SingleChildScrollView(
-        child: Container(
-          height: deviceSize.height * 1.35,
-          width: double.maxFinite,
-          child: Stack(
-            children: [
-              Positioned(
-                top: 0,
-                left: 0,
-                child: Container(
-                  height: deviceSize.height * 0.35,
-                  width: deviceSize.width,
-                  child: _buildPreviewImage(keepImageIds, fileViewModel, _currentImage),
-                ),
-              ),
-              Positioned(
-                left: 10,
-                top: deviceSize.height * 0.16,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black38,
-                    shape: BoxShape.circle,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image carousel with navigation arrows
+            SizedBox(
+              height: deviceSize.height * 0.35,
+              width: double.maxFinite,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: _buildPreviewImage(keepImageIds, fileViewModel, _currentImage),
                   ),
-                  child: CustomIconButton(
-                    icon: Icon(
-                      Icons.keyboard_arrow_left_rounded,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(
-                        () {
-                          final imageCount = totalImageCount;
-                          if (imageCount > 0) {
-                            if (_currentImage > 0) {
-                              _currentImage--;
-                            } else {
-                              _currentImage = imageCount - 1;
-                            }
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 10,
-                top: deviceSize.height * 0.16,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black38,
-                    shape: BoxShape.circle,
-                  ),
-                  child: CustomIconButton(
-                    icon: Icon(
-                      Icons.keyboard_arrow_right_rounded,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(
-                        () {
-                          final imageCount = totalImageCount;
-                          if (imageCount > 0) {
-                            if (_currentImage < imageCount - 1) {
-                              _currentImage++;
-                            } else {
-                              _currentImage = 0;
-                            }
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Positioned(
-                top: deviceSize.height * 0.3,
-                left: deviceSize.width * 0.04,
-                child: Card(
-                  elevation: 4,
-                  child: Container(
-                    height: deviceSize.height * 0.17,
-                    width: deviceSize.width * 0.9,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                  Positioned(
+                    left: 10,
+                    top: 0,
+                    bottom: 0,
                     child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: deviceSize.height * 0.04),
-                        child: Text(
-                          viewModel.title,
-                          style: TextStyle(
-                            fontSize: 23,
-                            fontWeight: FontWeight.w600,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black38,
+                          shape: BoxShape.circle,
+                        ),
+                        child: CustomIconButton(
+                          icon: Icon(
+                            Icons.keyboard_arrow_left_rounded,
+                            size: 20,
+                            color: Colors.white,
                           ),
+                          onPressed: () {
+                            setState(
+                              () {
+                                final imageCount = totalImageCount;
+                                if (imageCount > 0) {
+                                  if (_currentImage > 0) {
+                                    _currentImage--;
+                                  } else {
+                                    _currentImage = imageCount - 1;
+                                  }
+                                }
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),
                   ),
+                  Positioned(
+                    right: 10,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black38,
+                          shape: BoxShape.circle,
+                        ),
+                        child: CustomIconButton(
+                          icon: Icon(
+                            Icons.keyboard_arrow_right_rounded,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            setState(
+                              () {
+                                final imageCount = totalImageCount;
+                                if (imageCount > 0) {
+                                  if (_currentImage < imageCount - 1) {
+                                    _currentImage++;
+                                  } else {
+                                    _currentImage = 0;
+                                  }
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Writer profile overlapping image area
+            Transform.translate(
+              offset: Offset(0, -30),
+              child: _buildWriterProfile(deviceSize),
+            ),
+
+            // Title card
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.04),
+              child: Card(
+                elevation: 4,
+                child: Container(
+                  width: double.maxFinite,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: deviceSize.width * 0.04,
+                    vertical: deviceSize.height * 0.025,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      viewModel.title,
+                      style: TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
-              Positioned(
-                top: deviceSize.height * 0.26,
-                left: 0,
-                right: 0,
-                child: _buildWriterProfile(deviceSize),
-              ),
-              Positioned(
-                top: deviceSize.height * 0.52,
-                left: deviceSize.width * 0.17,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.calendar_month_rounded,
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: deviceSize.width * 0.02,
-                    ),
-                    Text(
+            ),
+
+            SizedBox(height: deviceSize.height * 0.02),
+
+            // Date and group count row
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.05),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.calendar_month_rounded,
+                    size: 20,
+                  ),
+                  SizedBox(
+                    width: deviceSize.width * 0.02,
+                  ),
+                  Flexible(
+                    child: Text(
                       formatDate(viewModel.mateAt!),
                       style: TextStyle(
                         fontSize: 16,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    SizedBox(
-                      width: deviceSize.width * 0.02,
+                  ),
+                  SizedBox(
+                    width: deviceSize.width * 0.02,
+                  ),
+                  Icon(
+                    Icons.group,
+                    size: 20,
+                  ),
+                  SizedBox(
+                    width: deviceSize.width * 0.02,
+                  ),
+                  Text(
+                    '${isEditMode ? viewModel.approvedAccountIds.length : viewModel.approvedAccountIds.length + 1}/${viewModel.permitPeopleCnt}',
+                    style: TextStyle(
+                      fontSize: 16,
                     ),
-                    Icon(
-                      Icons.group,
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: deviceSize.width * 0.02,
-                    ),
-                    Text(
-                      '${isEditMode ? viewModel.approvedAccountIds.length : viewModel.approvedAccountIds.length + 1}/${viewModel.permitPeopleCnt}',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Positioned(
-                top: deviceSize.height * 0.67,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: EdgeInsets.only(left: deviceSize.width * 0.05),
-                  // child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+            ),
+
+            SizedBox(height: deviceSize.height * 0.05),
+
+            // Detail info section
+            Padding(
+              padding: EdgeInsets.only(
+                left: deviceSize.width * 0.05,
+                right: deviceSize.width * 0.05,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '안내사항',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.01,
+                  ),
+                  Text(
+                    '자세한 정보를 알려드릴게요',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.03,
+                  ),
+                  _buildInfoRow(
+                    icon: Icons.category_rounded,
+                    text: viewModel.fitCategory != null
+                        ? viewModel.fitCategory!.label
+                        : '미지정',
+                    deviceSize: deviceSize,
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.02,
+                  ),
+                  _buildInfoRow(
+                    icon: Icons.group,
+                    text: '최대 ${viewModel.permitPeopleCnt}명 => ${viewModel.gatherType!.label}',
+                    deviceSize: deviceSize,
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.02,
+                  ),
+                  _buildInfoRow(
+                    icon: Icons.attach_money_rounded,
+                    text: viewModel.mateFees.isEmpty
+                        ? '무료'
+                        : '${viewModel.totalFee}원',
+                    deviceSize: deviceSize,
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.02,
+                  ),
+                  _buildInfoRow(
+                    icon: Icons.compare_arrows_rounded,
+                    text: getTextPermitAges(viewModel.permitMinAge!,
+                        viewModel.permitMaxAge!),
+                    deviceSize: deviceSize,
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.02,
+                  ),
+                  _buildInfoRow(
+                    icon: Icons.wc_rounded,
+                    text: _getTextPermitGender(viewModel.permitGender),
+                    deviceSize: deviceSize,
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.02,
+                  ),
+                  _buildInfoRow(
+                    icon: Icons.calendar_month_rounded,
+                    text: formatDate(viewModel.mateAt!),
+                    deviceSize: deviceSize,
+                  ),
+                  SizedBox(
+                    height: deviceSize.height * 0.02,
+                  ),
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '안내사항',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
+                      Padding(
+                        padding:
+                            EdgeInsets.only(top: deviceSize.height * 0.003),
+                        child: Icon(
+                          Icons.place_rounded,
+                          size: 20,
                         ),
                       ),
                       SizedBox(
-                        height: deviceSize.height * 0.01,
+                        width: deviceSize.width * 0.02,
                       ),
-                      Text(
-                        '자세한 정보를 알려드릴게요',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${viewModel.fitPlaceName}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              '${viewModel.fitPlaceAddress}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.03,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.category_rounded,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: deviceSize.width * 0.02,
-                          ),
-                          Text(
-                            viewModel.fitCategory != null
-                                ? viewModel.fitCategory!.label
-                                : '미지정',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.02,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.group,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: deviceSize.width * 0.02,
-                          ),
-                          Text(
-                            '최대 ${viewModel.permitPeopleCnt}명 => ${viewModel.gatherType!.label}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.02,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.attach_money_rounded,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: deviceSize.width * 0.02,
-                          ),
-                          Text(
-                            viewModel.mateFees.isEmpty
-                                ? '무료'
-                                : '${viewModel.totalFee}원',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.02,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.compare_arrows_rounded,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: deviceSize.width * 0.02,
-                          ),
-                          Text(
-                            getTextPermitAges(viewModel.permitMinAge!,
-                                viewModel.permitMaxAge!),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.02,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.wc_rounded,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: deviceSize.width * 0.02,
-                          ),
-                          Text(
-                            _getTextPermitGender(viewModel.permitGender),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.02,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_month_rounded,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            width: deviceSize.width * 0.02,
-                          ),
-                          Text(
-                            formatDate(viewModel.mateAt!),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.02,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.only(top: deviceSize.height * 0.003),
-                            child: Icon(
-                              Icons.place_rounded,
-                              size: 20,
-                            ),
-                          ),
-                          SizedBox(
-                            width: deviceSize.width * 0.02,
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${viewModel.fitPlaceName}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      right: deviceSize.width * 0.05),
-                                  child: Text(
-                                    '${viewModel.fitPlaceAddress}',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    // overflow: TextOverflow.ellipsis,
-                                    // maxLines: 2,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
-                ),
+                  SizedBox(height: deviceSize.height * 0.03),
+                ],
               ),
-              // ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -552,10 +489,41 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
                 error: (_, __) => '',
               ),
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String text,
+    required Size deviceSize,
+  }) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+        ),
+        SizedBox(
+          width: deviceSize.width * 0.02,
+        ),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
+      ],
     );
   }
 

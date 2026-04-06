@@ -203,9 +203,13 @@ class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
                             children: [
                               Icon(Icons.calendar_today, size: 14, color: Colors.grey),
                               SizedBox(width: 4),
-                              Text(
-                                _formatDate(item.mateAt),
-                                style: TextStyle(fontSize: 13, color: Colors.grey),
+                              Flexible(
+                                child: Text(
+                                  _formatDate(item.mateAt),
+                                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               SizedBox(width: 12),
                               Icon(Icons.group, size: 14, color: Colors.grey),

@@ -83,13 +83,12 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                   minHeight: constraint.maxHeight,
                   minWidth: constraint.maxWidth,
                 ),
-                child: IntrinsicHeight(
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(
-                        deviceSize.width * 0.05, 0, deviceSize.width * 0.05, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(
+                      deviceSize.width * 0.05, 0, deviceSize.width * 0.05, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                         if (hasApprovedMembers)
                           Padding(
                             padding: EdgeInsets.only(bottom: deviceSize.height * 0.02),
@@ -226,7 +225,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                           children: [
                                               SizedBox(
                                                 height: 35,
-                                                width: 30,
+                                                width: 45,
                                                 child: TextField(
                                                   controller: _controller,
                                                   maxLength: 2,
@@ -380,7 +379,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                         viewModelNotifier.setGatherType(GatherType.FAST);
                                       },
                                       child: Container(
-                                        height: deviceSize.height * 0.15,
+                                        padding: EdgeInsets.symmetric(vertical: 16, horizontal: deviceSize.width * 0.025),
                                         decoration: BoxDecoration(
                                           color: viewModel.gatherType == GatherType.FAST ? Colors.orangeAccent : Colors.white,
                                           borderRadius: BorderRadius.circular(15),
@@ -388,14 +387,11 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                         ),
                                         child: Row(
                                           children: [
-                                            SizedBox(
-                                              width: deviceSize.width * 0.025,
-                                            ),
                                             Icon(Icons.watch_later),
                                             SizedBox(
                                               width: deviceSize.width * 0.025,
                                             ),
-                                            Text.rich(
+                                            Expanded(child: Text.rich(
                                               TextSpan(
                                                   text: '선착순\n',
                                                   style: TextStyle(
@@ -426,7 +422,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                                     ),
                                                   ]
                                               ),
-                                            ),
+                                            )),
                                           ],
                                         ),
                                       ),
@@ -439,7 +435,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                         viewModelNotifier.setGatherType(GatherType.AGREE);
                                       },
                                       child: Container(
-                                        height: deviceSize.height * 0.15,
+                                        padding: EdgeInsets.symmetric(vertical: 16, horizontal: deviceSize.width * 0.025),
                                         decoration: BoxDecoration(
                                           color: viewModel.gatherType == GatherType.AGREE ? Colors.orangeAccent : Colors.white,
                                           borderRadius: BorderRadius.circular(15),
@@ -447,14 +443,11 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                         ),
                                         child: Row(
                                           children: [
-                                            SizedBox(
-                                              width: deviceSize.width * 0.025,
-                                            ),
                                             Icon(Icons.approval_rounded),
                                             SizedBox(
                                               width: deviceSize.width * 0.025,
                                             ),
-                                            Text.rich(
+                                            Expanded(child: Text.rich(
                                               TextSpan(
                                                   text: '승인제\n',
                                                   style: TextStyle(
@@ -485,7 +478,7 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                                     ),
                                                   ]
                                               ),
-                                            ),
+                                            )),
                                           ],
                                         ),
                                       ),
@@ -756,7 +749,6 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                     ),
                   ),
                 ),
-              ),
             );
           },
         ),

@@ -32,7 +32,6 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
       ),
       body: Container(
         width: deviceSize.width,
-        height: deviceSize.height,
         color: Color(0xffF1F1F1),
         child: Column(
           children: [
@@ -79,26 +78,21 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                     Opacity(
                                       opacity: items[index].closed ? 0.4 : 1.0,
                                       child: Container(
-                                height: deviceSize.height * 0.15,
+                                padding: EdgeInsets.symmetric(vertical: 12, horizontal: deviceSize.width * 0.03),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   color: Colors.white,
                                 ),
                                 child: Row(
                                   children: [
-                                    SizedBox(
-                                      width: deviceSize.width * 0.03,
-                                    ),
                                     _getThumbnailImage(items[index].thumbnailImageId, deviceSize),
                                     SizedBox(
                                       width: deviceSize.width * 0.03,
                                     ),
-                                    Column(
+                                    Expanded(
+                                      child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        SizedBox(
-                                          height: deviceSize.height * 0.015,
-                                        ),
                                         Container(
                                           child: Padding(
                                             padding: const EdgeInsets.all(6.0),
@@ -124,6 +118,8 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                             fontSize: 15,
                                             fontWeight: FontWeight.w500,
                                           ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         SizedBox(
                                           height: deviceSize.height * 0.003,
@@ -138,12 +134,16 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                             SizedBox(
                                               width: deviceSize.width * 0.01,
                                             ),
-                                            Text(
-                                              '${_extractAddress(items[index].fitPlaceAddress)} ∙ ${_formatDate(items[index].mateAt)}',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey,
+                                            Flexible(
+                                              child: Text(
+                                                '${_extractAddress(items[index].fitPlaceAddress)} ∙ ${_formatDate(items[index].mateAt)}',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.grey,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
                                           ],
@@ -154,12 +154,16 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                             SizedBox(
                                               width: deviceSize.width * 0.01,
                                             ),
-                                            Text(
-                                              '${items[index].writerNickName} ∙ ${items[index].gatherType?.label ?? ''}',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.grey,
+                                            Flexible(
+                                              child: Text(
+                                                '${items[index].writerNickName} ∙ ${items[index].gatherType?.label ?? ''}',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Colors.grey,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
                                             SizedBox(
@@ -184,6 +188,7 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                           ],
                                         ),
                                       ],
+                                    ),
                                     ),
                                   ],
                                 ),

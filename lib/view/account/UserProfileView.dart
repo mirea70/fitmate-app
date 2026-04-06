@@ -146,9 +146,14 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
                 SizedBox(height: deviceSize.height * (isMe ? 0.01 : 0.02)),
                 _buildProfileImage(profile.profileImageId, deviceSize),
                 SizedBox(height: deviceSize.height * 0.02),
-                Text(
-                  profile.nickName,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.05),
+                  child: Text(
+                    profile.nickName,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                  ),
                 ),
                 SizedBox(height: deviceSize.height * 0.005),
                 if (profile.introduction.isNotEmpty)
@@ -467,7 +472,12 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
             child: Text(label, style: TextStyle(fontSize: 15, color: Colors.grey, fontWeight: FontWeight.w500)),
           ),
           Expanded(
-            child: Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            ),
           ),
         ],
       ),

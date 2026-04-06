@@ -42,8 +42,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraint.maxHeight),
-              child: IntrinsicHeight(
-                child: Column(
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -97,14 +96,13 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                         ],
                       ),
                     ),
-                    Expanded(child: SizedBox()),
+                    SizedBox(height: deviceSize.height * 0.05),
                     _NextButton2(),
                     SizedBox(
                       height: devicePadding.bottom + deviceSize.height * 0.03,
                     ),
                   ],
                 ),
-              ),
             ),
           );
         }),

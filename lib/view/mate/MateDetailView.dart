@@ -660,7 +660,14 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
         children: [
           Icon(icon, size: 22, color: Colors.grey[700]),
           SizedBox(width: 12),
-          Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
         ],
       ),
     );

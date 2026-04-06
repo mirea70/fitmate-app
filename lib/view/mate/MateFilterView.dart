@@ -76,7 +76,7 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
                     '필터',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                  Expanded(child: SizedBox()),
+                  Spacer(),
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);

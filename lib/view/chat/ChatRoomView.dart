@@ -215,7 +215,7 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
                 ),
               )
             else
-              const Expanded(child: SizedBox()),
+              const SizedBox(height: 40),
             const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

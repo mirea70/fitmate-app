@@ -85,47 +85,37 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
     final keepImageIds = ref.watch(keepImageIdsProvider);
     int count = keepImageIds.length + fileViewModel.files.length;
 
-    return Stack(
-      children: [
-        Container(
-          height: 77,
-          width: 77,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Color(0xffE8E8E8),
-              width: 2,
+    final double boxSize = widget.deviceSize.width * 0.2;
+
+    return GestureDetector(
+      onTap: _showImageSourceSheet,
+      child: Container(
+        height: boxSize,
+        width: boxSize,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Color(0xffE8E8E8),
+            width: 2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.add_a_photo,
+              color: Colors.black,
+              size: boxSize * 0.3,
             ),
-          ),
-        ),
-        Positioned(
-          top: 3,
-          left: 15,
-          child: Container(
-            child: IconButton(
-              onPressed: _showImageSourceSheet,
-              constraints: BoxConstraints(),
-              icon: Icon(
-                Icons.add_a_photo,
-                color: Colors.black,
-                size: 25,
-              ),
+            SizedBox(height: 4),
+            Text(
+              '$count/3',
+              style: TextStyle(
+                  fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w300),
             ),
-          ),
+          ],
         ),
-        SizedBox(
-          height: widget.deviceSize.height * 0.01,
-        ),
-        Positioned(
-          top: 45,
-          left: 15,
-          child: Text(
-            '$count/3 (선택)',
-            style: TextStyle(
-                fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w300),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

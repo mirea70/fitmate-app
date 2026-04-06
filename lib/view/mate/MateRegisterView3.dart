@@ -138,6 +138,7 @@ class _ImageListSection extends ConsumerWidget {
   final Size deviceSize;
 
   Widget _buildServerImageThumbnail(WidgetRef ref, int imageId) {
+    final double boxSize = deviceSize.width * 0.2;
     final data = ref.read(imageCacheServiceProvider).get(imageId);
     ImageProvider imageProvider;
     if (data != null) {
@@ -146,10 +147,11 @@ class _ImageListSection extends ConsumerWidget {
       imageProvider = AssetImage('assets/images/default_intro_image.jpg');
     }
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         Container(
-          height: 77,
-          width: 77,
+          height: boxSize,
+          width: boxSize,
           decoration: BoxDecoration(
             image: DecorationImage(fit: BoxFit.cover, image: imageProvider),
             borderRadius: BorderRadius.circular(10),
@@ -157,22 +159,20 @@ class _ImageListSection extends ConsumerWidget {
           ),
         ),
         Positioned(
-          top: 5,
-          left: 57,
-          child: Container(
-            height: deviceSize.height * 0.02,
-            width: deviceSize.width * 0.05,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.grey),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                final keepIds = ref.read(keepImageIdsProvider.notifier);
-                final current = List<int>.from(keepIds.state);
-                current.remove(imageId);
-                keepIds.state = current;
-              },
-              icon: Icon(Icons.close, color: Colors.white, size: 10),
-              alignment: Alignment.center,
+          top: -5,
+          right: -5,
+          child: GestureDetector(
+            onTap: () {
+              final keepIds = ref.read(keepImageIdsProvider.notifier);
+              final current = List<int>.from(keepIds.state);
+              current.remove(imageId);
+              keepIds.state = current;
+            },
+            child: Container(
+              height: 20,
+              width: 20,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.grey),
+              child: Icon(Icons.close, color: Colors.white, size: 12),
             ),
           ),
         ),

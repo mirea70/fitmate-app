@@ -40,35 +40,38 @@ class _MateSearchViewState extends State<MateSearchView> {
                 SizedBox(
                   width: deviceSize.width * 0.04,
                 ),
-                Container(
-                  // width: deviceSize.width * 0.9,
-                  height: deviceSize.height * 0.05,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Color(0xffE8E8E8),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: deviceSize.width * 0.03,
-                      ),
-                      Icon(Icons.search),
-                      SizedBox(
-                        width: deviceSize.width * 0.02,
-                      ),
-                      CustomInputWithoutFocus(
-                        deviceSize: deviceSize * 0.75,
-                        hintText: '관심사, 지역명 등을 입력해보세요',
-                        onSubmitted: (value) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      MateListSearchView(keyword: value)));
-                        },
-                      ),
-                    ],
+                Expanded(
+                  child: Container(
+                    height: deviceSize.height * 0.05,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Color(0xffE8E8E8),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: deviceSize.width * 0.03,
+                        ),
+                        Icon(Icons.search),
+                        SizedBox(
+                          width: deviceSize.width * 0.02,
+                        ),
+                        Expanded(
+                          child: CustomInputWithoutFocus(
+                            deviceSize: deviceSize * 0.75,
+                            hintText: '관심사, 지역명 등을 입력해보세요',
+                            onSubmitted: (value) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          MateListSearchView(keyword: value)));
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

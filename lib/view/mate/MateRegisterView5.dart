@@ -52,40 +52,38 @@ class _MateRegisterView5State extends ConsumerState<MateRegisterView5> {
                   minHeight: constraint.maxHeight,
                   minWidth: constraint.maxWidth,
                 ),
-                child: IntrinsicHeight(
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(
-                        deviceSize.width * 0.05, 0, deviceSize.width * 0.05, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '참가비가 있나요?',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(
+                      deviceSize.width * 0.05, 0, deviceSize.width * 0.05, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '참가비가 있나요?',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.01,
+                      ),
+                      Text(
+                        '개인 거래로 문제가 발생하는 것을 예방하기 위해 \n'
+                        '모임 진행에 필요한 모든 금액을 참가비로 설정해 주세요.',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey,
                         ),
-                        SizedBox(
-                          height: deviceSize.height * 0.01,
-                        ),
-                        Text(
-                          '개인 거래로 문제가 발생하는 것을 예방하기 위해 \n'
-                          '모임 진행에 필요한 모든 금액을 참가비로 설정해 주세요.',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        SizedBox(
-                          height: deviceSize.height * 0.05,
-                        ),
-                        _MateFeeToggleSection(deviceSize: deviceSize),
-                        _MateFeeContentSection(
-                          deviceSize: deviceSize,
-                          scrollController: _scrollController,
-                        ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        height: deviceSize.height * 0.05,
+                      ),
+                      _MateFeeToggleSection(deviceSize: deviceSize),
+                      _MateFeeContentSection(
+                        deviceSize: deviceSize,
+                        scrollController: _scrollController,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -217,16 +215,13 @@ class _MateFeeContentSection extends ConsumerWidget {
             height: deviceSize.height * 0.02,
           ),
           Container(
-            height: deviceSize.height * 0.1,
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: deviceSize.width * 0.02),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: Color(0xffE8E8E8),
             ),
             child: Row(
               children: [
-                SizedBox(
-                  width: deviceSize.width * 0.02,
-                ),
                 Icon(
                   Icons.warning_amber_rounded,
                   size: 35,
@@ -234,13 +229,15 @@ class _MateFeeContentSection extends ConsumerWidget {
                 SizedBox(
                   width: deviceSize.width * 0.03,
                 ),
-                Text(
-                  "모임진행에 비용이 발생한다면 \n"
-                  "참가비를 '있음'으로 설정해 주세요.",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
+                Expanded(
+                  child: Text(
+                    "모임진행에 비용이 발생한다면 "
+                    "참가비를 '있음'으로 설정해 주세요.",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 )
               ],

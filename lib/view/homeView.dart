@@ -29,7 +29,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
     try {
       OAuthToken token;
       if (await isKakaoTalkInstalled()) {
-        token = await UserApi.instance.loginWithKakaoTalk();
+        try {
+          token = await UserApi.instance.loginWithKakaoTalk();
+        } catch (_) {
+          token = await UserApi.instance.loginWithKakaoAccount();
+        }
       } else {
         token = await UserApi.instance.loginWithKakaoAccount();
       }
@@ -84,120 +88,115 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final Size deviceSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: Container(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: deviceSize.height * 0.15,
-                  ),
-                  Center(
-                    child: ClipPath(
-                      clipper: TrapezoidClipper(),
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: deviceSize.height * 0.08,
-                        width: deviceSize.width * 0.5,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: Colors.orangeAccent,
-                        ),
-                        child: Text(
-                          'FitMate',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 35,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w800,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: deviceSize.height * 0.2,
-                  ),
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          '아직도 혼자 운동하세요?',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 7,
-                        ),
-                        Text(
-                          '이제,',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 25,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 7,
-                        ),
-                        Text(
-                          '운동 메이트와 함께 해봐요!',
-                          style: TextStyle(
-                            color: Colors.orangeAccent,
-                            fontSize: 25,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: deviceSize.height * 0.2,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.05),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CustomButton(
-                        deviceSize: deviceSize,
-                        onTapMethod: _isLoading ? () {} : _handleKakaoLogin,
-                        title: _isLoading ? '로그인 중...' : '카카오톡으로 시작하기',
-                        isEnabled: !_isLoading,
-                        color: Color(0xffFEE500),
-                        textColor: Colors.black87,
-                      ),
-                      SizedBox(
-                        height: deviceSize.height * 0.02,
-                      ),
-                      CustomButton(
-                        deviceSize: deviceSize,
-                        onTapMethod: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return LoginView();
-                              },
+                      SizedBox(height: deviceSize.height * 0.08),
+                      Center(
+                        child: ClipPath(
+                          clipper: TrapezoidClipper(),
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: deviceSize.height * 0.08,
+                            width: deviceSize.width * 0.55,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: Colors.orangeAccent,
                             ),
-                          );
-                        },
-                        title: '다른 방법으로 시작하기',
-                        isEnabled: true,
+                            child: Text(
+                              'FitMate',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w800,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
                       ),
+                      SizedBox(height: deviceSize.height * 0.1),
+                      Column(
+                        children: [
+                          Text(
+                            '아직도 혼자 운동하세요?',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 7),
+                          Text(
+                            '이제,',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 24,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: 7),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              '운동 메이트와 함께 해봐요!',
+                              style: TextStyle(
+                                color: Colors.orangeAccent,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                              ),
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: deviceSize.height * 0.1),
+                      Column(
+                        children: [
+                          CustomButton(
+                            deviceSize: deviceSize,
+                            onTapMethod: _isLoading ? () {} : _handleKakaoLogin,
+                            title: _isLoading ? '로그인 중...' : '카카오톡으로 시작하기',
+                            isEnabled: !_isLoading,
+                            color: Color(0xffFEE500),
+                            textColor: Colors.black87,
+                          ),
+                          SizedBox(height: deviceSize.height * 0.02),
+                          CustomButton(
+                            deviceSize: deviceSize,
+                            onTapMethod: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return LoginView();
+                                  },
+                                ),
+                              );
+                            },
+                            title: '다른 방법으로 시작하기',
+                            isEnabled: true,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: deviceSize.height * 0.05),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

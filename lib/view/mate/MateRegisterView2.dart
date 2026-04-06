@@ -24,9 +24,7 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
     final viewModelNotifier = ref.read(mateRegisterViewModelProvider.notifier);
     final viewModel = ref.watch(mateRegisterViewModelProvider);
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.white,
         appBar: CustomAppBar(
           deviceSize: deviceSize,
@@ -40,8 +38,7 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
             return SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraint.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
@@ -61,8 +58,9 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                             Container(
                               child: Column(
                                 children: [
-                                  GestureDetector(
+                                  InkWell(
                                     onTap: () {
+                                      debugPrint('[MateRegisterView2] 장소 인풋 탭 감지됨');
                                       showModalBottomSheet(
                                         context: context,
                                         builder: (context) {
@@ -97,28 +95,34 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                                     ),
                                                     Container(
                                                       width: deviceSize.width * 0.9,
-                                                      height: deviceSize.height * 0.05,
+                                                      padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.03),
                                                       decoration: BoxDecoration(
                                                           borderRadius: BorderRadius.circular(20),
                                                           color: Color(0xffE8E8E8),
                                                       ),
                                                       child: Row(
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
                                                         children: [
-                                                          SizedBox(
-                                                            width: deviceSize.width * 0.03,
-                                                          ),
                                                           Icon(Icons.search),
                                                           SizedBox(
                                                             width: deviceSize.width * 0.02,
                                                           ),
-                                                          CustomInputWithoutFocus(
-                                                            deviceSize: deviceSize * 0.85,
-                                                            onChangeMethod:
-                                                                (value) {
-                                                              ref.read(searchViewModelProvider.notifier).searchPlace(value);
-                                                            },
-                                                            hintText: '어디에서 만나나요?',
+                                                          Expanded(
+                                                            child: TextField(
+                                                              onChanged: (value) {
+                                                                ref.read(searchViewModelProvider.notifier).searchPlace(value);
+                                                              },
+                                                              decoration: InputDecoration(
+                                                                hintText: '어디에서 만나나요?',
+                                                                hintStyle: TextStyle(
+                                                                  color: Colors.grey,
+                                                                  fontSize: 16,
+                                                                  fontWeight: FontWeight.w400,
+                                                                ),
+                                                                border: InputBorder.none,
+                                                                isDense: true,
+                                                                contentPadding: EdgeInsets.symmetric(vertical: 12),
+                                                              ),
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -187,23 +191,32 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                         isScrollControlled: true,
                                       ).then((value) => ref.read(searchViewModelProvider.notifier).reset());
                                     },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.place,
-                                        ),
-                                        SizedBox(
-                                          width: deviceSize.width * 0.02,
-                                        ),
-                                        Text(
-                                          viewModel.fitPlaceName != '' ? viewModel.fitPlaceName
-                                          : '장소를 입력해주세요',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 15,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: 12),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.place,
                                           ),
-                                        ),
-                                      ],
+                                          SizedBox(
+                                            width: deviceSize.width * 0.02,
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              viewModel.fitPlaceName != '' ? viewModel.fitPlaceName
+                                              : '장소를 입력해주세요',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.chevron_right,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
@@ -224,7 +237,6 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                       ),
                     ],
                   ),
-                ),
               ),
             );
           },
@@ -255,7 +267,6 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
             ],
           ),
         ),
-      ),
     );
   }
 }

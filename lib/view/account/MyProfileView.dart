@@ -86,11 +86,16 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
               _buildProfileImage(profile.profileImageId, deviceSize),
               SizedBox(height: deviceSize.height * 0.02),
               // 닉네임
-              Text(
-                profile.nickName,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.05),
+                child: Text(
+                  profile.nickName,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               SizedBox(height: deviceSize.height * 0.005),
@@ -355,11 +360,15 @@ class _MyProfileViewState extends ConsumerState<MyProfileView> {
               ),
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
+          Expanded(
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

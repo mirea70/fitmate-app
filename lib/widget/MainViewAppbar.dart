@@ -11,7 +11,7 @@ class MainViewAppbar extends ConsumerWidget implements PreferredSizeWidget {
   const MainViewAppbar({super.key});
 
   // AppBar 기본 높이 + 하단 타이틀 영역
-  static const double _bottomAreaHeight = 56;
+  static const double _bottomAreaHeight = 68;
 
   @override
   Size get preferredSize =>

@@ -40,10 +40,9 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
             return SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraint.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                       Container(
                         padding: EdgeInsets.only(left: deviceSize.width * 0.05),
                         child: Column(
@@ -83,7 +82,6 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
                     ],
                   ),
                 ),
-              ),
             );
           },
         ),

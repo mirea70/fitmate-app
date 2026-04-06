@@ -155,8 +155,7 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
                     minHeight: constraint.maxHeight,
                     minWidth: constraint.maxWidth,
                   ),
-                  child: IntrinsicHeight(
-                    child: Container(
+                  child: Container(
                       padding: EdgeInsets.only(left: deviceSize.width * 0.05),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,17 +169,23 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
                                 borderRadius: BorderRadius.circular(10),
                                 color: Colors.orangeAccent,
                               ),
-                              child: Text(
-                                '거의 다 왔어요! 기본 정보만 입력해주세요',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  child: Text(
+                                    '거의 다 왔어요! 기본 정보만 입력해주세요',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          SizedBox(height: deviceSize.height * 0.05),
+                          SizedBox(height: deviceSize.height * 0.04),
                           // 닉네임
                           Text('닉네임', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                           SizedBox(height: deviceSize.height * 0.01),
@@ -195,7 +200,7 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
                             maxLength: 10,
                             text: _nickName,
                           ),
-                          SizedBox(height: deviceSize.height * 0.05),
+                          SizedBox(height: deviceSize.height * 0.04),
                           // 이름
                           Text('이름', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                           SizedBox(height: deviceSize.height * 0.01),
@@ -210,7 +215,7 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
                             maxLength: 5,
                             text: _name,
                           ),
-                          SizedBox(height: deviceSize.height * 0.05),
+                          SizedBox(height: deviceSize.height * 0.04),
                           // 성별
                           Text('성별', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                           SizedBox(height: deviceSize.height * 0.01),
@@ -236,7 +241,7 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
                               ],
                             ),
                           ),
-                          SizedBox(height: deviceSize.height * 0.05),
+                          SizedBox(height: deviceSize.height * 0.04),
                           // 생년월일
                           Text('생년월일', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                           SizedBox(height: deviceSize.height * 0.01),
@@ -244,7 +249,7 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
                             initialDate: _birthDate,
                             onDateChanged: (value) => setState(() => _birthDate = value),
                           ),
-                          SizedBox(height: deviceSize.height * 0.05),
+                          SizedBox(height: deviceSize.height * 0.04),
                           // 전화번호
                           Text('전화번호', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                           SizedBox(height: deviceSize.height * 0.01),
@@ -260,10 +265,8 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
                             text: _phone,
                           ),
                           SizedBox(height: deviceSize.height * 0.02),
-                          Expanded(child: SizedBox()),
                         ],
                       ),
-                    ),
                   ),
                 ),
               );

@@ -20,6 +20,7 @@ class AppConfig {
   static const kakaoNativeAppKey = String.fromEnvironment('KAKAO_NATIVE_APP_KEY');
   static const naverClientId = String.fromEnvironment('NAVER_CLIENT_ID');
   static const naverClientSecret = String.fromEnvironment('NAVER_CLIENT_SECRET');
+  static const _isEmulator = bool.fromEnvironment('IS_EMULATOR', defaultValue: false);
 
   // ──────────── 초기화 ────────────
 
@@ -51,7 +52,7 @@ class AppConfig {
     if (_environment == Environment.prod) {
       return 'https://www.fitmate.site';
     }
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid && _isEmulator) {
       return 'http://10.0.2.2:8090';
     }
     return 'http://192.168.45.98:8090';

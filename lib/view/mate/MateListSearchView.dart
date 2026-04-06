@@ -57,34 +57,37 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                   SizedBox(
                     width: deviceSize.width * 0.04,
                   ),
-                  Container(
-                    // width: deviceSize.width * 0.9,
-                    height: deviceSize.height * 0.05,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Color(0xffE8E8E8),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: deviceSize.width * 0.03,
-                        ),
-                        Icon(Icons.search),
-                        SizedBox(
-                          width: deviceSize.width * 0.02,
-                        ),
-                        CustomInputWithoutFocus(
-                          deviceSize: deviceSize * 0.75,
-                          hintText: '관심사, 지역명 등을 입력해보세요',
-                          onSubmitted: (value) {
-                            setState(() {
-                              _keyword = value;
-                            });
-                          },
-                          initText: _keyword,
-                        ),
-                      ],
+                  Expanded(
+                    child: Container(
+                      height: deviceSize.height * 0.05,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Color(0xffE8E8E8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: deviceSize.width * 0.03,
+                          ),
+                          Icon(Icons.search),
+                          SizedBox(
+                            width: deviceSize.width * 0.02,
+                          ),
+                          Expanded(
+                            child: CustomInputWithoutFocus(
+                              deviceSize: deviceSize * 0.75,
+                              hintText: '관심사, 지역명 등을 입력해보세요',
+                              onSubmitted: (value) {
+                                setState(() {
+                                  _keyword = value;
+                                });
+                              },
+                              initText: _keyword,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -134,26 +137,21 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                       Opacity(
                                         opacity: items[index].closed ? 0.4 : 1.0,
                                         child: Container(
-                                  height: deviceSize.height * 0.15,
+                                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: deviceSize.width * 0.03),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     color: Colors.white,
                                   ),
                                   child: Row(
                                     children: [
-                                      SizedBox(
-                                        width: deviceSize.width * 0.03,
-                                      ),
                                       _getThumbnailImage(items[index].thumbnailImageId, deviceSize),
                                       SizedBox(
                                         width: deviceSize.width * 0.03,
                                       ),
-                                      Column(
+                                      Expanded(
+                                        child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          SizedBox(
-                                            height: deviceSize.height * 0.015,
-                                          ),
                                           Container(
                                             child: Padding(
                                               padding: const EdgeInsets.all(6.0),
@@ -179,6 +177,8 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500,
                                             ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           SizedBox(
                                             height: deviceSize.height * 0.003,
@@ -193,12 +193,16 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                               SizedBox(
                                                 width: deviceSize.width * 0.01,
                                               ),
-                                              Text(
-                                                '${_extractAddress(items[index].fitPlaceAddress)} ∙ ${_formatDate(items[index].mateAt)}',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.grey,
+                                              Flexible(
+                                                child: Text(
+                                                  '${_extractAddress(items[index].fitPlaceAddress)} ∙ ${_formatDate(items[index].mateAt)}',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],
@@ -209,12 +213,16 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                               SizedBox(
                                                 width: deviceSize.width * 0.01,
                                               ),
-                                              Text(
-                                                '${items[index].writerNickName} ∙ ${items[index].gatherType?.label ?? ''}',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w400,
-                                                  color: Colors.grey,
+                                              Flexible(
+                                                child: Text(
+                                                  '${items[index].writerNickName} ∙ ${items[index].gatherType?.label ?? ''}',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
                                                 ),
                                               ),
                                               SizedBox(
@@ -239,6 +247,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                             ],
                                           ),
                                         ],
+                                      ),
                                       ),
                                     ],
                                   ),

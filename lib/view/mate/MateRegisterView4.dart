@@ -51,8 +51,7 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
             return SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraint.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
@@ -149,7 +148,6 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
                       ),
                     ],
                   ),
-                ),
               ),
             );
           },
