@@ -150,7 +150,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          '나와 맞는 운동 메이트를 지금 만나보세요',
+                          '나와 맞는 운동 메이트를 지금 바로 만나보세요!',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white.withValues(alpha:0.7),
