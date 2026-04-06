@@ -479,6 +479,7 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
           hintText: '새 비밀번호',
           errorText: _passwordError,
           text: _newPassword,
+          obscureText: true,
         ),
         SizedBox(height: deviceSize.height * 0.03),
         Text('비밀번호 확인', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
@@ -492,6 +493,7 @@ class _ResetPasswordTabState extends ConsumerState<_ResetPasswordTab> {
           hintText: '비밀번호 확인',
           errorText: _confirmError,
           text: _confirmPassword,
+          obscureText: true,
         ),
         SizedBox(height: deviceSize.height * 0.04),
         Center(

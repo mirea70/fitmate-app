@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CustomInput extends StatefulWidget {
-  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength, required this.text});
+  const CustomInput({required this.deviceSize, required this.onChangeMethod, required this.hintText, this.errorText, this.maxLength, required this.text, this.obscureText = false});
   final Size deviceSize;
   final ValueChanged<String> onChangeMethod;
   final String hintText;
   final String? errorText;
   final int? maxLength;
   final String text;
+  final bool obscureText;
 
   @override
   State<CustomInput> createState() => _CustomInputState();
@@ -41,6 +42,7 @@ class _CustomInputState extends State<CustomInput> {
         contextMenuBuilder: (context, editableTextState) => const SizedBox.shrink(),
         controller: _textController,
         maxLength: widget.maxLength,
+        obscureText: widget.obscureText,
         onChanged: widget.onChangeMethod,
         decoration: InputDecoration(
           hintText: widget.hintText,

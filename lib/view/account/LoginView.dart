@@ -114,6 +114,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       viewModelNotifier.setPassword(value),
                                   hintText: '비밀번호를 입력해주세요',
                                   text: viewModel.password,
+                                  obscureText: true,
                                 )
                               ],
                             ),

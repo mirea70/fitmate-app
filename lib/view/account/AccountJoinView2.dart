@@ -76,6 +76,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             errorText: null,
                             maxLength: 20,
                             text: viewModel.password,
+                            obscureText: true,
                           ),
                           SizedBox(
                             height: deviceSize.height * 0.1,
@@ -92,6 +93,7 @@ class _AccountJoinView2State extends ConsumerState<AccountJoinView2> {
                             errorText: null,
                             maxLength: 20,
                             text: checkPasswordState,
+                            obscureText: true,
                           ),
                         ],
                       ),
