@@ -127,13 +127,13 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
   }
 
   void validateApplyQuestion(String value) {
-    String pattern = r'^[가-힣\s?!~]{5,20}$';
+    String pattern = r'^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s?!~]{5,20}$';
     RegExp nameRegex = RegExp(pattern);
     if ((!nameRegex.hasMatch(value)))
       throw CustomException(
         domain: ErrorDomain.MATE,
         type: ErrorType.INVALID_INPUT,
-        msg: '참여자 질문은 5~20자의 한글 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
+        msg: '참여자 질문은 5~20자의 한글, 영문 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
       );
   }
 

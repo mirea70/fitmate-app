@@ -57,7 +57,7 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
                               height: deviceSize.height * 0.01,
                             ),
                             Text(
-                              '5~20자의 한글 및 특수문자 ?, !, ~ 만 입력 가능합니다.',
+                              '5~20자의 한글, 영문 및 특수문자 ?, !, ~ 만 입력 가능합니다.',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,

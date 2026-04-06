@@ -188,117 +188,95 @@ class _MateRegisterView6State extends ConsumerState<MateRegisterView6> {
                                 height: deviceSize.height * 0.02,
                               ),
                               if(_isPermitPeopleCntEditing && !hasApprovedMembers)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              Column(
                                 children: [
-                                  Container(
-                                    alignment: Alignment.centerRight,
-                                    height: deviceSize.height * 0.1,
-                                    width: deviceSize.width * 0.3,
-                                    child: Text(
-                                      '최대 인원',
-                                      style: TextStyle(fontSize: 20),
+                                  CustomIconButton(
+                                    onPressed: () {
+                                      viewModelNotifier.plusPermitPeopleCnt();
+                                    },
+                                    icon: Icon(
+                                      Icons.keyboard_arrow_up_rounded,
+                                      color: Colors.orangeAccent,
+                                      size: 35,
                                     ),
                                   ),
-                                  Container(
-                                    height: deviceSize.height * 0.18,
-                                    width: deviceSize.width * 0.4,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        CustomIconButton(
-                                          onPressed: () {
-                                            viewModelNotifier
-                                                .plusPermitPeopleCnt();
+                                  SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '최대 인원',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      SizedBox(width: 16),
+                                      SizedBox(
+                                        height: 35,
+                                        width: 45,
+                                        child: TextField(
+                                          controller: _controller,
+                                          maxLength: 2,
+                                          textAlign: TextAlign.center,
+                                          onChanged: (value) {},
+                                          onSubmitted: (value) {
+                                            if (value.isNotEmpty) {
+                                              int intVal = int.parse(value);
+                                              try {
+                                                viewModelNotifier.validatePermitPeopleCnt(intVal);
+                                              } on CustomException catch (e) {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return CustomAlert(
+                                                      title: e.msg,
+                                                      deviceSize: deviceSize,
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                              viewModelNotifier.setPermitPeopleCnt(intVal);
+                                              _controller.value = TextEditingValue(
+                                                text: getTextPermitPeopleCnt(intVal),
+                                                selection: TextSelection.collapsed(offset: 2),
+                                              );
+                                            }
                                           },
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_up_rounded,
-                                            color: Colors.orangeAccent,
-                                            size: 35,
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.all(0),
                                           ),
-                                        ),
-                                        Expanded(child: SizedBox()),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                              SizedBox(
-                                                height: 35,
-                                                width: 45,
-                                                child: TextField(
-                                                  controller: _controller,
-                                                  maxLength: 2,
-                                                  onChanged: (value) {
-
-                                                  },
-                                                  onSubmitted: (value) {
-                                                    if (value.isNotEmpty) {
-                                                      int intVal = int.parse(value);
-                                                      try {
-                                                        viewModelNotifier.validatePermitPeopleCnt(intVal);
-                                                      } on CustomException catch (e) {
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext context) {
-                                                            return CustomAlert(
-                                                              title: e.msg,
-                                                              deviceSize: deviceSize,
-                                                            );
-                                                          },
-                                                        );
-                                                      }
-                                                      viewModelNotifier.setPermitPeopleCnt(intVal);
-                                                      _controller.value = TextEditingValue(
-                                                        text: getTextPermitPeopleCnt(intVal),
-                                                        selection: TextSelection.collapsed(offset: 2),
-                                                      );
-                                                    }
-                                                  },
-                                                  decoration: InputDecoration(
-                                                    border: InputBorder.none,
-                                                    isDense: true,
-                                                    contentPadding: EdgeInsets.all(0),
-                                                  ),
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                    fontSize: 20,
-                                                  ),
-                                                  keyboardType: TextInputType.number,
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter.digitsOnly
-                                                  ],
-                                                  buildCounter: (
-                                                    BuildContext context, {
-                                                    required int currentLength,
-                                                    required int? maxLength,
-                                                    required bool isFocused,
-                                                  }) =>
-                                                      null,
-                                                ),
-                                              ),
-                                                Center(
-                                              child: Text(
-                                              '명',
-                                                style:
-                                                TextStyle(fontSize: 20),
-                                              ),
-                                            )
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 20,
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly
                                           ],
+                                          buildCounter: (
+                                            BuildContext context, {
+                                            required int currentLength,
+                                            required int? maxLength,
+                                            required bool isFocused,
+                                          }) => null,
                                         ),
-                                        Expanded(child: SizedBox()),
-                                        CustomIconButton(
-                                          onPressed: () {
-                                            viewModelNotifier
-                                                .minusPermitPeopleCnt();
-                                          },
-                                          icon: Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: Colors.orangeAccent,
-                                            size: 35,
-                                          ),
-                                        ),
-                                      ],
+                                      ),
+                                      Text(
+                                        '명',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 8),
+                                  CustomIconButton(
+                                    onPressed: () {
+                                      viewModelNotifier.minusPermitPeopleCnt();
+                                    },
+                                    icon: Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: Colors.orangeAccent,
+                                      size: 35,
                                     ),
                                   ),
                                 ],
