@@ -6,6 +6,7 @@ import 'package:fitmate_app/view/mate/MainView.dart';
 import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/widget/BirthDatePicker.dart';
 import 'package:fitmate_app/widget/CustomAlert.dart';
+import 'package:fitmate_app/repository/account/AccountRepository.dart';
 import 'package:fitmate_app/widget/CustomButton.dart';
 import 'package:fitmate_app/widget/CustomInput.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +89,21 @@ class _ProfileCompleteViewState extends ConsumerState<ProfileCompleteView> {
     setState(() => _isSubmitting = true);
 
     try {
+      // 전화번호 중복 체크
+      final isPhoneAvailable = await ref.read(accountRepositoryProvider).validateDuplicatedPhone(_phone);
+      if (!isPhoneAvailable) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => CustomAlert(
+              title: '이미 가입된 전화번호입니다.',
+              deviceSize: MediaQuery.of(context).size,
+            ),
+          );
+        }
+        return;
+      }
+
       final loginResponse = await ref.read(authRepositoryProvider).kakaoRegister(
         kakaoAccessToken: widget.kakaoAccessToken,
         name: _name,

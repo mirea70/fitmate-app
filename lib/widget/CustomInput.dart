@@ -33,7 +33,9 @@ class _CustomInputState extends State<CustomInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: widget.deviceSize.height * 0.08,
+      constraints: BoxConstraints(
+        minHeight: widget.deviceSize.height * 0.08,
+      ),
       width: widget.deviceSize.width * 0.9,
       child: TextField(
         contextMenuBuilder: (context, editableTextState) => const SizedBox.shrink(),

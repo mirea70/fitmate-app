@@ -39,7 +39,9 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: widget.deviceSize.height * 0.08,
+      constraints: BoxConstraints(
+        minHeight: widget.deviceSize.height * 0.08,
+      ),
       width: widget.deviceSize.width * 0.9,
       child: TextField(
         controller: _textController,
