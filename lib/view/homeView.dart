@@ -105,9 +105,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha:0.1),
-                    Colors.black.withValues(alpha:0.3),
-                    Colors.black.withValues(alpha:0.75),
+                    Colors.black.withValues(alpha: 0.4),
+                    Colors.black.withValues(alpha: 0.5),
+                    Colors.black.withValues(alpha: 0.85),
                   ],
                   stops: [0.0, 0.4, 1.0],
                 ),
