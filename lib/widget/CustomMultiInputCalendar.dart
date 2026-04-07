@@ -15,19 +15,30 @@ class CustomMultiInputCalendar extends StatefulWidget {
 class _CustomMultiInputCalendarState extends State<CustomMultiInputCalendar> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  late DateTime _focusedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusedDay = widget.initDay;
+  }
 
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
       locale: 'ko_KR',
-      focusedDay: widget.initDay,
+      focusedDay: _focusedDay,
+      onPageChanged: (focusedDay) {
+        _focusedDay = focusedDay;
+      },
       firstDay: widget.initDay.subtract(Duration(days: 3)),
       lastDay: widget.initDay.add(Duration(days: 365)),
-      selectedDayPredicate: (date) {
-        return isSameDay(_rangeStart, date) || isSameDay(_rangeEnd, date);
-      },
+      rangeStartDay: _rangeStart,
+      rangeEndDay: _rangeEnd,
+      rangeSelectionMode: RangeSelectionMode.toggledOn,
       onDaySelected: (selectedDay, focusedDay) {
         setState(() {
+          _focusedDay = focusedDay;
           if (_rangeStart == null || (_rangeStart != null && _rangeEnd != null)) {
             _rangeStart = selectedDay;
             _rangeEnd = null;
@@ -44,15 +55,14 @@ class _CustomMultiInputCalendarState extends State<CustomMultiInputCalendar> {
             final difference = _rangeEnd!.difference(_rangeStart!).inDays;
             if (difference > 7) {
               _rangeEnd = _rangeStart!.add(Duration(days: 6));
-
               showDialog(
-                  context: context,
-                  builder: (context) {
-                    return CustomAlert(
-                        title: '최대 7일까지 설정 가능합니다.',
-                        deviceSize: MediaQuery.of(context).size,
-                    );
-                  }
+                context: context,
+                builder: (context) {
+                  return CustomAlert(
+                    title: '최대 7일까지 설정 가능합니다.',
+                    deviceSize: MediaQuery.of(context).size,
+                  );
+                },
               );
             }
           }
@@ -60,13 +70,32 @@ class _CustomMultiInputCalendarState extends State<CustomMultiInputCalendar> {
           widget.onRangeSelected(_rangeStart, _rangeEnd);
         });
       },
-      rangeSelectionMode: RangeSelectionMode.toggledOn,
+      calendarStyle: CalendarStyle(
+        rangeHighlightColor: Colors.orangeAccent.withOpacity(0.3),
+        rangeStartDecoration: BoxDecoration(
+          color: Colors.orangeAccent,
+          shape: BoxShape.circle,
+        ),
+        rangeEndDecoration: BoxDecoration(
+          color: Colors.orangeAccent,
+          shape: BoxShape.circle,
+        ),
+        withinRangeTextStyle: TextStyle(color: Colors.white),
+        rangeStartTextStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        rangeEndTextStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        todayDecoration: BoxDecoration(
+          color: Colors.transparent,
+        ),
+        todayTextStyle: TextStyle(color: Colors.black),
+        outsideDaysVisible: true,
+        outsideTextStyle: TextStyle(color: Colors.grey),
+      ),
       headerStyle: HeaderStyle(
         titleCentered: true,
         formatButtonVisible: false,
         titleTextStyle: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
         ),
       ),
       daysOfWeekStyle: DaysOfWeekStyle(
@@ -80,26 +109,6 @@ class _CustomMultiInputCalendarState extends State<CustomMultiInputCalendar> {
         ),
       ),
       calendarBuilders: CalendarBuilders(
-        defaultBuilder: (context, day, focusedDay) {
-          bool isWithinRange = _rangeStart != null &&
-              _rangeEnd != null &&
-              // .add(Duration(days: 1))
-              day.isAfter(_rangeStart!) &&
-              // .subtract(Duration(days: 1))
-              day.isBefore(_rangeEnd!);
-
-          return Container(
-            decoration: BoxDecoration(
-              color: isWithinRange ? Colors.orangeAccent.withOpacity(0.5) : Colors.transparent,
-            ),
-            child: Center(
-              child: Text(
-                '${day.day}',
-                style: TextStyle(color: isWithinRange ? Colors.white : Colors.black),
-              ),
-            ),
-          );
-        },
         disabledBuilder: (context, day, focusedDay) {
           return Center(
             child: Text(
@@ -108,166 +117,7 @@ class _CustomMultiInputCalendarState extends State<CustomMultiInputCalendar> {
             ),
           );
         },
-        outsideBuilder: (context, day, focusedDay) {
-          return Center(
-            child: Text(
-              '${day.day}',
-              style: TextStyle(color: Colors.grey),
-            ),
-          );
-        },
-        selectedBuilder: (context, day, focusedDay) {
-          if(isSameDay(day, _rangeStart)) {
-            if(_rangeEnd != null)
-              return StartCircle(day: day.day);
-            else
-              return Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orangeAccent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${day.day}',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              );
-          }
-          else if(isSameDay(day, _rangeEnd)) {
-            return EndCircle(day: day.day);
-          }
-          return null;
-        },
-        todayBuilder: (context, day, focusedDay) {
-
-          bool isWithinRange = _rangeStart != null && _rangeEnd != null &&
-              day.isAfter(_rangeStart!) &&
-              day.isBefore(_rangeEnd!);
-
-          if(isWithinRange)
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.orangeAccent.withOpacity(0.5),
-              ),
-              child: Center(
-                child: Text(
-                  '${day.day}',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            );
-          else
-            return Center(
-              child: Text(
-                    '${day.day}',
-                    style: TextStyle(color: Colors.black),
-              ),
-            );
-        },
-        withinRangeBuilder: (context, day, focusedDay) {
-          bool isStart = isSameDay(day, _rangeStart);
-          bool isEnd = isSameDay(day, _rangeEnd);
-
-          return Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: isStart || isEnd ? Colors.orangeAccent : Colors.orange.withOpacity(0.5),
-                shape: BoxShape.circle,
-              ),
-              width: 35.0,
-              height: 35.0,
-              child: Center(
-                child: Text(
-                  '${day.day}',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          );
-        },
       ),
-    );
-  }
-}
-
-
-class StartCircle extends StatelessWidget {
-  final int day;
-
-  const StartCircle({Key? key, required this.day}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRect(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                color: Colors.orangeAccent.withOpacity(0.5),
-                width: 25.0,
-              ),
-            ),
-          ),
-        Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.orangeAccent,
-              shape: BoxShape.circle,
-            ),
-            width: 50.0,
-            height: 50.0,
-            child: Center(
-              child: Text(
-                '$day',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class EndCircle extends StatelessWidget {
-  final int day;
-
-  const EndCircle({Key? key, required this.day}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRect(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              color: Colors.orangeAccent.withOpacity(0.5),
-              width: 25.0,
-            ),
-          ),
-        ),
-        Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.orangeAccent,
-              shape: BoxShape.circle,
-            ),
-            width: 50.0,
-            height: 50.0,
-            child: Center(
-              child: Text(
-                '$day',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

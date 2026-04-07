@@ -35,7 +35,12 @@ class FitMateApp extends ConsumerWidget {
       navigatorKey: navigatorKey,
       theme: ThemeData(
         fontFamily: 'Pretendard',
-        scaffoldBackgroundColor: Colors.white
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+        ),
       ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

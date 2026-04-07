@@ -142,7 +142,8 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                     borderRadius: BorderRadius.circular(10),
                                     color: Colors.white,
                                   ),
-                                  child: Row(
+                                  child: IntrinsicHeight(
+                                    child: Row(
                                     children: [
                                       _getThumbnailImage(items[index].thumbnailImageId, deviceSize),
                                       SizedBox(
@@ -151,6 +152,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                       Expanded(
                                         child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Container(
                                             child: Padding(
@@ -251,6 +253,7 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
                                       ),
                                     ],
                                   ),
+                                  ),
                                         ),
                                       ),
                                       if (items[index].closed)
@@ -328,10 +331,15 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
   }
 
   String _extractAddress(String address) {
-    List<String> tokens = address.split(' ')
-        .where((word) => word.endsWith('구')).toList();
-    String response = (tokens.isNotEmpty) ? tokens[0] : '알수없음';
-    return response;
+    if (address.isEmpty) return '';
+    final tokens = address.split(' ');
+    final gu = tokens.where((w) => w.endsWith('구')).toList();
+    if (gu.isNotEmpty) return gu[0];
+    final si = tokens.where((w) => w.endsWith('시')).toList();
+    if (si.isNotEmpty) return si[0];
+    final dong = tokens.where((w) => w.endsWith('동')).toList();
+    if (dong.isNotEmpty) return dong[0];
+    return tokens[0];
   }
 
   String _formatDate(DateTime dateTime) {
@@ -370,15 +378,18 @@ class _MateListSearchViewState extends ConsumerState<MateListSearchView> {
   }
 
   Widget _buildThumbnailImageContainer(ImageProvider imageProvider, Size deviceSize) {
-    return Container(
-      width: deviceSize.width * 0.28,
-      height: deviceSize.height * 0.12,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: imageProvider,
-          fit: BoxFit.fill,
+    return Expanded(
+      flex: 0,
+      child: Container(
+        width: deviceSize.width * 0.28,
+        constraints: BoxConstraints(minHeight: 80),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: imageProvider,
+            fit: BoxFit.cover,
+          ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        borderRadius: BorderRadius.circular(10),
       ),
     );
   }

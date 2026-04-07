@@ -92,79 +92,83 @@ class _MateFilterViewState extends ConsumerState<MateFilterView> {
               SizedBox(
                 height: deviceSize.height * 0.02,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        dayInputIdx != 1 ? dayInputIdx = 1 : dayInputIdx = 0;
-                      });
-                    },
-                    child: Container(
-                      height: deviceSize.height * 0.05,
-                      width: deviceSize.width * 0.47,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: dayInputIdx != 1
-                              ? Color(0xffE8E8E8)
-                              : Colors.orangeAccent,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomLeft: Radius.circular(10),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '요일 선택',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: dayInputIdx != 1
-                                ? Colors.black
-                                : Colors.orangeAccent,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.03),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            dayInputIdx != 1 ? dayInputIdx = 1 : dayInputIdx = 0;
+                          });
+                        },
+                        child: Container(
+                          height: (deviceSize.height * 0.05).clamp(40.0, 50.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: dayInputIdx != 1
+                                  ? Color(0xffE8E8E8)
+                                  : Colors.orangeAccent,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '요일 선택',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: dayInputIdx != 1
+                                    ? Colors.black
+                                    : Colors.orangeAccent,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        dayInputIdx != 2 ? dayInputIdx = 2 : dayInputIdx = 0;
-                        dayOfWeekIdx = -1;
-                      });
-                    },
-                    child: Container(
-                      height: deviceSize.height * 0.05,
-                      width: deviceSize.width * 0.47,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: dayInputIdx != 2
-                              ? Color(0xffE8E8E8)
-                              : Colors.orangeAccent,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '날짜 선택',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: dayInputIdx != 2
-                                ? Colors.black
-                                : Colors.orangeAccent,
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            dayInputIdx != 2 ? dayInputIdx = 2 : dayInputIdx = 0;
+                            dayOfWeekIdx = -1;
+                          });
+                        },
+                        child: Container(
+                          height: (deviceSize.height * 0.05).clamp(40.0, 50.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: dayInputIdx != 2
+                                  ? Color(0xffE8E8E8)
+                                  : Colors.orangeAccent,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '날짜 선택',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: dayInputIdx != 2
+                                    ? Colors.black
+                                    : Colors.orangeAccent,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               if (dayInputIdx == 1)
                 Padding(

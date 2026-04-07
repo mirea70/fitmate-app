@@ -214,6 +214,7 @@ class _MateRequestViewState extends ConsumerState<MateRequestView> {
               ),
             ),
           ),
+          SizedBox(height: (deviceSize.height * 0.03).clamp(20.0, 30.0)),
         ],
       ),
     );

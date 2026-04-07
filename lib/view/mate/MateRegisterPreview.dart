@@ -58,7 +58,7 @@ class _MateRegisterPreviewState extends ConsumerState<MateRegisterPreview> {
           children: [
             // Image carousel with navigation arrows
             SizedBox(
-              height: deviceSize.height * 0.35,
+              height: (deviceSize.height * 0.35).clamp(250.0, 380.0),
               width: double.maxFinite,
               child: Stack(
                 children: [

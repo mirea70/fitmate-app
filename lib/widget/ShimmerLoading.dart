@@ -83,42 +83,44 @@ class MateListItemSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: deviceSize.height * 0.15,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
       ),
-      child: Row(
-        children: [
-          SizedBox(width: deviceSize.width * 0.03),
-          ShimmerBox(
-            width: deviceSize.width * 0.28,
-            height: deviceSize.height * 0.12,
-            borderRadius: 10,
-          ),
-          SizedBox(width: deviceSize.width * 0.03),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: deviceSize.height * 0.02),
-                ShimmerBox(width: 50, height: 24, borderRadius: 10),
-                SizedBox(height: deviceSize.height * 0.008),
-                ShimmerBox(width: deviceSize.width * 0.4, height: 16),
-                SizedBox(height: deviceSize.height * 0.008),
-                ShimmerBox(width: deviceSize.width * 0.35, height: 14),
-                SizedBox(height: deviceSize.height * 0.008),
-                Row(
-                  children: [
-                    ShimmerBox.circle(size: deviceSize.width * 0.06),
-                    const SizedBox(width: 6),
-                    ShimmerBox(width: deviceSize.width * 0.25, height: 14),
-                  ],
-                ),
-              ],
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            SizedBox(width: deviceSize.width * 0.03),
+            ShimmerBox(
+              width: deviceSize.width * 0.28,
+              height: 90,
+              borderRadius: 10,
             ),
-          ),
-        ],
+            SizedBox(width: deviceSize.width * 0.03),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ShimmerBox(width: 50, height: 22, borderRadius: 10),
+                  const SizedBox(height: 6),
+                  ShimmerBox(width: deviceSize.width * 0.4, height: 16),
+                  const SizedBox(height: 6),
+                  ShimmerBox(width: deviceSize.width * 0.35, height: 14),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      ShimmerBox.circle(size: 24),
+                      const SizedBox(width: 6),
+                      ShimmerBox(width: deviceSize.width * 0.25, height: 14),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

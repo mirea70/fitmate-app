@@ -59,7 +59,7 @@ class MainViewAppbar extends ConsumerWidget implements PreferredSizeWidget {
     return SafeArea(
       bottom: false, // AppBar는 하단 safe area 불필요
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05),
         child: Column(
           mainAxisSize: MainAxisSize.min, // ⭐ 핵심
           children: [

@@ -16,29 +16,30 @@ class NoticeListViewModel extends AsyncNotifier<List<NoticeResponse>> {
   Future<List<NoticeResponse>> _loadNotices() async {
     final repo = ref.read(accountRepositoryProvider);
 
-    // 읽음 처리와 알림 목록을 병렬 조회
-    final results = await Future.wait([
-      repo.markNoticesAsRead(),
-      repo.getMyNotices(),
-    ]);
-    final notices = results[1] as List<NoticeResponse>;
+    // 읽음 처리 (실패해도 무시)
+    repo.markNoticesAsRead().catchError((_) {});
 
-    // 발신자 프로필 이미지도 병렬 조회
-    final senderIds = notices
-        .map((n) => n.senderAccountId)
-        .where((id) => id != null)
-        .toSet();
+    // 알림 목록 조회
+    final notices = await repo.getMyNotices();
 
-    final imageIds = <int?>[];
-    if (senderIds.isNotEmpty) {
-      final profiles = await Future.wait(
-        senderIds.map((id) => repo.getProfileByAccountId(id!).catchError((_) => null)),
-      );
-      for (final profile in profiles) {
-        if (profile != null) imageIds.add(profile.profileImageId);
+    // 발신자 프로필 이미지 사전 로드 (실패해도 무시)
+    try {
+      final senderIds = notices
+          .map((n) => n.senderAccountId)
+          .where((id) => id != null)
+          .toSet();
+
+      final imageIds = <int?>[];
+      if (senderIds.isNotEmpty) {
+        for (final id in senderIds) {
+          try {
+            final profile = await repo.getProfileByAccountId(id!);
+            imageIds.add(profile.profileImageId);
+          } catch (_) {}
+        }
       }
-    }
-    await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
+      await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
+    } catch (_) {}
 
     return notices;
   }

@@ -47,67 +47,100 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
                 constraints: BoxConstraints(
                   minHeight: constraint.maxHeight,
                 ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(deviceSize.width * 0.05, 0,
-                            deviceSize.width * 0.05, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '일정에 대해 소개해봐요!',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(deviceSize.width * 0.05, 0,
+                          deviceSize.width * 0.05, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '일정에 대해 소개해봐요!',
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(height: deviceSize.height * 0.03 + 10),
+                          Text(
+                            '배너 이미지 (최대 3장)',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '(첫 번째 이미지가 목록 썸네일로 사용됩니다)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(height: (deviceSize.height * 0.02 + 8).clamp(5, 12)),
+                          SizedBox(
+                            height: deviceSize.width * 0.22,
+                            child: _ImageListSection(deviceSize: deviceSize),
+                          ),
+                          SizedBox(height: deviceSize.height * 0.02 + 8),
+                          Text(
+                            '제목',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          CustomInput(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) {
+                              viewModelNotifier.setTitle(value);
+                            },
+                            hintText: '제목을 입력해 주세요',
+                            text: viewModel.title,
+                          ),
+                          SizedBox(
+                              height: (deviceSize.height * 0.005).clamp(5, 8)),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Text(
+                              '(예시 : 아침헬스 함께 가실 분!)',
                               style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.05,
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.1,
-                              child: _ImageListSection(deviceSize: deviceSize),
-                            ),
-                            SizedBox(
-                              height: deviceSize.height * 0.02,
-                            ),
-                            CustomInput(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) {
-                                viewModelNotifier.setTitle(value);
-                              },
-                              hintText: '제목을 입력해 주세요',
-                              text: viewModel.title,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: deviceSize.width * 0.02),
-                              child: Text(
-                                '예시 : 아침헬스 함께 가실 분!',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w300,
-                                ),
+                                fontSize: 12,
+                                color: Colors.grey,
                               ),
                             ),
-                            SizedBox(
-                              height: deviceSize.height * 0.02,
+                          ),
+                          SizedBox(
+                              height:
+                                  (deviceSize.height * 0.025).clamp(20, 25)
+                          ),
+                          Text(
+                            '소개글',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
                             ),
-                            CustomInputLarge(
-                              deviceSize: deviceSize,
-                              onChangeMethod: (value) {
-                                viewModelNotifier.setIntroduction(value);
-                              },
-                              hintText: '소개글을 입력해 주세요 (선택)',
-                              text: viewModel.introduction ?? '',
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 4),
+                          CustomInputLarge(
+                            deviceSize: deviceSize,
+                            onChangeMethod: (value) {
+                              viewModelNotifier.setIntroduction(value);
+                            },
+                            hintText: '소개글을 입력해 주세요 (선택)',
+                            text: viewModel.introduction ?? '',
+                          ),
+                          SizedBox(
+                              height:
+                                  (deviceSize.height * 0.03).clamp(20.0, 30.0)),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -135,6 +168,7 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
 
 class _ImageListSection extends ConsumerWidget {
   const _ImageListSection({required this.deviceSize});
+
   final Size deviceSize;
 
   Widget _buildServerImageThumbnail(WidgetRef ref, int imageId) {
@@ -171,7 +205,8 @@ class _ImageListSection extends ConsumerWidget {
             child: Container(
               height: 20,
               width: 20,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.grey),
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: Colors.grey),
               child: Icon(Icons.close, color: Colors.white, size: 12),
             ),
           ),
@@ -209,7 +244,8 @@ class _ImageListSection extends ConsumerWidget {
               );
             },
             scrollDirection: Axis.horizontal,
-            separatorBuilder: (context, index) => SizedBox(width: deviceSize.width * 0.02),
+            separatorBuilder: (context, index) =>
+                SizedBox(width: deviceSize.width * 0.02),
           ),
         ),
       ],
@@ -243,11 +279,8 @@ class _NextButton extends ConsumerWidget {
             );
             return;
           }
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      MateRegisterView4()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MateRegisterView4()));
         },
         title: '다음',
         isEnabled: viewModel.title.length >= 5);

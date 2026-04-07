@@ -14,9 +14,10 @@ class CustomButton extends StatelessWidget {
 
 @override
   Widget build(BuildContext context) {
+    final buttonHeight = (deviceSize.height * 0.06).clamp(48.0, 60.0);
     return Container(
       width: deviceSize.width * 0.9,
-      height: deviceSize.height * 0.06,
+      height: buttonHeight,
       child: ElevatedButton(
         onPressed: isEnabled ? onTapMethod : null,
         style: ElevatedButton.styleFrom(

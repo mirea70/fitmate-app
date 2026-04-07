@@ -82,8 +82,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding:
-                                      EdgeInsets.only(left: deviceSize.width * 0.03),
+                                  padding: const EdgeInsets.only(left: 4),
                                   child: CustomInputTitle('아이디'),
                                 ),
                                 const SizedBox(height: 7),
@@ -103,8 +102,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding:
-                                      EdgeInsets.only(left: deviceSize.width * 0.03),
+                                  padding: const EdgeInsets.only(left: 4),
                                   child: CustomInputTitle('비밀번호'),
                                 ),
                                 const SizedBox(height: 7),
@@ -130,7 +128,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         height: deviceSize.height * 0.02,
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.02),
+                        padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.05),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

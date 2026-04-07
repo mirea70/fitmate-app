@@ -35,7 +35,7 @@ class _CustomInputState extends State<CustomInput> {
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        minHeight: widget.deviceSize.height * 0.08,
+        minHeight: (widget.deviceSize.height * 0.08).clamp(52.0, 64.0),
       ),
       width: widget.deviceSize.width * 0.9,
       child: TextField(

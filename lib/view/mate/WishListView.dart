@@ -107,18 +107,15 @@ class _WishListViewState extends ConsumerState<WishListView> {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Color(0xffE8E8E8)),
         ),
-        child: Row(
+        child: IntrinsicHeight(
+          child: Row(
           children: [
-            CachedThumbnailImage(
-              imageId: item.thumbnailImageId,
-              width: deviceSize.width * 0.2,
-              height: deviceSize.width * 0.2,
-              borderRadius: 8,
-            ),
-            SizedBox(width: deviceSize.width * 0.03),
+            _buildThumbnail(item.thumbnailImageId, deviceSize),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Row(
                     children: [
@@ -143,17 +140,32 @@ class _WishListViewState extends ConsumerState<WishListView> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    _formatDate(item.mateAt),
-                    style: const TextStyle(fontSize: 13, color: Colors.grey),
+                  Row(
+                    children: [
+                      Icon(Icons.location_pin, size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          '${_extractAddress(item.fitPlaceAddress)} ∙ ${_formatDate(item.mateAt)}',
+                          style: const TextStyle(fontSize: 13, color: Colors.grey),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Icon(Icons.group, size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
                         '${item.approvedAccountCnt}/${item.permitPeopleCnt}',
+                        style: const TextStyle(fontSize: 13, color: Colors.grey),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '∙ ${item.gatherType?.label ?? ''}',
                         style: const TextStyle(fontSize: 13, color: Colors.grey),
                       ),
                     ],
@@ -164,8 +176,31 @@ class _WishListViewState extends ConsumerState<WishListView> {
             Icon(Icons.favorite, color: Colors.orangeAccent, size: 22),
           ],
         ),
+        ),
       ),
     );
+  }
+
+  Widget _buildThumbnail(int? thumbnailImageId, Size deviceSize) {
+    final thumbSize = (deviceSize.width * 0.2).clamp(70.0, 120.0);
+    return CachedThumbnailImage(
+      imageId: thumbnailImageId,
+      width: thumbSize,
+      height: thumbSize * 0.9,
+      borderRadius: 8,
+    );
+  }
+
+  String _extractAddress(String address) {
+    if (address.isEmpty) return '';
+    final tokens = address.split(' ');
+    final gu = tokens.where((w) => w.endsWith('구')).toList();
+    if (gu.isNotEmpty) return gu[0];
+    final si = tokens.where((w) => w.endsWith('시')).toList();
+    if (si.isNotEmpty) return si[0];
+    final dong = tokens.where((w) => w.endsWith('동')).toList();
+    if (dong.isNotEmpty) return dong[0];
+    return tokens[0];
   }
 
   String _formatDate(DateTime dateTime) {

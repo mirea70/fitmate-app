@@ -1,72 +1,35 @@
-import 'package:fitmate_app/widget/CustomIconButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MateListFilterViewAppbar extends ConsumerStatefulWidget implements PreferredSizeWidget {
-  const MateListFilterViewAppbar({
-    required this.deviceSize,
-    required this.devicePadding,
-  });
-
-  final Size deviceSize;
-  final EdgeInsets devicePadding;
+class MateListFilterViewAppbar extends StatelessWidget implements PreferredSizeWidget {
+  const MateListFilterViewAppbar({super.key});
 
   @override
-  ConsumerState<MateListFilterViewAppbar> createState() => _MateListFilterViewAppbarState();
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Size get preferredSize => Size.fromHeight(deviceSize.height * 0.05);
-}
-
-class _MateListFilterViewAppbarState extends ConsumerState<MateListFilterViewAppbar> {
-@override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(widget.deviceSize.width * 0.05, 0, widget.deviceSize.width * 0.05, 0),
-      child: Column(
-        children: [
-          SizedBox(
-            height: widget.devicePadding.top,
-          ),
-          Row(
-            children: [
-              CustomIconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 27,
-                ),
-                onPressed: (){
-                  Navigator.pop(context);
-                },
-              ),
-              Expanded(
-                child: SizedBox(
-                ),
-              ),
-              Text(
-                '필터 결과',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 22,
-                ),
-              ),
-              Expanded(
-                child: SizedBox(
-                ),
-              ),
-              CustomIconButton(
-                icon: Icon(
-                  Icons.filter_alt_outlined,
-                  size: 27,
-                ),
-                onPressed: (){
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ],
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+        onPressed: () => Navigator.pop(context),
       ),
+      title: const Text(
+        '필터 결과',
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 22,
+          color: Colors.black,
+        ),
+      ),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.filter_alt_outlined, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
     );
   }
 }

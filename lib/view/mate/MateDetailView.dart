@@ -9,6 +9,7 @@ import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateApproveView.dart';
 import 'package:fitmate_app/view/mate/MateRegisterView1.dart';
 import 'package:fitmate_app/view/mate/MateRequestView.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateDetailViewModel.dart';
 import 'package:fitmate_app/view_model/mate/MateRegisterViewModel.dart';
 import 'package:fitmate_app/view_model/file/FileViewModel.dart';
@@ -100,6 +101,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     try {
       await ref.read(mateRepositoryProvider).closeMate(widget.mateId);
       ref.invalidate(mateDetailProvider(widget.mateId));
+      ref.read(mateAsyncViewModelProvider.notifier).refresh();
       if (mounted) {
         AppSnackBar.show(context, message: '모집이 마감되었습니다.', type: SnackBarType.success);
       }
@@ -139,7 +141,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
-    final double imageHeight = deviceSize.height * 0.38;
+    final double imageHeight = (deviceSize.height * 0.38).clamp(250.0, 400.0);
     final detailState = ref.watch(mateDetailProvider(widget.mateId));
 
     return detailState.when(
@@ -538,6 +540,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
           ),
         ));
         ref.invalidate(mateDetailProvider(widget.mateId));
+        ref.read(mateAsyncViewModelProvider.notifier).refresh();
       };
     } else if (isApproved) {
       title = '채팅방 입장';
@@ -559,6 +562,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
           builder: (context) => MateRequestView(mateId: widget.mateId),
         ));
         ref.invalidate(mateDetailProvider(widget.mateId));
+        ref.read(mateAsyncViewModelProvider.notifier).refresh();
       };
     }
 
@@ -623,6 +627,7 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
                       reasonController.text.trim(),
                     );
                 ref.invalidate(mateDetailProvider(widget.mateId));
+                ref.read(mateAsyncViewModelProvider.notifier).refresh();
                 if (mounted) {
                   AppSnackBar.show(context, message: '신청이 취소되었습니다.', type: SnackBarType.success);
                 }

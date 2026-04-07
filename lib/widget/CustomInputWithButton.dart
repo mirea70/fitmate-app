@@ -40,7 +40,7 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        minHeight: widget.deviceSize.height * 0.08,
+        minHeight: (widget.deviceSize.height * 0.08).clamp(52.0, 64.0),
       ),
       width: widget.deviceSize.width * 0.9,
       child: TextField(
@@ -49,6 +49,7 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
         maxLength: widget.maxLength,
         onChanged: widget.onChangeMethod,
         decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           hintText: widget.hintText,
           hintStyle: TextStyle(
             color: Color(0xffE8E8E8),
@@ -71,19 +72,29 @@ class _CustomInputWithButtonState extends State<CustomInputWithButton> {
             BorderRadius.all(Radius.circular(8.0)),
             borderSide: BorderSide(color: Color(0xffE8E8E8), width: 2.0),
           ),
-          suffix: ElevatedButton(
-            onPressed: widget.isEnableButton ? widget.onPressMethod : null,
-            style: ElevatedButton.styleFrom(
-              elevation: 5.0,
-              backgroundColor: Colors.orangeAccent,
-            ),
-            child: Text(
-              widget.buttonTitle,
-              style: TextStyle(
-                color: Colors.white,
+          suffixIcon: Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: SizedBox(
+              height: 30,
+              child: ElevatedButton(
+                onPressed: widget.isEnableButton ? widget.onPressMethod : null,
+                style: ElevatedButton.styleFrom(
+                  elevation: 3.0,
+                  backgroundColor: Colors.orangeAccent,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  minimumSize: const Size(0, 30),
+                ),
+                child: Text(
+                  widget.buttonTitle,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
               ),
             ),
-          )
+          ),
+          suffixIconConstraints: const BoxConstraints(maxHeight: 34),
         ),
         buildCounter: (
             BuildContext context,

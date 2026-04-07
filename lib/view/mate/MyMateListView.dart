@@ -127,19 +127,48 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Color(0xffE8E8E8)),
               ),
-              child: Row(
+              child: IntrinsicHeight(
+                child: Row(
                 children: [
                   _buildThumbnail(item.thumbnailImageId, deviceSize),
-                  SizedBox(width: deviceSize.width * 0.03),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Color(0xffF1F1F1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            item.fitCategory.label,
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                         Text(
                           item.title,
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.location_pin, size: 14, color: Colors.grey),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                '${_extractAddress(item.fitPlaceAddress)} ∙ ${_formatDate(item.mateAt)}',
+                                style: const TextStyle(fontSize: 13, color: Colors.grey),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 4),
                         Row(
@@ -150,18 +179,19 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
                               '${item.approvedAccountCnt}/${item.permitPeopleCnt}',
                               style: const TextStyle(fontSize: 13, color: Colors.grey),
                             ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '∙ ${item.gatherType?.label ?? ''}',
+                              style: const TextStyle(fontSize: 13, color: Colors.grey),
+                            ),
                           ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _formatDate(item.mateAt),
-                          style: const TextStyle(fontSize: 13, color: Colors.grey),
                         ),
                       ],
                     ),
                   ),
                   const Icon(Icons.chevron_right, color: Colors.grey),
                 ],
+              ),
               ),
             ),
           ),
@@ -184,12 +214,25 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
   }
 
   Widget _buildThumbnail(int? thumbnailImageId, Size deviceSize) {
+    final thumbWidth = (deviceSize.width * 0.18).clamp(70.0, 120.0);
     return CachedThumbnailImage(
       imageId: thumbnailImageId,
-      width: deviceSize.width * 0.18,
-      height: deviceSize.width * 0.18,
+      width: thumbWidth,
+      height: thumbWidth * 0.9,
       borderRadius: 8,
     );
+  }
+
+  String _extractAddress(String address) {
+    if (address.isEmpty) return '';
+    final tokens = address.split(' ');
+    final gu = tokens.where((w) => w.endsWith('구')).toList();
+    if (gu.isNotEmpty) return gu[0];
+    final si = tokens.where((w) => w.endsWith('시')).toList();
+    if (si.isNotEmpty) return si[0];
+    final dong = tokens.where((w) => w.endsWith('동')).toList();
+    if (dong.isNotEmpty) return dong[0];
+    return tokens[0];
   }
 
   String _formatDate(DateTime dateTime) {

@@ -42,7 +42,7 @@ class _MateSearchViewState extends State<MateSearchView> {
                 ),
                 Expanded(
                   child: Container(
-                    height: deviceSize.height * 0.05,
+                    height: (deviceSize.height * 0.05).clamp(44.0, 56.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: Color(0xffE8E8E8),

@@ -182,22 +182,32 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
             icon: Icon(Icons.arrow_back, color: Colors.black),
           ),
           actions: [
-            TextButton(
-              onPressed: _isSaving ? null : _save,
-              child: _isSaving
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(
-                      '저장',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.orangeAccent,
-                      ),
-                    ),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: GestureDetector(
+                onTap: _isSaving ? null : _save,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: _isSaving ? Colors.grey.shade300 : Colors.orangeAccent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: _isSaving
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : Text(
+                          '저장',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
             ),
           ],
         ),

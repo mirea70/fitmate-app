@@ -116,7 +116,6 @@ class _MateRegisterView4State extends ConsumerState<MateRegisterView4> {
                                   secondChild: Container(
                                     margin: EdgeInsets.only(top: 8),
                                     width: deviceSize.width * 0.9,
-                                    height: deviceSize.height * 0.45,
                                     decoration: BoxDecoration(
                                       color: Color(0xffFAFAFA),
                                       borderRadius: BorderRadius.circular(15),

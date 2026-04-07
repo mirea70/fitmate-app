@@ -50,9 +50,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                   children: [
                     Center(
                       child: Container(
-                        width: deviceSize.width * 0.8,
-                        height: deviceSize.height * 0.05,
-                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.orangeAccent,
@@ -60,7 +58,7 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView4> {
                         child: Text(
                           '이제, 프로필만 작성하면 가입 완료!',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 25,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),

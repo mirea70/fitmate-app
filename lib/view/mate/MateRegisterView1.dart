@@ -93,7 +93,7 @@ class _MateRegisterView1State extends ConsumerState<MateRegisterView1> {
                                       },
                                       child: Container(
                                         width: deviceSize.width * 0.27,
-                                        height: deviceSize.height * 0.055,
+                                        height: (deviceSize.height * 0.055).clamp(44.0, 56.0),
                                         decoration: BoxDecoration(
                                           color: isSelected ? Colors.orangeAccent : Colors.white,
                                           borderRadius: BorderRadius.circular(12),

@@ -78,7 +78,7 @@ class _BirthDatePickerState extends State<BirthDatePicker> {
           onTap: () => setState(() => _isExpanded = !_isExpanded),
           child: Container(
             width: deviceSize.width * 0.9,
-            height: deviceSize.height * 0.06,
+            height: (deviceSize.height * 0.06).clamp(48.0, 56.0),
             padding: EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),

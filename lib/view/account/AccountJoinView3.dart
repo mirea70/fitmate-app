@@ -65,11 +65,11 @@ class _AccountJoinView3State extends ConsumerState<AccountJoinView3> {
                               ),
                             ),
                             SizedBox(
-                              height: deviceSize.height * 0.1,
+                              height: (deviceSize.height * 0.05).clamp(24.0, 40.0),
                             ),
                             _PhoneInputSection(),
                             SizedBox(
-                              height: deviceSize.height * 0.1,
+                              height: (deviceSize.height * 0.05).clamp(24.0, 40.0),
                             ),
                             _CodeInputSection(),
                           ],

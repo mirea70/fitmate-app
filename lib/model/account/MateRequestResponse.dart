@@ -1,3 +1,5 @@
+import 'package:fitmate_app/model/mate/Mate.dart';
+
 class MateRequestResponse {
   final int mateId;
   final int? thumbnailImageId;
@@ -10,6 +12,8 @@ class MateRequestResponse {
   final int totalFee;
   final DateTime applyAt;
   final bool closed;
+  final FitCategory? fitCategory;
+  final String? approveStatus;
 
   MateRequestResponse({
     required this.mateId,
@@ -23,6 +27,8 @@ class MateRequestResponse {
     required this.totalFee,
     required this.applyAt,
     required this.closed,
+    this.fitCategory,
+    this.approveStatus,
   });
 
   factory MateRequestResponse.fromJson(Map<String, dynamic> json) {
@@ -50,6 +56,10 @@ class MateRequestResponse {
       totalFee: json['totalFee'],
       applyAt: DateTime.parse(json['applyAt']),
       closed: json['closed'] ?? false,
+      fitCategory: json['fitCategory'] != null
+          ? FitCategory.getByCode(json['fitCategory'])
+          : null,
+      approveStatus: json['approveStatus'],
     );
   }
 }
