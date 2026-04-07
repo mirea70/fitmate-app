@@ -1,3 +1,4 @@
+import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/config/StompService.dart';
 import 'package:fitmate_app/widget/AppSnackBar.dart';
 import 'package:fitmate_app/model/account/AccountProfile.dart';
@@ -48,11 +49,21 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
     _stompService = ref.read(stompServiceProvider);
     _chatRepository = ref.read(chatRepositoryProvider);
     _checkMateOwner();
+    _preloadMemberProfiles();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref.read(currentRoomIdProvider.notifier).set(widget.roomId);
       _connectStomp();
     });
+  }
+
+  Future<void> _preloadMemberProfiles() async {
+    for (final accountId in widget.memberAccountIds) {
+      try {
+        await _getProfile(accountId);
+      } catch (_) {}
+    }
+    if (mounted) setState(() {});
   }
 
   Future<void> _checkMateOwner() async {
@@ -342,6 +353,9 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
     final profile = await ref
         .read(accountRepositoryProvider)
         .getProfileByAccountId(accountId);
+    if (profile.profileImageId != null) {
+      await ref.read(imageCacheServiceProvider).ensureLoaded([profile.profileImageId]);
+    }
     _profileCache[accountId] = profile;
     return profile;
   }
@@ -587,7 +601,9 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
 
   Widget _buildSenderProfile(
       int senderId, int? profileImageId, double size) {
-    return CachedProfileImage(imageId: profileImageId, size: size);
+    final cachedProfile = _profileCache[senderId];
+    final imageId = profileImageId ?? cachedProfile?.profileImageId;
+    return CachedProfileImage(imageId: imageId, size: size);
   }
 
   Widget _buildSenderName(ChatMessage msg) {

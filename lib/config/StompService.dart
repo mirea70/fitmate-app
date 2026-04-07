@@ -47,7 +47,7 @@ class StompService {
   void _activate(String token) {
     _client?.deactivate();
 
-    final wsUrl = AppConfig().baseUrl + '/stomp';
+    final wsUrl = '${AppConfig().baseUrl}/stomp?token=$token';
 
     _client = StompClient(
       config: StompConfig.sockJS(
@@ -64,16 +64,16 @@ class StompService {
         },
         onWebSocketError: (error) {
           _isConnected = false;
-          _reconnectWithFreshToken();
+          _onErrorCallback?.call('채팅 서버 연결에 실패했습니다.');
         },
         onStompError: (StompFrame frame) {
           _isConnected = false;
-          _reconnectWithFreshToken();
+          _onErrorCallback?.call('채팅 서버 인증에 실패했습니다.');
         },
         onDisconnect: (StompFrame frame) {
           _isConnected = false;
         },
-        reconnectDelay: Duration.zero,
+        reconnectDelay: const Duration(seconds: 5),
       ),
     );
 

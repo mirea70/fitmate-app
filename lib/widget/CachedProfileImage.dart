@@ -26,6 +26,16 @@ class _CachedProfileImageState extends ConsumerState<CachedProfileImage> {
     _initImage();
   }
 
+  @override
+  void didUpdateWidget(covariant CachedProfileImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.imageId != oldWidget.imageId) {
+      _data = null;
+      _fadeIn = false;
+      _initImage();
+    }
+  }
+
   void _initImage() {
     if (widget.imageId == null) return;
     final cache = ref.read(imageCacheServiceProvider);
