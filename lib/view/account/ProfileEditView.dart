@@ -59,6 +59,7 @@ class _ProfileEditViewState extends ConsumerState<ProfileEditView> {
   Future<void> _pickImage() async {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       builder: (BuildContext context) {
         return SafeArea(
           child: Wrap(

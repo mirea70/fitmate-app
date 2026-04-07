@@ -83,6 +83,7 @@ class MainViewAppbar extends ConsumerWidget implements PreferredSizeWidget {
                         onPressed: () {
                           showModalBottomSheet(
                             context: context,
+                            backgroundColor: Colors.white,
                             isScrollControlled: true,
                             builder: (_) => const MateFilterView(),
                           );

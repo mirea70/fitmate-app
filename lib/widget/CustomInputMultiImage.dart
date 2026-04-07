@@ -24,6 +24,7 @@ class _CustomInputMultiImageState extends ConsumerState<CustomInputMultiImage> {
 
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       builder: (BuildContext context) {
         return SafeArea(
           child: Wrap(

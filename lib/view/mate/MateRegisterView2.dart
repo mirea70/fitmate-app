@@ -63,6 +63,7 @@ class _MateRegisterView2State extends ConsumerState<MateRegisterView2> {
                                       debugPrint('[MateRegisterView2] 장소 인풋 탭 감지됨');
                                       showModalBottomSheet(
                                         context: context,
+                                        backgroundColor: Colors.white,
                                         builder: (context) {
                                           // List<Map<String,String>>
                                           return Consumer(
