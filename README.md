@@ -2,11 +2,11 @@
 
 운동 메이트를 찾을 수 있는 소셜 플랫폼의 모바일 애플리케이션입니다.
 
-백엔드부터 모바일 앱, 스토어 배포까지 1인 풀스택으로 수행한 프로젝트입니다.
+백엔드부터 모바일 앱, 스토어 배포까지 1인 개발로 진행하였습니다.
 
 > **백엔드 저장소** : [fitmate-back](https://github.com/mirea70/fitmate-back)
 
-
+<br/>
 
 
 ## 기술 스택
@@ -23,7 +23,7 @@
 | **배포** | Google Play Store |
 
 
-
+<br/>
 
 ## 주요 기능
 
@@ -38,7 +38,7 @@
 | **알림** | 모집 승인/마감/신청 등 실시간 알림 |
 
 
-
+<br/>
 
 ## 프로젝트 구조
 
@@ -56,8 +56,7 @@ lib/
 └── service/         # Firebase Phone Auth 등 서비스
 ```
 
-
-
+<br/>
 
 ## 주요 화면
 
@@ -66,10 +65,14 @@ lib/
 |:---:|:---:|:---:|
 | <img src="screenshots/01_home.png" width="200"/> | <img src="screenshots/02_mate_list.png" width="200"/> | <img src="screenshots/03_filter.png" width="200"/> |
 
+<br/>
+
 ### 메이트 상세 / 참여 신청
 | 메이트 상세 | 참여 가이드 | 참여 질문 답변 |
 |:---:|:---:|:---:|
 | <img src="screenshots/04_mate_detail.png" width="200"/> | <img src="screenshots/22_apply_guide.png" width="200"/> | <img src="screenshots/23_apply_answer.png" width="200"/> |
+
+<br/>
 
 ### 메이트 등록 (7단계)
 | 1. 카테고리 선택 | 2. 장소 검색 | 3. 장소 선택 |
@@ -92,18 +95,21 @@ lib/
 |:---:|
 | <img src="screenshots/17_register_preview.png" width="200"/> |
 
+<br/>
+
 ### 채팅
 | 채팅 목록 | 채팅방 | 채팅 멤버 |
 |:---:|:---:|:---:|
 | <img src="screenshots/20_chat_list.png" width="200"/> | <img src="screenshots/19_chat_room.png" width="200"/> | <img src="screenshots/18_chat_drawer.png" width="200"/> |
+
+<br/>
 
 ### 마이페이지
 | 마이페이지 |
 |:---:|
 | <img src="screenshots/21_mypage.png" width="200"/> |
 
-
-
+<br/>
 
 ## 실행 방법
 
@@ -140,10 +146,9 @@ flutter run --dart-define-from-file=.env.emulator
 flutter build appbundle --release --dart-define-from-file=.env.prod
 ```
 
+<br/>
 
-
-
-## 아키텍처
+## 프로젝트 아키텍처
 
 ```
 View (UI)
@@ -160,8 +165,7 @@ Backend API (Spring Boot)
 - **Repository** : 서버 API 통신, 인터페이스 분리 (테스트 용이)
 - **Service** : Firebase, 이미지 캐시 등 외부 서비스 래핑
 
-
-
+<br/>
 
 ## 배포
 
