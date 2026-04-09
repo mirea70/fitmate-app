@@ -244,7 +244,7 @@ class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
                               Icon(Icons.group, size: 14, color: Colors.grey),
                               const SizedBox(width: 4),
                               Text(
-                                '${item.approvedAccountCnt}/${item.permitPeopleCnt}',
+                                '${item.approvedAccountCnt + 1}/${item.permitPeopleCnt}',
                                 style: TextStyle(fontSize: 13, color: Colors.grey),
                               ),
                             ],

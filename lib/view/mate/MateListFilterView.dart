@@ -177,7 +177,7 @@ class _MateListFilterViewState extends ConsumerState<MateListFilterView> {
                                               width: deviceSize.width * 0.01,
                                             ),
                                             Text(
-                                              '${items[index].approvedAccountCnt}/${items[index].permitPeopleCnt}',
+                                              '${items[index].approvedAccountCnt + 1}/${items[index].permitPeopleCnt}',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w400,

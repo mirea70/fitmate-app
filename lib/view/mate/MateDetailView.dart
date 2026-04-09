@@ -35,6 +35,16 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
   int _currentImage = 0;
   bool? _wishedOverride;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.invalidate(mateDetailProvider(widget.mateId));
+      }
+    });
+  }
+
   Future<void> _toggleWish() async {
     try {
       final wished = await ref.read(mateRepositoryProvider).toggleWish(widget.mateId);

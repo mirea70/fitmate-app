@@ -176,7 +176,7 @@ class _MyMateListViewState extends ConsumerState<MyMateListView> {
                             Icon(Icons.group, size: 14, color: Colors.grey),
                             const SizedBox(width: 4),
                             Text(
-                              '${item.approvedAccountCnt}/${item.permitPeopleCnt}',
+                              '${item.approvedAccountCnt + 1}/${item.permitPeopleCnt}',
                               style: const TextStyle(fontSize: 13, color: Colors.grey),
                             ),
                             const SizedBox(width: 8),

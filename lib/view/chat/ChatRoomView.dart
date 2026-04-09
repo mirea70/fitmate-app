@@ -11,6 +11,9 @@ import 'package:fitmate_app/view/account/UserProfileView.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
 import 'package:fitmate_app/view_model/chat/ChatMessageViewModel.dart';
+import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateDetailViewModel.dart';
 import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -310,6 +313,11 @@ class _ChatRoomViewState extends ConsumerState<ChatRoomView> {
                 } else {
                   await ref.read(chatRepositoryProvider).leaveChatRoom(widget.roomId);
                 }
+                if (isMateRoom) {
+                  ref.invalidate(mateDetailProvider(widget.matingId!));
+                  ref.read(mateAsyncViewModelProvider.notifier).refresh();
+                }
+                ref.read(chatRoomListProvider.notifier).refresh();
                 if (mounted) {
                   Navigator.pop(context);
                   AppSnackBar.show(context,

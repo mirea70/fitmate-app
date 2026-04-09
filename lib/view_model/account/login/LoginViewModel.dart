@@ -5,7 +5,12 @@ import 'package:fitmate_app/config/Const.dart';
 import 'package:fitmate_app/config/SecureStorage.dart';
 import 'package:fitmate_app/repository/auth/AuthRepository.dart';
 import 'package:fitmate_app/view/mate/MainView.dart';
+import 'package:fitmate_app/view_model/account/MyProfileViewModel.dart';
+import 'package:fitmate_app/view_model/account/NoticeViewModel.dart';
+import 'package:fitmate_app/view_model/account/NoticeListViewModel.dart';
 import 'package:fitmate_app/view_model/account/join/AccountJoinErrorViewModel.dart';
+import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
+import 'package:fitmate_app/view_model/mate/MateAsyncViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -103,6 +108,12 @@ class LoginViewModel extends Notifier<LoginState> {
       storage.delete(key: accessTokenKey),
       storage.delete(key: refreshTokenKey),
     ]);
+    // 사용자별 캐시 초기화
+    ref.invalidate(myProfileProvider);
+    ref.invalidate(mateAsyncViewModelProvider);
+    ref.invalidate(chatRoomListProvider);
+    ref.invalidate(noticeListProvider);
+    ref.invalidate(unreadNoticeCountProvider);
     state = state.copyWith(isLoading: false);
   }
 }
