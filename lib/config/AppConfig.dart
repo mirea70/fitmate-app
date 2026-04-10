@@ -50,7 +50,7 @@ class AppConfig {
 
   String _getBaseUrl() {
     if (_environment == Environment.prod) {
-      return 'https://www.fitmate.site';
+      return 'https://www.fitmate.store';
     }
     if (Platform.isAndroid && _isEmulator) {
       return 'http://10.0.2.2:8090';
