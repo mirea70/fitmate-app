@@ -1,8 +1,7 @@
-import 'package:fitmate_app/config/ImageCacheService.dart';
 import 'package:fitmate_app/model/account/MateRequestResponse.dart';
 import 'package:fitmate_app/repository/account/AccountRepository.dart';
-import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -103,7 +102,7 @@ class _MateRequestTabState extends ConsumerState<_MateRequestTab> {
 
   Future<void> _loadData() async {
     try {
-      await ref.read(widget.provider.future);
+      final requests = await ref.read(widget.provider.future);
 
       if (mounted) {
         setState(() {
