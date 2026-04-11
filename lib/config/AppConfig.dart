@@ -48,6 +48,8 @@ class AppConfig {
 
   String get baseUrl => _getBaseUrl();
 
+  static const _localIp = String.fromEnvironment('LOCAL_IP', defaultValue: 'localhost');
+
   String _getBaseUrl() {
     if (_environment == Environment.prod) {
       return 'https://www.fitmate.store';
@@ -55,6 +57,6 @@ class AppConfig {
     if (Platform.isAndroid && _isEmulator) {
       return 'http://10.0.2.2:8090';
     }
-    return 'http://192.168.45.98:8090';
+    return 'http://$_localIp:8090';
   }
 }
