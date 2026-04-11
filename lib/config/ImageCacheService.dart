@@ -119,6 +119,43 @@ class ImageCacheService {
     }
   }
 
+  /// 썸네일 로드: 메모리 → 디스크 → 네트워크(썸네일 API) 순서
+  Future<Uint8List?> loadThumbnail(int fileId) async {
+    final thumbKey = -fileId; // 썸네일은 음수 키로 구분
+
+    final memCached = _memoryGet(thumbKey);
+    if (memCached != null) return memCached;
+
+    try {
+      final dir = await _getDiskCacheDir();
+      final file = _diskFile(dir, thumbKey);
+      if (await file.exists()) {
+        final data = await file.readAsBytes();
+        _memoryPut(thumbKey, data);
+        return data;
+      }
+    } catch (_) {}
+
+    if (_loadingIds.contains(thumbKey)) return null;
+    _loadingIds.add(thumbKey);
+    try {
+      final data = await ref.read(fileRepositoryProvider).downloadThumbnail(fileId);
+      _memoryPut(thumbKey, data);
+      _getDiskCacheDir().then((dir) {
+        _diskFile(dir, thumbKey).writeAsBytes(data);
+      }).catchError((_) {});
+      return data;
+    } catch (_) {
+      return null;
+    } finally {
+      _loadingIds.remove(thumbKey);
+    }
+  }
+
+  /// 썸네일이 메모리에 있는지 확인
+  Uint8List? getThumbnail(int fileId) => _memoryGet(-fileId);
+  bool hasThumbnail(int fileId) => _memoryCache.containsKey(-fileId);
+
   /// 선행 캐시 적재 (await). 화면에 즉시 보여야 할 이미지 용.
   /// 디스크 캐시가 있으면 네트워크 없이 즉시 완료.
   Future<void> ensureLoaded(List<int?> fileIds) async {

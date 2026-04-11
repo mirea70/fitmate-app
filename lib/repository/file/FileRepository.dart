@@ -61,4 +61,18 @@ class FileRepository {
     );
     return response.data;
   }
+
+  Future<Uint8List> downloadThumbnail(int fileId) async {
+    String endpoint = "/api/file/$fileId/thumbnail";
+    final response = await dio.get(
+      endpoint,
+      options: Options(
+        headers: {
+          'accessToken': true
+        },
+        responseType: ResponseType.bytes,
+      ),
+    );
+    return response.data;
+  }
 }

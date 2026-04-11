@@ -113,12 +113,12 @@ class _CachedThumbnailImageState extends ConsumerState<CachedThumbnailImage> {
   void _initImage() {
     if (widget.imageId == null) return;
     final cache = ref.read(imageCacheServiceProvider);
-    final cached = cache.get(widget.imageId!);
+    final cached = cache.getThumbnail(widget.imageId!);
     if (cached != null) {
       _data = cached;
       return;
     }
-    cache.load(widget.imageId!).then((data) {
+    cache.loadThumbnail(widget.imageId!).then((data) {
       if (mounted && data != null) setState(() { _data = data; _fadeIn = true; });
     });
   }

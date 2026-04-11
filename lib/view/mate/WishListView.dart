@@ -28,12 +28,11 @@ class _WishListViewState extends ConsumerState<WishListView> {
   Future<void> _loadWishList() async {
     try {
       final items = await ref.read(mateRepositoryProvider).getMyWishList();
-      final imageIds = <int?>[];
+      final profileImageIds = <int?>[];
       for (final item in items) {
-        imageIds.add(item.thumbnailImageId);
-        imageIds.add(item.writerImageId);
+        profileImageIds.add(item.writerImageId);
       }
-      await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
+      await ref.read(imageCacheServiceProvider).ensureLoaded(profileImageIds);
       if (mounted) {
         setState(() {
           _wishList = items;

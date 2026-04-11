@@ -1,4 +1,5 @@
 import 'package:fitmate_app/config/ImageCacheService.dart';
+import 'package:fitmate_app/widget/CachedProfileImage.dart';
 import 'package:fitmate_app/view_model/account/NoticeViewModel.dart';
 import 'package:fitmate_app/view/mate/MateDetailView.dart';
 import 'package:fitmate_app/widget/DefaultProfileImage.dart';
@@ -271,31 +272,12 @@ class _MateListViewState extends ConsumerState<MateListView> {
   }
 
   Widget _getThumbnailImage(int? thumbnailImageId, Size deviceSize) {
-    if (thumbnailImageId == null) {
-      return _buildThumbnailImageContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-    }
-    final cached = ref.read(imageCacheServiceProvider).get(thumbnailImageId);
-    if (cached != null) {
-      return _buildThumbnailImageContainer(MemoryImage(cached), deviceSize);
-    }
-    return _buildThumbnailImageContainer(AssetImage('assets/images/default_intro_image.jpg'), deviceSize);
-  }
-
-  Widget _buildThumbnailImageContainer(ImageProvider imageProvider, Size deviceSize) {
     final thumbWidth = (deviceSize.width * 0.28).clamp(100.0, 180.0);
-    return Expanded(
-      flex: 0,
-      child: Container(
-        width: thumbWidth,
-        constraints: BoxConstraints(minHeight: 80),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: imageProvider,
-            fit: BoxFit.cover,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
+    return CachedThumbnailImage(
+      imageId: thumbnailImageId,
+      width: thumbWidth,
+      height: thumbWidth * 0.8,
+      borderRadius: 10,
     );
   }
 
