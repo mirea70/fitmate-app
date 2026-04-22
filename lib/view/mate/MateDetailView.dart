@@ -739,10 +739,10 @@ class _MateDetailViewState extends ConsumerState<MateDetailView> {
     return FutureBuilder<Uint8List?>(
       future: ref.read(imageCacheServiceProvider).load(introImageId),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-          return Image.memory(snapshot.data!, fit: BoxFit.cover);
-        }
-        if (snapshot.hasError) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return Image.memory(snapshot.data!, fit: BoxFit.cover);
+          }
           return Image.asset('assets/images/default_intro_image.jpg', fit: BoxFit.cover);
         }
         return Center(child: CircularProgressIndicator());

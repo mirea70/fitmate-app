@@ -19,6 +19,7 @@ class CachedProfileImage extends ConsumerStatefulWidget {
 class _CachedProfileImageState extends ConsumerState<CachedProfileImage> {
   Uint8List? _data;
   bool _fadeIn = false;
+  bool _loadDone = false;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _CachedProfileImageState extends ConsumerState<CachedProfileImage> {
     if (widget.imageId != oldWidget.imageId) {
       _data = null;
       _fadeIn = false;
+      _loadDone = false;
       _initImage();
     }
   }
@@ -42,10 +44,11 @@ class _CachedProfileImageState extends ConsumerState<CachedProfileImage> {
     final cached = cache.get(widget.imageId!);
     if (cached != null) {
       _data = cached;
+      _loadDone = true;
       return;
     }
     cache.load(widget.imageId!).then((data) {
-      if (mounted && data != null) setState(() { _data = data; _fadeIn = true; });
+      if (mounted) setState(() { _data = data; _fadeIn = data != null; _loadDone = true; });
     });
   }
 
@@ -53,8 +56,12 @@ class _CachedProfileImageState extends ConsumerState<CachedProfileImage> {
   Widget build(BuildContext context) {
     if (widget.imageId == null) return DefaultProfileImage(size: widget.size);
 
-    if (_data == null) {
+    if (!_loadDone) {
       return ShimmerBox.circle(size: widget.size);
+    }
+
+    if (_data == null) {
+      return DefaultProfileImage(size: widget.size);
     }
 
     final cacheSize = (widget.size * MediaQuery.devicePixelRatioOf(context)).toInt();
@@ -103,6 +110,7 @@ class CachedThumbnailImage extends ConsumerStatefulWidget {
 class _CachedThumbnailImageState extends ConsumerState<CachedThumbnailImage> {
   Uint8List? _data;
   bool _fadeIn = false;
+  bool _loadDone = false;
 
   @override
   void initState() {
@@ -116,16 +124,17 @@ class _CachedThumbnailImageState extends ConsumerState<CachedThumbnailImage> {
     final cached = cache.getThumbnail(widget.imageId!);
     if (cached != null) {
       _data = cached;
+      _loadDone = true;
       return;
     }
     cache.loadThumbnail(widget.imageId!).then((data) {
-      if (mounted && data != null) setState(() { _data = data; _fadeIn = true; });
+      if (mounted) setState(() { _data = data; _fadeIn = data != null; _loadDone = true; });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_data == null && widget.imageId != null) {
+    if (!_loadDone && widget.imageId != null) {
       return ShimmerBox(
         width: widget.width,
         height: widget.height,
