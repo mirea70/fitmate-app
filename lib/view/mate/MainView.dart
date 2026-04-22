@@ -6,6 +6,7 @@ import 'package:fitmate_app/view_model/account/NoticeViewModel.dart';
 import 'package:fitmate_app/view_model/chat/ChatRoomListViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_update/in_app_update.dart';
 
 
 class MainView extends ConsumerStatefulWidget {
@@ -20,6 +21,24 @@ class MainView extends ConsumerStatefulWidget {
 
 class _MainViewState extends ConsumerState<MainView> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkForUpdate();
+  }
+
+  Future<void> _checkForUpdate() async {
+    try {
+      final updateInfo = await InAppUpdate.checkForUpdate();
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        // 즉시 업데이트 (전체 화면 차단, 업데이트 완료 전 사용 불가)
+        await InAppUpdate.performImmediateUpdate();
+      }
+    } catch (_) {
+      // Play Store 연결 불가 등 예외 무시 (디버그 모드 등)
+    }
+  }
 
   void selectTab(int index) {
     setState(() {
