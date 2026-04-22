@@ -57,7 +57,7 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
                               height: deviceSize.height * 0.01,
                             ),
                             Text(
-                              '5~20자의 한글, 영문 및 특수문자 ?, !, ~ 만 입력 가능합니다.',
+                              '5~50자의 한글, 영문 및 특수문자 ?, !, ~ 만 입력 가능합니다.',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
@@ -73,7 +73,7 @@ class _MateRegisterView7State extends ConsumerState<MateRegisterView7> {
                                 viewModelNotifier.setApplyQuestion(value);
                               },
                               hintText: '주 운동루틴은?',
-                              maxLength: 20,
+                              maxLength: 50,
                               text: viewModel.applyQuestion ?? '',
                             ),
                           ],

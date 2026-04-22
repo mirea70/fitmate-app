@@ -99,6 +99,7 @@ class _MateRegisterView3State extends ConsumerState<MateRegisterView3> {
                               viewModelNotifier.setTitle(value);
                             },
                             hintText: '제목을 입력해 주세요',
+                            maxLength: 50,
                             text: viewModel.title,
                           ),
                           SizedBox(

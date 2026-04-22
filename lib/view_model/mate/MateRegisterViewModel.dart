@@ -41,13 +41,13 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
   }
 
   void validateTitle(String value) {
-    String pattern = r'^[ㄱ-ㅎ가-힣a-zA-Z0-9\s?!~]{5,20}$';
+    String pattern = r'^[ㄱ-ㅎ가-힣a-zA-Z0-9\s?!~]{5,50}$';
     RegExp nameRegex = RegExp(pattern);
     if ((!nameRegex.hasMatch(value)))
       throw CustomException(
         domain: ErrorDomain.MATE,
         type: ErrorType.INVALID_INPUT,
-        msg: '제목은 5~20자의 한글, 영문, 숫자 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
+        msg: '제목은 5~50자의 한글, 영문, 숫자 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
       );
   }
 
@@ -127,13 +127,13 @@ class MateRegisterViewModel extends Notifier<Mate> implements BaseViewModel {
   }
 
   void validateApplyQuestion(String value) {
-    String pattern = r'^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s?!~]{5,20}$';
+    String pattern = r'^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s?!~]{5,50}$';
     RegExp nameRegex = RegExp(pattern);
     if ((!nameRegex.hasMatch(value)))
       throw CustomException(
         domain: ErrorDomain.MATE,
         type: ErrorType.INVALID_INPUT,
-        msg: '참여자 질문은 5~20자의 한글, 영문 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
+        msg: '참여자 질문은 5~50자의 한글, 영문 및 특수문자 ?, !, ~ 로 입력해야 합니다.',
       );
   }
 
