@@ -7,11 +7,26 @@ import 'package:fitmate_app/widget/ShimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NoticeListView extends ConsumerWidget {
+class NoticeListView extends ConsumerStatefulWidget {
   const NoticeListView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NoticeListView> createState() => _NoticeListViewState();
+}
+
+class _NoticeListViewState extends ConsumerState<NoticeListView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(noticeListProvider.notifier).refreshIfStale();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final noticeState = ref.watch(noticeListProvider);
 
     return Scaffold(

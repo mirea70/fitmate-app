@@ -12,6 +12,12 @@ final mateAsyncViewModelProvider =
 });
 
 class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
+  static const _ttl = Duration(minutes: 5);
+  DateTime? _lastFetchedAt;
+
+  bool get isStale =>
+      _lastFetchedAt == null || DateTime.now().difference(_lastFetchedAt!) > _ttl;
+
   @override
   Future<List<MateListItem>> build() async {
     return _fetchMates(0);
@@ -25,7 +31,14 @@ class MateAsyncViewModel extends AsyncNotifier<List<MateListItem>> {
       imageIds.add(item.writerImageId);
     }
     await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
+    _lastFetchedAt = DateTime.now();
     return items;
+  }
+
+  /// TTL 경과 시에만 백그라운드 갱신 (Stale-While-Revalidate)
+  Future<void> refreshIfStale({bool includeClosed = false}) async {
+    if (!isStale) return;
+    await refresh(includeClosed: includeClosed);
   }
 
   Future<void> refresh({bool includeClosed = false}) async {

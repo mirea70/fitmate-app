@@ -22,7 +22,12 @@ class ChatRoomListState {
 }
 
 class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
+  static const _ttl = Duration(minutes: 5);
+  DateTime? _lastFetchedAt;
   final Map<int, AccountProfile> _profileCache = {};
+
+  bool get isStale =>
+      _lastFetchedAt == null || DateTime.now().difference(_lastFetchedAt!) > _ttl;
 
   @override
   Future<ChatRoomListState> build() async {
@@ -59,11 +64,17 @@ class ChatRoomListViewModel extends AsyncNotifier<ChatRoomListState> {
       await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
     }
 
+    _lastFetchedAt = DateTime.now();
     return ChatRoomListState(
       rooms: rooms,
       myAccountId: profile.accountId,
       profileCache: Map.from(_profileCache),
     );
+  }
+
+  Future<void> refreshIfStale() async {
+    if (!isStale) return;
+    await refresh();
   }
 
   Future<void> refresh() async {

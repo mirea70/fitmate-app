@@ -19,13 +19,14 @@ class ChatListView extends ConsumerStatefulWidget {
 }
 
 class _ChatListViewState extends ConsumerState<ChatListView> {
+  bool _hasAutoRetried = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !ref.read(chatRoomListProvider).hasValue) {
-        ref.read(chatRoomListProvider.notifier).refresh();
+      if (mounted) {
+        ref.read(chatRoomListProvider.notifier).refreshIfStale();
       }
     });
   }
@@ -33,6 +34,16 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
+
+    ref.listen<AsyncValue<ChatRoomListState>>(chatRoomListProvider, (prev, next) {
+      if (next.hasError && !_hasAutoRetried) {
+        _hasAutoRetried = true;
+        ref.read(chatRoomListProvider.notifier).refresh();
+      } else if (next.hasValue) {
+        _hasAutoRetried = false;
+      }
+    });
+
     final chatRoomsAsync = ref.watch(chatRoomListProvider);
 
     return Scaffold(
@@ -81,20 +92,25 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
             ),
           );
         },
-        error: (e, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('채팅방 목록을 불러올 수 없습니다.'),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () =>
-                    ref.read(chatRoomListProvider.notifier).refresh(),
-                child: const Text('다시 시도'),
-              ),
-            ],
-          ),
-        ),
+        error: (e, stack) {
+          if (!_hasAutoRetried) {
+            return const ChatListSkeleton();
+          }
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('채팅방 목록을 불러올 수 없습니다.'),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () =>
+                      ref.read(chatRoomListProvider.notifier).refresh(),
+                  child: const Text('다시 시도'),
+                ),
+              ],
+            ),
+          );
+        },
         loading: () => const ChatListSkeleton(),
       ),
     );

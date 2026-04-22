@@ -8,6 +8,12 @@ final noticeListProvider = AsyncNotifierProvider<NoticeListViewModel, List<Notic
 );
 
 class NoticeListViewModel extends AsyncNotifier<List<NoticeResponse>> {
+  static const _ttl = Duration(minutes: 5);
+  DateTime? _lastFetchedAt;
+
+  bool get isStale =>
+      _lastFetchedAt == null || DateTime.now().difference(_lastFetchedAt!) > _ttl;
+
   @override
   Future<List<NoticeResponse>> build() async {
     return _loadNotices();
@@ -16,8 +22,8 @@ class NoticeListViewModel extends AsyncNotifier<List<NoticeResponse>> {
   Future<List<NoticeResponse>> _loadNotices() async {
     final repo = ref.read(accountRepositoryProvider);
 
-    // 읽음 처리 (실패해도 무시)
-    repo.markNoticesAsRead().catchError((_) {});
+    // 읽음 처리 (완료 대기, 실패해도 무시)
+    try { await repo.markNoticesAsRead(); } catch (_) {}
 
     // 알림 목록 조회
     final notices = await repo.getMyNotices();
@@ -41,7 +47,13 @@ class NoticeListViewModel extends AsyncNotifier<List<NoticeResponse>> {
       await ref.read(imageCacheServiceProvider).ensureLoaded(imageIds);
     } catch (_) {}
 
+    _lastFetchedAt = DateTime.now();
     return notices;
+  }
+
+  Future<void> refreshIfStale() async {
+    if (!isStale) return;
+    await refresh();
   }
 
   Future<void> refresh() async {
