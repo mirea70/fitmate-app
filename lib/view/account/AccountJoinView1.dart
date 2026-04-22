@@ -92,6 +92,17 @@ class _AccountJoinView1State extends ConsumerState<AccountJoinView1> {
                               maxLength: 20,
                               text: viewModel.loginName,
                             ),
+                            const SizedBox(height: 6),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: Text(
+                                '영문과 숫자를 포함하여 최대 20자까지 가능합니다.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
