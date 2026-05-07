@@ -1,8 +1,6 @@
 # FitMate - 모바일 앱
 
-운동 메이트를 찾을 수 있는 소셜 플랫폼의 모바일 애플리케이션입니다.
-
-백엔드부터 모바일 앱, 스토어 배포까지 1인 개발로 진행하였습니다.
+운동 메이트를 찾을 수 있는 소셜 플랫폼의 모바일 애플리케이션입니다. 현재 **Google Play Store**에 정식 출시되어 운영 중에 있습니다.
 
 > **백엔드 저장소** : [fitmate-back](https://github.com/mirea70/fitmate-back)
 
@@ -164,11 +162,3 @@ Backend API (Spring Boot)
 - **ViewModel** : Riverpod 기반 상태 관리, 비즈니스 로직
 - **Repository** : 서버 API 통신, 인터페이스 분리 (테스트 용이)
 - **Service** : Firebase, 이미지 캐시 등 외부 서비스 래핑
-
-<br/>
-
-## 배포
-
-- **Google Play Store** 비공개 테스트 배포 완료
-- 릴리즈 서명, 앱 아이콘, 스토어 등록정보, 개인정보처리방침 등 스토어 등록 전 과정 수행
-- 프로덕션 배포 준비 중
